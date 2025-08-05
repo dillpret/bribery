@@ -35,9 +35,6 @@ pip install -r requirements.txt
 # Install additional production dependencies
 pip install gunicorn[eventlet]
 
-# Copy WSGI file to root for easier access
-cp deployment/wsgi.py ./wsgi.py
-
 # Make sure prompts.txt exists and is readable
 echo "📝 Checking prompts file..."
 if [ ! -f "data/prompts.txt" ]; then
@@ -66,7 +63,7 @@ WorkingDirectory=/var/www/bribery-game
 Environment="PATH=/var/www/bribery-game/venv/bin"
 Environment="FLASK_ENV=production"
 Environment="PORT=5000"
-ExecStart=/var/www/bribery-game/venv/bin/gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 wsgi:app
+ExecStart=/var/www/bribery-game/venv/bin/gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 deployment.wsgi:app
 Restart=always
 
 [Install]
