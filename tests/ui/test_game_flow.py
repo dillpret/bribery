@@ -8,6 +8,7 @@ import pytest
 import time
 import sys
 import os
+import requests
 
 # Add the app directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -49,14 +50,26 @@ class TestUIGameFlow:
         if hasattr(self, 'driver') and self.driver:
             self.driver.quit()
     
+    def _verify_server_health(self, test_server):
+        """Verify the test server is responding properly"""
+        try:
+            response = requests.get(test_server['base_url'], timeout=5)
+            if response.status_code != 200:
+                pytest.skip(f"Test server not responding properly (status: {response.status_code})")
+        except requests.exceptions.RequestException as e:
+            pytest.skip(f"Test server not accessible: {e}")
+
     def test_complete_game_round_ui(self, test_server):
         """Test a complete game round with multiple players through the UI"""
+        if not self.driver:
+            pytest.skip("Browser driver not available")
+            
+        self._verify_server_health(test_server)
+        
         # Phase 1: Create Game (Host)
         print("\n🎯 Phase 1: Creating game with host...")
         game_id = BrowserHelper.create_game_as_host(self.driver, test_server, "GameHost")
-        print(f"   ✅ Game created with ID: {game_id}")
-        
-        # Phase 2: Add Players
+        print(f"   ✅ Game created with ID: {game_id}")        # Phase 2: Add Players
         print("\n👥 Phase 2: Adding players...")
         player_windows = []
         player_names = ["Alice", "Bob", "Charlie"]

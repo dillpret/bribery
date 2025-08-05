@@ -5,6 +5,7 @@ Browser automation helper functions for UI tests
 """
 
 import os
+import time
 
 # Selenium imports are optional
 try:
@@ -48,41 +49,50 @@ class BrowserHelper:
         chrome_options.add_argument('--log-level=3')  # Suppress INFO, WARNING, ERROR
         
         try:
-            # Try different approaches to get ChromeDriver
+            # Try different approaches to get ChromeDriver - system PATH first for offline reliability
             service = None
             
-            # Method 1: Try ChromeDriverManager
+            # Method 1: Try system PATH chromedriver first (works offline)
             try:
-                service = Service(ChromeDriverManager().install())
-                return webdriver.Chrome(service=service, options=chrome_options)
+                driver = webdriver.Chrome(options=chrome_options)
+                print("✅ Using system PATH chromedriver")
+                return driver
             except Exception as e1:
-                print(f"ChromeDriverManager failed: {e1}")
+                print(f"System PATH chromedriver failed: {e1}")
                 
-                # Method 2: Try system PATH chromedriver
+                # Method 2: Try ChromeDriverManager with caching
                 try:
-                    return webdriver.Chrome(options=chrome_options)
+                    service = Service(ChromeDriverManager().install())
+                    driver = webdriver.Chrome(service=service, options=chrome_options)
+                    print("✅ Using ChromeDriverManager")
+                    return driver
                 except Exception as e2:
-                    print(f"System PATH chromedriver failed: {e2}")
+                    print(f"ChromeDriverManager failed: {e2}")
                     
                     # Method 3: Try common installation paths
                     common_paths = [
+                        r".\chromedriver.exe",
+                        r"chromedriver.exe",
                         r"C:\chromedriver\chromedriver.exe",
                         r"C:\Program Files\chromedriver\chromedriver.exe",
-                        r"C:\Users\{}\AppData\Local\Programs\chromedriver\chromedriver.exe".format(os.environ.get('USERNAME', '')),
-                        r".\chromedriver.exe",
-                        r"chromedriver.exe"
+                        r"C:\Program Files (x86)\chromedriver\chromedriver.exe",
+                        r"C:\Tools\chromedriver.exe",
+                        r"C:\WebDrivers\chromedriver.exe",
+                        os.path.join(os.path.dirname(__file__), "chromedriver.exe"),
                     ]
                     
                     for path in common_paths:
                         if os.path.exists(path):
                             try:
                                 service = Service(path)
-                                return webdriver.Chrome(service=service, options=chrome_options)
+                                driver = webdriver.Chrome(service=service, options=chrome_options)
+                                print(f"✅ Using chromedriver from: {path}")
+                                return driver
                             except Exception as e3:
                                 print(f"Path {path} failed: {e3}")
                                 continue
                     
-                    print("All ChromeDriver methods failed")
+                    print("❌ All ChromeDriver methods failed")
                     return None
                     
         except Exception as e:
@@ -92,64 +102,143 @@ class BrowserHelper:
     @staticmethod
     def create_game_as_host(driver, test_server, username="TestHost"):
         """Helper method to create a game and return game ID"""
-        driver.get(test_server['base_url'])
-        
-        host_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Host New Game')]")
-        host_button.click()
-        
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, "host-game"))
-        )
-        
-        username_input = driver.find_element(By.ID, "host-username")
-        username_input.send_keys(username)
-        
-        create_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Create Game')]")
-        create_button.click()
-        
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, "game-created"))
-        )
-        
-        game_id_element = driver.find_element(By.ID, "created-game-id")
-        return game_id_element.text
+        try:
+            # Navigate to the page and wait for it to load
+            driver.get(test_server['base_url'])
+            
+            # Wait for the page to fully load by checking for the main content
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+            
+            # Additional wait for any JavaScript to initialize
+            time.sleep(1)
+            
+            # Find and click the host button
+            host_button = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Host New Game')]"))
+            )
+            host_button.click()
+
+            # Wait for the host game form to appear
+            WebDriverWait(driver, 15).until(
+                EC.visibility_of_element_located((By.ID, "host-game"))
+            )
+            
+            # Fill in username
+            username_input = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "host-username"))
+            )
+            username_input.clear()
+            username_input.send_keys(username)
+            
+            # Click create game button
+            create_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create Game')]"))
+            )
+            create_button.click()
+
+            # Wait for game creation confirmation
+            WebDriverWait(driver, 20).until(
+                EC.visibility_of_element_located((By.ID, "game-created"))
+            )
+            
+            # Get the game ID
+            game_id_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, "created-game-id"))
+            )
+            
+            return game_id_element.text
+            
+        except Exception as e:
+            print(f"❌ Error in create_game_as_host: {e}")
+            print(f"Current URL: {driver.current_url}")
+            print(f"Page title: {driver.title}")
+            # Take a screenshot for debugging
+            try:
+                driver.save_screenshot("create_game_error.png")
+                print("Screenshot saved as create_game_error.png")
+            except:
+                pass
+            raise
     
     @staticmethod
     def join_game_as_player(driver, test_server, game_id, username):
         """Helper method to join a game in a new window"""
-        # Open new window
-        driver.execute_script("window.open('');")
-        player_window = driver.window_handles[-1]
-        driver.switch_to.window(player_window)
-        driver.get(test_server['base_url'])
-        
-        # Join game
-        join_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Join Game')]")
-        join_button.click()
-        
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, "join-game"))
-        )
-        
-        username_input = driver.find_element(By.ID, "join-username")
-        username_input.send_keys(username)
-        
-        game_id_input = driver.find_element(By.ID, "game-id")
-        game_id_input.send_keys(game_id)
-        
-        join_submit_button = driver.find_element(By.XPATH, "//div[@id='join-game']//button[contains(text(), 'Join Game')]")
-        join_submit_button.click()
-        
-        # Handle potential alert
         try:
-            WebDriverWait(driver, 3).until(EC.alert_is_present())
-            alert = driver.switch_to.alert
-            alert.send_keys(username)
-            alert.accept()
-        except:
-            pass
-        
-        # Wait for game page
+            # Open new window
+            driver.execute_script("window.open('');")
+            player_window = driver.window_handles[-1]
+            driver.switch_to.window(player_window)
+            driver.get(test_server['base_url'])
+            
+            # Wait for page to load
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+            time.sleep(1)  # Allow JS to initialize
+
+            # Find and click join button
+            join_button = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Join Game')]"))
+            )
+            join_button.click()
+
+            # Wait for join form to appear
+            WebDriverWait(driver, 15).until(
+                EC.visibility_of_element_located((By.ID, "join-game"))
+            )
+            
+            # Fill in username
+            username_input = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "join-username"))
+            )
+            username_input.clear()
+            username_input.send_keys(username)
+            
+            # Fill in game ID
+            game_id_input = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "game-id"))
+            )
+            game_id_input.clear()
+            game_id_input.send_keys(game_id)
+            
+            # Submit join request
+            join_submit_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//div[@id='join-game']//button[contains(text(), 'Join Game')]"))
+            )
+            join_submit_button.click()
+
+            # Handle potential alert
+            try:
+                WebDriverWait(driver, 3).until(EC.alert_is_present())
+                alert = driver.switch_to.alert
+                alert.send_keys(username)
+                alert.accept()
+            except:
+                pass
+
+            # Wait for game page to load
+            WebDriverWait(driver, 20).until(
+                EC.any_of(
+                    EC.visibility_of_element_located((By.ID, "game-screen")),
+                    EC.visibility_of_element_located((By.CLASS_NAME, "game-content")),
+                    EC.visibility_of_element_located((By.ID, "player-list"))
+                )
+            )
+            
+            return player_window
+            
+        except Exception as e:
+            print(f"❌ Error in join_game_as_player: {e}")
+            print(f"Current URL: {driver.current_url}")
+            print(f"Page title: {driver.title}")
+            try:
+                driver.save_screenshot("join_game_error.png")
+                print("Screenshot saved as join_game_error.png")
+            except:
+                pass
+            raise
         WebDriverWait(driver, 10).until(
             lambda driver: "/game/" in driver.current_url
         )

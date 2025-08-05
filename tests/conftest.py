@@ -29,89 +29,52 @@ def find_free_port():
 @pytest.fixture(scope="session")
 def test_server():
     """Start or connect to a Flask test server for the entire test session"""
-    # First, try to find if a server is already running
-    test_port = 5001  # Use a fixed port for test server
+    # Use a dynamic port to avoid conflicts
+    test_port = find_free_port()
     base_url = f'http://127.0.0.1:{test_port}'
-    socketio_url = f'http://localhost:{test_port}'
+    socketio_url = f'http://127.0.0.1:{test_port}'  # Use consistent host
     
-    # Check if a server is already running
-    try:
-        response = requests.get(base_url, timeout=1)
-        if response.status_code == 200:
-            print(f"✅ Found existing test server on port {test_port}")
-            server_info = {
-                'base_url': base_url,
-                'socketio_url': socketio_url,
-                'port': test_port,
-                'managed_by_us': False
-            }
-            yield server_info
-            return
-    except requests.exceptions.RequestException:
-        pass  # No server running, we'll start one
+    # Start our own server (don't check for existing since we use dynamic ports)
     
-    # No server running, start our own
-    server_script = f'''
-import sys
-import os
-from pathlib import Path
-
-# Add paths
-root_dir = r"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
-src_path = os.path.join(root_dir, "src")
-sys.path.insert(0, root_dir)
-sys.path.insert(0, src_path)
-
-from web import create_app
-
-# Configure for testing with optimizations
-app, socketio = create_app({{
-    'TESTING': True, 
-    'SECRET_KEY': 'test-secret-key',
-    'WTF_CSRF_ENABLED': False,
-    'SERVER_NAME': None
-}})
-
-# Reduce logging overhead
-import logging
-logging.getLogger('werkzeug').setLevel(logging.ERROR)
-logging.getLogger('socketio').setLevel(logging.ERROR)
-logging.getLogger('engineio').setLevel(logging.ERROR)
-
-if __name__ == "__main__":
-    print(f"Starting test server on port {test_port}")
-    socketio.run(app, debug=False, host='127.0.0.1', port={test_port}, use_reloader=False, log_output=False)
-'''
-    
-    # Write the server script to a temporary file
-    script_path = os.path.join(os.path.dirname(__file__), 'test_server_temp.py')
-    with open(script_path, 'w') as f:
-        f.write(server_script)
+    # Use the proper test_server.py file
+    server_script_path = os.path.join(os.path.dirname(__file__), 'test_server.py')
     
     server_process = None
     try:
         # Start server process
-        venv_python = r"C:/Users/AB018M1/OneDrive - Absa/Code/GameExperiment/.venv/Scripts/python.exe"
+        venv_python = sys.executable
+        startup_info = subprocess.STARTUPINFO()
+        startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startup_info.wShowWindow = subprocess.SW_HIDE
+        
         server_process = subprocess.Popen(
-            [venv_python, script_path],
+            [venv_python, server_script_path, '--port', str(test_port)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0
+            startupinfo=startup_info,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
         )
         
         # Wait for server to start
-        max_retries = 15
+        max_retries = 30  # Increased timeout for slower machines
+        retry_delay = 0.5
         for i in range(max_retries):
             try:
-                response = requests.get(base_url, timeout=0.5)
+                response = requests.get(base_url, timeout=2.0)  # Increased timeout
                 if response.status_code == 200:
                     print(f"✅ Test server started successfully on port {test_port}")
                     break
-            except requests.exceptions.RequestException:
+            except requests.exceptions.RequestException as e:
                 if i == max_retries - 1:
+                    # Print server output for debugging
+                    if server_process.poll() is not None:
+                        stdout, stderr = server_process.communicate()
+                        print(f"❌ Server process exited with code {server_process.returncode}")
+                        print(f"STDOUT: {stdout.decode() if stdout else 'None'}")
+                        print(f"STDERR: {stderr.decode() if stderr else 'None'}")
                     server_process.terminate()
-                    pytest.fail(f"❌ Test server failed to start within 15 seconds on port {test_port}")
-                time.sleep(0.5)
+                    pytest.fail(f"❌ Test server failed to start within {max_retries * retry_delay} seconds on port {test_port}. Last error: {e}")
+                time.sleep(retry_delay)
         
         # Provide server info to tests
         server_info = {
@@ -128,26 +91,31 @@ if __name__ == "__main__":
         if server_process:
             print("🧹 Shutting down test server...")
             try:
-                if os.name == 'nt':  # Windows
+                # Use Windows-specific process termination
+                try:
                     server_process.send_signal(signal.CTRL_BREAK_EVENT)
-                else:  # Unix-like
+                except (OSError, AttributeError):
                     server_process.terminate()
                 
                 # Wait for process to end, with timeout
                 try:
                     server_process.wait(timeout=5)
                 except subprocess.TimeoutExpired:
-                    server_process.kill()  # Force kill if it doesn't terminate gracefully
+                    print("⚠️ Server didn't terminate gracefully, forcing kill...")
+                    if os.name == 'nt':
+                        server_process.kill()
+                    else:
+                        try:
+                            os.killpg(os.getpgid(server_process.pid), signal.SIGKILL)
+                        except:
+                            server_process.kill()
                     server_process.wait()
                     
             except Exception as e:
                 print(f"Warning: Error shutting down server: {e}")
         
-        # Clean up temporary script
-        try:
-            os.remove(script_path)
-        except Exception:
-            pass
+        # Clean up - no temporary script to remove since we use the proper test_server.py
+        pass
 
 @pytest.fixture(autouse=True)
 def clean_game_state():

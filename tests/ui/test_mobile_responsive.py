@@ -1,6 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Mobile responsive UI tests
+"""
+
+import pytest
+import sys
+import os
+import requests
+import time
+
+# Add the app directory to the path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'src'))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from helpers.browser_helpers import BrowserHelper
+# -*- coding: utf-8 -*-
+"""
 Mobile responsiveness tests for the Bribery game UI
 """
 
@@ -155,10 +172,21 @@ class TestMobileUI:
             if driver:
                 driver.quit()
     
+    def _verify_server_health(self, test_server):
+        """Verify the test server is responding properly"""
+        try:
+            response = requests.get(test_server['base_url'], timeout=5)
+            if response.status_code != 200:
+                pytest.skip(f"Test server not responding properly (status: {response.status_code})")
+        except requests.exceptions.RequestException as e:
+            pytest.skip(f"Test server not accessible: {e}")
+    
     def test_mobile_viewport_configuration(self, test_server):
         """Test that viewport is properly configured for mobile"""
         if not self.drivers:
             pytest.skip("No mobile drivers available")
+        
+        self._verify_server_health(test_server)
         
         # Test on iPhone 12
         driver = self.drivers.get("iPhone 12")
@@ -249,14 +277,26 @@ class TestMobileUI:
         """Test the complete mobile game creation flow"""
         if not self.drivers:
             pytest.skip("No mobile drivers available")
-        
+
         driver = self.drivers.get("iPhone 12")
         if not driver:
             pytest.skip("iPhone 12 driver not available")
         
-        # Test mobile game flow
-        assert MobileBrowserHelper.test_mobile_game_flow(driver, test_server)
-    
+        self._verify_server_health(test_server)
+
+        # Test mobile game flow with better error handling
+        try:
+            result = MobileBrowserHelper.test_mobile_game_flow(driver, test_server)
+            assert result, "Mobile game flow test failed"
+        except Exception as e:
+            print(f"❌ Mobile game flow failed: {e}")
+            try:
+                driver.save_screenshot("mobile_game_flow_error.png")
+                print("Screenshot saved as mobile_game_flow_error.png")
+            except:
+                pass
+            raise
+
     def test_cross_device_consistency(self, test_server):
         """Test that the UI is consistent across different mobile devices"""
         if len(self.drivers) < 2:

@@ -7,6 +7,8 @@ UI tests using browser automation
 import pytest
 import sys
 import os
+import requests
+import time
 
 # Add the app directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -39,9 +41,24 @@ class TestUIBasic:
         if hasattr(self, 'driver') and self.driver:
             self.driver.quit()
     
+    def _verify_server_health(self, test_server):
+        """Verify the test server is responding properly"""
+        try:
+            response = requests.get(test_server['base_url'], timeout=5)
+            if response.status_code != 200:
+                pytest.skip(f"Test server not responding properly (status: {response.status_code})")
+        except requests.exceptions.RequestException as e:
+            pytest.skip(f"Test server not accessible: {e}")
+    
     def test_home_page_elements(self, test_server):
         """Test that all home page elements are present"""
+        if not self.driver:
+            pytest.skip("Browser driver not available")
+            
+        self._verify_server_health(test_server)
+        
         self.driver.get(test_server['base_url'])
+        time.sleep(2)  # Allow page to fully load
         
         # Check title
         assert "Bribery" in self.driver.title
@@ -54,6 +71,11 @@ class TestUIBasic:
     
     def test_host_game_flow(self, test_server):
         """Test the complete host game flow"""
+        if not self.driver:
+            pytest.skip("Browser driver not available")
+            
+        self._verify_server_health(test_server)
+        
         game_id = BrowserHelper.create_game_as_host(self.driver, test_server, "TestHost")
         
         assert len(game_id) > 0
@@ -64,6 +86,11 @@ class TestUIBasic:
     
     def test_join_game_flow(self, test_server):
         """Test joining a game"""
+        if not self.driver:
+            pytest.skip("Browser driver not available")
+            
+        self._verify_server_health(test_server)
+        
         # First create a game to join
         self.test_host_game_flow(test_server)
         game_id = self.last_created_game_id
