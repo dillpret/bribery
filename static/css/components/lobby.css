@@ -1,0 +1,44 @@
+/* Lobby-specific styles */
+.lobby-content {
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.player-list {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.player-item {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 12px 16px;
+    margin: 4px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.player-item.host {
+    background: #e74c3c;
+}
+
+.settings-display {
+    background: #e9ecef;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 15px 0;
+    text-align: left;
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+}

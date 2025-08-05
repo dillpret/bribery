@@ -1,0 +1,246 @@
+/* Base styles and component imports */
+@import url('components/lobby.css');
+@import url('components/buttons.css');
+@import url('components/forms.css');
+@import url('components/game-phases.css');
+@import url('components/scoreboard.css');
+@import url('components/mobile.css');
+
+/* Global styles - Mobile First */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    padding: 10px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    min-height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    flex-shrink: 0;
+}
+
+h1 {
+    color: #764ba2;
+    margin-bottom: 10px;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.game-info {
+    color: #666;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+}
+
+.status-bar {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.timer {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    font-weight: bold;
+    color: #e74c3c;
+    margin: 8px 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Game-specific styles */
+.round-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.prompt {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 15px;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 600;
+    margin: 15px 0;
+    line-height: 1.4;
+}
+
+.targets {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.target-item {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 12px 0;
+}
+
+.submission-area {
+    margin-top: 12px;
+}
+
+.submission-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.submission-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Voting styles */
+.voting-content {
+    text-align: center;
+}
+
+.bribe-option {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 16px;
+    margin: 12px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.bribe-option:hover, .bribe-option:focus {
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    outline: none;
+}
+
+.bribe-option:active {
+    transform: translateY(0);
+}
+
+.bribe-option.selected {
+    border-color: #28a745;
+    background: #f8fff9;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.bribe-content {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    line-height: 1.5;
+    word-break: break-word;
+    flex-grow: 1;
+}
+
+.bribe-image {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Vote results */
+.vote-results {
+    background: #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.vote-item {
+    margin: 5px 0;
+    padding: 5px 0;
+}
+
+/* Waiting screen */
+.waiting-screen {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.waiting-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Drag and drop */
+.drag-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px 0;
+    transition: border-color 0.3s;
+}
+
+.drag-drop-area.dragover {
+    border-color: #667eea;
+    background: #f0f5ff;
+}
+
+.file-preview {
+    max-width: 200px;
+    max-height: 200px;
+    margin: 10px auto;
+    display: block;
+    border-radius: 5px;
+}
+
+/* Import component styles */
+@import url('components/lobby.css');
+@import url('components/game-phases.css');
+@import url('components/buttons.css');
+@import url('components/forms.css');
+@import url('components/scoreboard.css');
+@import url('components/mobile.css');

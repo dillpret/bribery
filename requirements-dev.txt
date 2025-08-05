@@ -1,0 +1,20 @@
+# Development dependencies for code quality and tooling
+# Install with: py -m pip install -r requirements-dev.txt
+
+# Code formatting and linting
+black==25.1.0
+isort==6.0.1
+flake8==7.3.0
+
+# Type checking
+mypy==1.17.1
+
+# Security scanning
+bandit==1.8.6
+
+# Pre-commit hooks
+pre-commit==4.2.0
+
+# Additional testing tools (if needed)
+# pytest-cov==4.0.0  # Coverage reporting
+# pytest-mock==3.11.1  # Mocking utilities

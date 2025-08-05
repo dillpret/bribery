@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Test - Bribery Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Bribery Game - Frontend Debug Test</h1>
+    
+    <div class="section">
+        <h2>1. Socket.IO Connection Test</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-log" class="log"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Create Game Test</h2>
+        <input type="text" id="test-username" placeholder="Username" value="TestUser">
+        <button onclick="testCreateGame()">Create Game</button>
+        <div id="create-game-log" class="log"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Join Game Test</h2>
+        <input type="text" id="test-join-username" placeholder="Username" value="Player1">
+        <input type="text" id="test-game-id" placeholder="Game ID">
+        <button onclick="testJoinGame()">Join Game</button>
+        <div id="join-game-log" class="log"></div>
+    </div>
+    
+    <script src="/static/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = isError ? 'error' : 'success';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            element.appendChild(logEntry);
+            element.scrollTop = element.scrollHeight;
+        }
+        
+        function testConnection() {
+            log('connection-log', 'Testing Socket.IO connection...');
+            
+            try {
+                if (socket) {
+                    socket.disconnect();
+                }
+                
+                socket = io();
+                
+                socket.on('connect', () => {
+                    log('connection-log', '✓ Socket.IO connected successfully!');
+                });
+                
+                socket.on('connect_error', (error) => {
+                    log('connection-log', `✗ Connection error: ${error}`, true);
+                });
+                
+                socket.on('disconnect', () => {
+                    log('connection-log', 'Socket.IO disconnected');
+                });
+                
+                // Test connection timeout
+                setTimeout(() => {
+                    if (!socket.connected) {
+                        log('connection-log', '✗ Connection timeout', true);
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                log('connection-log', `✗ Exception: ${error}`, true);
+            }
+        }
+        
+        function testCreateGame() {
+            if (!socket || !socket.connected) {
+                log('create-game-log', '✗ Not connected. Test connection first.', true);
+                return;
+            }
+            
+            const username = document.getElementById('test-username').value.trim();
+            if (!username) {
+                log('create-game-log', '✗ Please enter a username', true);
+                return;
+            }
+            
+            log('create-game-log', `Creating game for user: ${username}`);
+            
+            // Set up event listeners
+            socket.on('game_created', (data) => {
+                log('create-game-log', `✓ Game created! ID: ${data.game_id}`);
+                document.getElementById('test-game-id').value = data.game_id;
+            });
+            
+            socket.on('lobby_update', (data) => {
+                log('create-game-log', `✓ Lobby updated. Players: ${data.player_count}`);
+            });
+            
+            socket.on('error', (data) => {
+                log('create-game-log', `✗ Error: ${data.message}`, true);
+            });
+            
+            // Emit create game event
+            socket.emit('create_game', {
+                username: username,
+                rounds: 3,
+                submission_time: 60,
+                voting_time: 30
+            });
+        }
+        
+        function testJoinGame() {
+            if (!socket || !socket.connected) {
+                log('join-game-log', '✗ Not connected. Test connection first.', true);
+                return;
+            }
+            
+            const username = document.getElementById('test-join-username').value.trim();
+            const gameId = document.getElementById('test-game-id').value.trim();
+            
+            if (!username || !gameId) {
+                log('join-game-log', '✗ Please enter both username and game ID', true);
+                return;
+            }
+            
+            log('join-game-log', `Joining game ${gameId} as ${username}`);
+            
+            // Set up event listeners
+            socket.on('joined_game', (data) => {
+                log('join-game-log', `✓ Joined game! Host: ${data.is_host}`);
+            });
+            
+            socket.on('lobby_update', (data) => {
+                log('join-game-log', `✓ Lobby updated. Players: ${data.player_count}`);
+            });
+            
+            socket.on('error', (data) => {
+                log('join-game-log', `✗ Error: ${data.message}`, true);
+            });
+            
+            // Emit join game event
+            socket.emit('join_game', {
+                username: username,
+                game_id: gameId.toUpperCase()
+            });
+        }
+        
+        // Auto-connect when page loads
+        window.onload = function() {
+            log('connection-log', 'Page loaded. Ready to test.');
+        };
+    </script>
+</body>
+</html>

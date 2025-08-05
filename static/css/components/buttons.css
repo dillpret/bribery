@@ -1,0 +1,81 @@
+/* Button styles - Mobile First */
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 8px;
+    min-height: 48px;
+    min-width: 120px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+button:hover, button:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    outline: none;
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.submit-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    min-height: 44px;
+    min-width: 100px;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.submit-btn:hover, .submit-btn:focus {
+    background: #218838;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+#submit-vote-btn {
+    background: #28a745;
+    font-size: 18px;
+    padding: 18px 32px;
+    margin-top: 20px;
+    min-width: 200px;
+}
+
+#submit-vote-btn:hover {
+    background: #218838;
+}

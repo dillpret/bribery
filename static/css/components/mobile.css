@@ -1,0 +1,191 @@
+/* Mobile-specific styles and responsive design */
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .category-option,
+    .score-item {
+        min-height: 44px; /* Apple's recommended minimum touch target */
+    }
+    
+    button:hover,
+    .category-option:hover,
+    .score-item:hover {
+        transform: none; /* Disable hover transforms on touch devices */
+    }
+}
+
+/* Small mobile screens (< 480px) */
+@media (max-width: 479px) {
+    .container {
+        padding: 10px;
+    }
+    
+    /* Adjust font sizes for small screens */
+    h1 {
+        font-size: 24px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    h3 {
+        font-size: 18px;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .button-group button {
+        width: 100%;
+        margin: 4px 0;
+    }
+    
+    /* Reduce padding for small screens */
+    .game-phase,
+    .scoreboard,
+    .lobby {
+        padding: 12px;
+        margin: 12px 0;
+    }
+    
+    /* Simplify form layouts */
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    label {
+        font-size: 14px;
+    }
+    
+    /* Optimize category selection for small screens */
+    .category-selection {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    
+    .category-option {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Medium mobile screens (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+    .category-selection {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .button-group button {
+        flex: 0 1 auto;
+        min-width: 120px;
+    }
+}
+
+/* Tablet landscape (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .category-selection {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .scoreboard,
+    .game-phase {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Prevent zoom on form inputs (iOS Safari) */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    font-size: 16px !important; /* Force 16px to prevent zoom */
+}
+
+/* iOS Safari viewport fix */
+@supports (-webkit-touch-callout: none) {
+    .container {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Ensure crisp rendering on high DPI screens */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    /* This could be expanded if dark mode is desired */
+    /* For now, we'll maintain light theme for consistency */
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+    /* Reduce vertical padding when in landscape on short screens */
+    .game-phase,
+    .scoreboard,
+    .lobby {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+    
+    .phase-content {
+        min-height: 120px;
+    }
+}
+
+/* Print styles (if users want to print scores) */
+@media print {
+    .container {
+        max-width: none;
+        box-shadow: none;
+        padding: 0;
+    }
+    
+    button {
+        display: none;
+    }
+    
+    .scoreboard,
+    .game-phase {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .score-item {
+        background: #fff !important;
+        border-left: 2px solid #000 !important;
+    }
+}
