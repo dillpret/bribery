@@ -24,7 +24,7 @@ def load_prompts() -> List[str]:
         # Default prompts if file doesn't exist
         _cached_prompts = [
             "A funny haiku",
-            "Your favorite meme",
+            "Your favourite meme",
             "A gif that describes your mood",
             "Something that would make them laugh",
             "A random fact",

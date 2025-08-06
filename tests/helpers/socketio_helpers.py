@@ -173,7 +173,7 @@ class SocketIOHelper:
         return True
     
     def wait_for_event(self, event_name: str, timeout: float = 2.0) -> bool:
-        """Wait for a specific event to occur with optimized timing"""
+        """Wait for a specific event to occur with optimised timing"""
         wait_count = 0
         max_wait = int(timeout / 0.05)  # Check every 50ms for faster response
         

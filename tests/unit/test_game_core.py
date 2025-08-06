@@ -191,19 +191,19 @@ class TestGameManager:
         manager = GameManager()
         
         # Add multiple games
-        game1 = Game("GAME0001", "host1", {'rounds': 3, 'submission_time': 60, 'voting_time': 30})
-        game2 = Game("GAME0002", "host2", {'rounds': 5, 'submission_time': 90, 'voting_time': 45})
+        game1 = Game("GAM1", "host1", {'rounds': 3, 'submission_time': 60, 'voting_time': 30})
+        game2 = Game("GAM2", "host2", {'rounds': 5, 'submission_time': 90, 'voting_time': 45})
         
         manager.add_game(game1)
         manager.add_game(game2)
         
         # Both games should be retrievable
-        assert manager.get_game("GAME0001") is game1
-        assert manager.get_game("GAME0002") is game2
+        assert manager.get_game("GAM1") is game1
+        assert manager.get_game("GAM2") is game2
         
         # Games should be independent
-        assert manager.get_game("GAME0001").settings['rounds'] == 3
-        assert manager.get_game("GAME0002").settings['rounds'] == 5
+        assert manager.get_game("GAM1").settings['rounds'] == 3
+        assert manager.get_game("GAM2").settings['rounds'] == 5
 
 
 class TestUtilityFunctions:
@@ -244,11 +244,11 @@ class TestUtilityFunctions:
             
     def test_game_id_format_validation(self):
         """Test game ID format requirements"""
-        # Game IDs should be 8 characters, alphanumeric, uppercase
-        valid_ids = ["ABC12345", "XYZE7890", "TEST1234", "12345678"]
+        # Game IDs should be 4 characters, alphanumeric, uppercase
+        valid_ids = ["ABC1", "XYZ7", "T3ST", "1234"]
         
         for game_id in valid_ids:
             game = Game(game_id, "host", {})
             assert game.game_id == game_id
-            assert len(game_id) == 8
+            assert len(game_id) == 4  # 4-character codes
             assert game_id.isalnum()

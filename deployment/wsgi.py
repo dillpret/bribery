@@ -6,14 +6,64 @@ import os
 import sys
 from pathlib import Path
 
-# Add src to path so we can import our modules
-src_path = Path(__file__).parent.parent / 'src'
-sys.path.insert(0, str(src_path))
+# Get absolute paths to ensure they work regardless of working directory
+wsgi_file = Path(__file__).resolve()
+project_root = wsgi_file.parent.parent
+src_path = project_root / 'src'
 
-# Import from our refactored structure
-from web import create_app
-from web.socket_handlers import get_game_manager
-import threading
+# Debug info (will appear in Gunicorn logs)
+print(f"WSGI Debug Info:")
+print(f"  WSGI file: {wsgi_file}")
+print(f"  Project root: {project_root}")
+print(f"  Src path: {src_path}")
+print(f"  Current working directory: {Path.cwd()}")
+
+# Add paths to Python path (insert at beginning to prioritise)
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+print(f"  Updated sys.path: {sys.path[:5]}")
+
+# Verify the web module exists before importing
+web_init_file = src_path / 'web' / '__init__.py'
+print(f"  Web module path: {web_init_file}")
+print(f"  Web module exists: {web_init_file.exists()}")
+
+if web_init_file.exists():
+    try:
+        # Import from our refactored structure
+        from web import create_app
+        from web.socket_handlers import get_game_manager
+        import threading
+        print("✅ Successfully imported web modules")
+        
+    except ImportError as e:
+        print(f"❌ Import error despite file existing: {e}")
+        print(f"❌ This suggests a dependency or sub-import issue")
+        
+        # Try to import the specific files to narrow down the issue
+        try:
+            import web
+            print(f"✅ Base web module imported successfully")
+        except ImportError as e2:
+            print(f"❌ Base web module import failed: {e2}")
+            
+        try:
+            from web import app
+            print(f"✅ web.app imported successfully")
+        except ImportError as e3:
+            print(f"❌ web.app import failed: {e3}")
+            
+        raise e
+else:
+    print(f"❌ Web module __init__.py not found at expected location")
+    print("Available files in src/web/:")
+    if (src_path / 'web').exists():
+        for file in (src_path / 'web').iterdir():
+            print(f"  - {file.name}")
+    raise ImportError(f"Web module not found at {web_init_file}")
 
 
 def cleanup_games():

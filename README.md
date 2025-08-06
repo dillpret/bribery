@@ -31,23 +31,22 @@ py -m bandit -r src/       # Security scan
 
 ## Testing
 ```bash
-py -m pytest                # Full suite (~30s)
-py -m pytest tests/unit/    # Unit tests (0.69s)
-py -m pytest tests/ui/      # Browser tests (~2min)
+py -m pytest                # Full suite
+py -m pytest tests/unit/    # Unit tests
+py -m pytest tests/ui/      # Browser tests (requires Chrome)
 ```
 
-## Project Status
-- ✅ **Performance:** Optimized test suite (10min → 30s)
-- ✅ **Architecture:** Modular components (1000+ lines → 95 lines)
-- ✅ **Mobile:** Responsive design with touch optimization
-- ✅ **Code Quality:** Automated enforcement (130+ violations → 0)
-- ✅ **Security:** Input validation and automated scanning
-- ⚠️ **Production:** Database persistence and scalability needed
+## Key Features
+- **Mobile-Optimised**: Touch-friendly interface with mobile image upload
+- **Custom Time Settings**: Flexible timer configuration for different group sizes  
+- **Real-Time Progress**: Live tracking of submission and voting progress
+- **Custom Prompts**: Players choose their own prompts (default enabled)
+- **4-Character Game Codes**: Easy-to-share codes for joining games
+- **Multiple Input Types**: Text, images, links, and GIFs supported
 
 ## Architecture
-- **Backend:** Flask + SocketIO
-- **Frontend:** Modular HTML/CSS/JS components
-- **Testing:** 3-tier optimized suite
-- **Mobile:** Touch-first responsive design
+- **Backend:** Flask + SocketIO for real-time multiplayer
+- **Frontend:** Responsive HTML/CSS/JS with mobile-first design
+- **Testing:** Comprehensive unit and integration test coverage
 
 See `.copilot-instructions.md` for development context.

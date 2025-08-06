@@ -29,7 +29,7 @@ body {
     background: white;
     border-radius: 20px;
     padding: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     min-height: calc(100vh - 20px);
     display: flex;
     flex-direction: column;
@@ -148,7 +148,8 @@ h1 {
     -webkit-tap-highlight-color: transparent;
 }
 
-.bribe-option:hover, .bribe-option:focus {
+.bribe-option:hover,
+.bribe-option:focus {
     border-color: #667eea;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
@@ -210,8 +211,18 @@ h1 {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Image upload container */
+.image-upload-container {
+    position: relative;
 }
 
 /* Drag and drop */
@@ -222,11 +233,79 @@ h1 {
     text-align: center;
     margin: 10px 0;
     transition: border-color 0.3s;
+    cursor: pointer;
+    position: relative;
 }
 
 .drag-drop-area.dragover {
     border-color: #667eea;
     background: #f0f5ff;
+}
+
+/* Show different text based on device capabilities */
+.drag-drop-text {
+    display: block;
+}
+
+.mobile-upload-text {
+    display: none;
+}
+
+.image-upload-btn {
+    display: none;
+    width: 100%;
+    padding: 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.image-upload-btn:hover {
+    background: #5a67d8;
+}
+
+.image-upload-btn:active {
+    background: #4c51bf;
+}
+
+/* Mobile and touch device styles */
+@media (max-width: 768px) {
+    .drag-drop-text {
+        display: none;
+    }
+
+    .mobile-upload-text {
+        display: block;
+    }
+
+    .image-upload-btn {
+        display: block;
+    }
+
+    .drag-drop-area {
+        padding: 15px;
+        margin-bottom: 5px;
+    }
+}
+
+/* Touch device detection - hide drag/drop text if touch is primary input */
+@media (pointer: coarse) {
+    .drag-drop-text {
+        display: none;
+    }
+
+    .mobile-upload-text {
+        display: block;
+    }
+
+    .image-upload-btn {
+        display: block;
+    }
 }
 
 .file-preview {
@@ -235,6 +314,99 @@ h1 {
     margin: 10px auto;
     display: block;
     border-radius: 5px;
+}
+
+/* Progress indicators */
+.progress-indicator {
+    background: #e8f5e8;
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.progress-indicator p {
+    margin: 0;
+    font-weight: 600;
+    color: #155724;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+}
+
+.progress-indicator.waiting {
+    background: #fff3cd;
+    border-color: #ffc107;
+}
+
+.progress-indicator.waiting p {
+    color: #856404;
+}
+
+/* Prompt Selection Improvements */
+.prompt-option-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    border: 2px solid #e9ecef;
+}
+
+.prompt-option-section h3 {
+    color: #495057;
+    margin: 0 0 10px 0;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-weight: 600;
+}
+
+.prompt-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.prompt-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.prompt-divider span {
+    background: white;
+    padding: 0 15px;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#prompt-dropdown {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+}
+
+#custom-prompt-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+#custom-prompt-input:focus,
+#prompt-dropdown:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Import component styles */

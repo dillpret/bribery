@@ -27,7 +27,7 @@ Each round consists of three or four phases depending on the Custom Prompts sett
 
 #### Phase 1A: Prompt Selection (Custom Prompts Mode Only)
 - **Individual Choice**: Each player selects their own prompt for receiving bribes
-- **Prompt Options**: Dropdown with preset prompts from `prompts.txt` + "Custom..." option
+- **Prompt Options**: Two separate sections - dropdown with preset prompts OR custom text input
 - **Custom Prompts**: Players can enter completely custom prompts (up to 200 characters)
 - **Completion**: Phase advances when all players select prompts OR 30-second timer expires
 - **Fallback**: Players who don't select use a default prompt
@@ -147,7 +147,7 @@ For N players in round R:
 - **Prompt Pool**: Random selection from `prompts.txt` (40+ creative prompts)
 - **Submission Formats**: 
   - Text: Plain text responses
-  - Images: Uploaded files or drag-dropped content
+  - Images: Mobile camera/gallery or drag-and-drop on desktop
   - Links: URLs for gifs, memes, articles
 - **Content Persistence**: Submissions stored per round, cleared between games
 
@@ -158,4 +158,4 @@ For N players in round R:
 - **Empty Games**: Games auto-cleanup after inactivity
 - **Late Joiners**: Queue until next round starts, maintain separate waiting screen
 
-This document represents the canonical business logic as implemented in the current system. Any AI assistance should reference these rules to understand expected game behavior, especially for edge cases involving reconnection, late joining, and mid-game state management.
+This document represents the canonical business logic as implemented in the current system. Any AI assistance should reference these rules to understand expected game behaviour, especially for edge cases involving reconnection, late joining, and mid-game state management.

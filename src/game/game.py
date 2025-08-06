@@ -38,7 +38,8 @@ class Game:
         self.players[player_id] = {
             'username': username,
             'connected': True,
-            'ready': False
+            'ready': False,
+            'active_in_round': self.state == "lobby"  # Only active if joining during lobby
         }
         self.scores[player_id] = 0
 
@@ -53,17 +54,27 @@ class Game:
         """Get count of connected players"""
         return len([p for p in self.players.values() if p['connected']])
 
+    def get_active_player_count(self) -> int:
+        """Get count of players active in current round"""
+        return len([p for p in self.players.values() if p['connected'] and p.get('active_in_round', True)])
+
+    def get_active_player_ids(self) -> list:
+        """Get list of player IDs active in current round"""
+        return [pid for pid, player in self.players.items()
+                if player['connected'] and player.get('active_in_round', True)]
+
     def get_player_count(self) -> int:
         """Get total player count (including disconnected)"""
         return len(self.players)
 
     def can_start_game(self) -> bool:
         """Check if game can be started"""
-        return self.get_connected_player_count() >= 3 and self.state == "lobby"
+        return self.get_active_player_count() >= 3 and self.state == "lobby"
 
     def generate_round_pairings(self):
         """Generate pairings so each player bribes exactly 2 others and receives bribes from exactly 2 others"""
-        player_ids = list(self.players.keys())
+        # Only include active players in pairings
+        player_ids = self.get_active_player_ids()
         n = len(player_ids)
 
         if n < 3:
@@ -100,21 +111,19 @@ class Game:
         return self.settings.get('custom_prompts', False)
 
     def all_players_prompt_ready(self, round_num: int) -> bool:
-        """Check if all players have selected their prompts for the round"""
+        """Check if all active players have selected their prompts for the round"""
         if not self.custom_prompts_enabled():
             return True
 
         if round_num not in self.player_prompt_ready:
             return False
 
-        connected_players = [
-            pid for pid,
-            player in self.players.items() if player['connected']]
+        active_players = self.get_active_player_ids()
         ready_players = [
             pid for pid,
             ready in self.player_prompt_ready[round_num].items() if ready]
 
-        return len(ready_players) >= len(connected_players)
+        return len(ready_players) >= len(active_players)
 
     def get_prompt_for_target(
             self,
@@ -134,6 +143,12 @@ class Game:
             return self.current_prompt
 
         return custom_prompt
+
+    def activate_waiting_players(self):
+        """Activate players who joined mid-game for the next round"""
+        for player_id, player in self.players.items():
+            if player['connected'] and not player.get('active_in_round', True):
+                player['active_in_round'] = True
 
     def cleanup(self):
         """Clean up game resources"""

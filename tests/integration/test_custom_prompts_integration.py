@@ -70,7 +70,7 @@ class TestCustomPromptsIntegration(unittest.TestCase):
         custom_game.current_prompt = "Default prompt"
         custom_game.player_prompts = {1: {"player2": "Custom prompt for player2"}}
         
-        # Integration test: same method, different behavior based on game settings
+        # Integration test: same method, different behaviour based on game settings
         trad_prompt = traditional_game.get_prompt_for_target(1, "player2")
         custom_prompt = custom_game.get_prompt_for_target(1, "player2")
         

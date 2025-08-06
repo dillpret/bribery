@@ -25,7 +25,7 @@ class BrowserHelper:
     
     @staticmethod
     def create_chrome_driver():
-        """Create Chrome driver with optimized settings"""
+        """Create Chrome driver with optimised settings"""
         if not SELENIUM_AVAILABLE:
             return None
             

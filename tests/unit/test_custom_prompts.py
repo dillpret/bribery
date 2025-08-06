@@ -37,7 +37,7 @@ class TestCustomPrompts(unittest.TestCase):
         self.assertTrue(self.custom_game.custom_prompts_enabled())
         self.assertFalse(self.traditional_game.custom_prompts_enabled())
         
-        # Test default behavior when setting missing
+        # Test default behaviour when setting missing
         default_game = Game("DEF789", "host1", {})
         self.assertFalse(default_game.custom_prompts_enabled())
     
@@ -120,7 +120,7 @@ class TestCustomPrompts(unittest.TestCase):
         self.assertEqual(prompt, "Default fallback prompt")
     
     def test_get_prompt_for_target_fallback_when_round_missing(self):
-        """Test fallback behavior when round data is missing"""
+        """Test fallback behaviour when round data is missing"""
         self.custom_game.current_prompt = "Fallback prompt"
         
         # No round data exists

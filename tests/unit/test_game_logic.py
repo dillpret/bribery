@@ -31,7 +31,7 @@ class TestGameLogic:
             
             # Check for some expected prompts
             prompt_text = ' '.join(prompts).lower()
-            assert any(word in prompt_text for word in ['haiku', 'meme', 'write', 'create'])
+            assert any(word in prompt_text for word in ['laugh', 'cute', 'something', 'make me'])
         else:
             # Fallback test with sample prompts
             sample_prompts = [
@@ -52,13 +52,13 @@ class TestGameLogic:
         
         # Simulate the game ID generation logic
         def generate_test_game_id():
-            return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            return ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
         
         # Generate a game ID
         game_id = generate_test_game_id()
         
         # Should be 8 characters long
-        assert len(game_id) == 8
+        assert len(game_id) == 4  # 4-character codes
         assert game_id.isalnum()
         assert game_id.isupper() or any(c.isdigit() for c in game_id)
     

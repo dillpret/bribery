@@ -16,7 +16,8 @@ button {
     touch-action: manipulation;
 }
 
-button:hover, button:focus {
+button:hover,
+button:focus {
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     outline: none;
@@ -51,7 +52,8 @@ button:disabled {
     -webkit-tap-highlight-color: transparent;
 }
 
-.submit-btn:hover, .submit-btn:focus {
+.submit-btn:hover,
+.submit-btn:focus {
     background: #218838;
     transform: translateY(-1px);
     outline: none;
@@ -78,4 +80,29 @@ button:disabled {
 
 #submit-vote-btn:hover {
     background: #218838;
+}
+
+/* Primary button for important actions */
+.primary-button {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: 2px solid #28a745;
+    padding: 18px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    min-width: 160px;
+}
+
+.primary-button:hover,
+.primary-button:focus {
+    background: linear-gradient(135deg, #218838 0%, #1ea585 100%);
+    border-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.primary-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
 }

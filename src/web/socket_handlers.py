@@ -2,7 +2,9 @@
 Socket.IO event handlers for the Bribery game
 """
 
+import logging
 import random
+import string
 import threading
 import uuid
 
@@ -12,6 +14,8 @@ from flask_socketio import emit, join_room
 from game import Game, GameManager, PlayerSession
 
 from .utils import get_player_room, load_prompts
+
+logger = logging.getLogger(__name__)
 
 # We'll need to get the game manager instance
 # This will be set when the handlers are registered
@@ -36,6 +40,7 @@ def register_socket_handlers(socketio_instance):
     socketio.on_event('submit_bribe', handle_submit_bribe)
     socketio.on_event('submit_vote', handle_submit_vote)
     socketio.on_event('restart_game', handle_restart_game)
+    socketio.on_event('return_to_lobby', handle_return_to_lobby)
     socketio.on_event('disconnect', handle_disconnect)
 
 
@@ -51,7 +56,14 @@ def handle_create_game(data):
         emit('error', {'message': 'Username is required'})
         return
 
-    game_id = str(uuid.uuid4())[:8].upper()
+    # Generate 4-character game code (letters and digits)
+    characters = string.ascii_uppercase + string.digits
+    game_id = ''.join(random.choice(characters) for _ in range(4))
+    
+    # Ensure uniqueness (very unlikely collision with 4 chars, but check anyway)
+    while game_manager.get_game(game_id) is not None:
+        game_id = ''.join(random.choice(characters) for _ in range(4))
+    
     player_id = str(uuid.uuid4())
 
     settings = {
@@ -89,6 +101,7 @@ def handle_join_game(data):
 
     game_id = data.get('game_id')
     username = data.get('username')
+    stored_player_id = data.get('player_id')  # From localStorage on page refresh
 
     if not game_id or not isinstance(game_id, str):
         emit('error', {'message': 'Game ID is required'})
@@ -106,12 +119,18 @@ def handle_join_game(data):
         emit('error', {'message': 'Game not found'})
         return
 
-    # Check if player is rejoining
-    existing_player_id = None
-    for pid, player in game.players.items():
-        if player['username'] == username:
-            existing_player_id = pid
-            break
+    # Check if player is rejoining (priority: stored player ID > username match)
+    existing_player_id = None    # First, try to use stored player ID if provided (page refresh scenario)
+    if stored_player_id and stored_player_id in game.players:
+        existing_player_id = stored_player_id
+        # Update username in case it changed
+        game.players[existing_player_id]['username'] = username
+    else:
+        # Fallback to username matching (traditional rejoin)
+        for pid, player in game.players.items():
+            if player['username'] == username:
+                existing_player_id = pid
+                break
 
     if existing_player_id:
         # Player rejoining
@@ -133,15 +152,16 @@ def handle_join_game(data):
     emit('joined_game', {
         'game_id': game_id,
         'player_id': player_id,
+        'username': username,  # Include username for client-side storage
         'is_host': player_id == game.host_id,
         'game_state': game.state
     })
 
     emit_lobby_update(game_id)
 
-    # If game is in progress, send current game state
+    # If game is in progress, send appropriate state for mid-game joiner
     if game.state != "lobby":
-        emit_game_state_to_player(game, player_id)
+        emit_midgame_joiner_state(game, player_id)
 
 
 def handle_start_game():
@@ -289,8 +309,11 @@ def handle_submit_vote(data):
     game.votes[game.current_round][player_id] = bribe_id.strip()
     emit('vote_submitted')
 
+    # Emit progress update
+    emit_voting_progress(game)
+
     # Check if all votes are in
-    if len(game.votes[game.current_round]) >= len(game.players):
+    if len(game.votes[game.current_round]) >= len(game.get_active_player_ids()):
         if game.round_timer:
             game.round_timer.cancel()
         end_voting_phase(game)
@@ -327,6 +350,40 @@ def handle_restart_game():
     emit_lobby_update(game.game_id)
 
 
+def handle_return_to_lobby():
+    """Handle returning to lobby after game completion"""
+    player_session = game_manager.get_player_session(request.sid)
+    if not player_session:
+        return
+
+    game = game_manager.get_game(player_session.game_id)
+    if not game:
+        return
+
+    if player_session.player_id != game.host_id:
+        emit('error', {'message': 'Only the host can return to lobby'})
+        return
+
+    # Reset game state to lobby but keep players and settings
+    game.state = "lobby"
+    game.current_round = 0
+    game.bribes = {}
+    game.votes = {}
+    game.scores = {pid: 0 for pid in game.players}
+    game.current_prompt = ""
+    game.round_pairings = {}
+
+    # Keep custom prompts setting and other game settings unchanged
+    # Keep all players connected
+
+    if game.round_timer:
+        game.round_timer.cancel()
+        game.round_timer = None
+
+    socketio.emit('returned_to_lobby', room=game.game_id)
+    emit_lobby_update(game.game_id)
+
+
 def handle_disconnect():
     """Handle player disconnection"""
     player_session = game_manager.get_player_session(request.sid)
@@ -344,6 +401,9 @@ def handle_disconnect():
 def start_next_round(game):
     """Start the next round of the game"""
     game.current_round += 1
+
+    # Activate any players who joined mid-game and were waiting
+    game.activate_waiting_players()
 
     # Generate new pairings for this round
     game.round_pairings[game.current_round] = game.generate_round_pairings()
@@ -419,14 +479,20 @@ def start_submission_phase(game):
         end_submission_phase,
         [game])
     game.round_timer.start()
+    
+    # Emit initial submission progress
+    emit_submission_progress(game)
 
 
 def check_all_submissions_complete(game):
     """Check if all players have submitted all their bribes"""
-    expected_submissions = len(game.players) * \
-        2  # Each player submits 2 bribes
+    expected_submissions = len(game.get_active_player_ids()) * \
+        2  # Each active player submits 2 bribes
     actual_submissions = sum(len(bribes)
                              for bribes in game.bribes[game.current_round].values())
+
+    # Emit progress update
+    emit_submission_progress(game)
 
     if actual_submissions >= expected_submissions:
         if game.round_timer:
@@ -434,17 +500,92 @@ def check_all_submissions_complete(game):
         end_submission_phase(game)
 
 
+def emit_submission_progress(game):
+    """Emit submission progress to all players"""
+    active_players = game.get_active_player_ids()
+    total_active = len(active_players)
+    
+    # Count how many players have completed all their submissions
+    completed_players = []
+    pending_players = []
+    
+    for player_id in active_players:
+        player_submissions = game.bribes[game.current_round].get(player_id, {})
+        # Each player needs to submit 2 bribes
+        if len(player_submissions) >= 2:
+            completed_players.append(player_id)
+        else:
+            pending_players.append(player_id)
+    
+    completed_count = len(completed_players)
+    
+    # Generate progress message
+    if completed_count == total_active:
+        progress_message = "All players finished! Moving to voting..."
+    elif len(pending_players) <= 2 and len(pending_players) > 0:
+        # Show names when 2 or fewer players remaining
+        pending_names = [game.players[pid]['username'] for pid in pending_players]
+        if len(pending_names) == 1:
+            progress_message = f"Waiting for {pending_names[0]}"
+        else:
+            progress_message = f"Waiting for {pending_names[0]} and {pending_names[1]}"
+    else:
+        progress_message = f"{completed_count}/{total_active} players finished"
+    
+    socketio.emit('submission_progress', {
+        'completed': completed_count,
+        'total': total_active,
+        'message': progress_message
+    }, room=game.game_id)
+
+
+def emit_voting_progress(game):
+    """Emit voting progress to all players"""
+    active_players = game.get_active_player_ids()
+    total_active = len(active_players)
+    
+    # Count votes submitted
+    votes_submitted = len(game.votes[game.current_round])
+    remaining_voters = []
+    
+    for player_id in active_players:
+        if player_id not in game.votes[game.current_round]:
+            remaining_voters.append(player_id)
+    
+    # Generate progress message
+    if votes_submitted == total_active:
+        progress_message = "All votes submitted! Calculating results..."
+    elif len(remaining_voters) <= 2 and len(remaining_voters) > 0:
+        # Show names when 2 or fewer players remaining
+        remaining_names = [game.players[pid]['username'] for pid in remaining_voters]
+        if len(remaining_names) == 1:
+            progress_message = f"Waiting for {remaining_names[0]}"
+        else:
+            progress_message = f"Waiting for {remaining_names[0]} and {remaining_names[1]}"
+    else:
+        progress_message = f"{votes_submitted}/{total_active} players voted"
+    
+    socketio.emit('voting_progress', {
+        'completed': votes_submitted,
+        'total': total_active,
+        'message': progress_message
+    }, room=game.game_id)
+
+
 def end_submission_phase(game):
     """End the submission phase and start voting"""
     game.state = "voting"
 
-    # Send voting options to each player
-    for player_id in game.players:
+    # Send voting options to each active player
+    for player_id in game.get_active_player_ids():
         bribes_for_player = []
 
-        # Find all bribes submitted TO this player
-        for submitter_id, submissions in game.bribes[game.current_round].items(
-        ):
+        # Find all bribes submitted TO this player, but exclude their own submissions
+        for submitter_id, submissions in game.bribes[game.current_round].items():
+            # Skip bribes submitted by the voting player themselves
+            if submitter_id == player_id:
+                continue
+
             for target_id, bribe in submissions.items():
                 if target_id == player_id:
                     bribes_for_player.append({
@@ -462,6 +603,9 @@ def end_submission_phase(game):
     game.round_timer = threading.Timer(
         game.settings['voting_time'], end_voting_phase, [game])
     game.round_timer.start()
+    
+    # Emit initial voting progress
+    emit_voting_progress(game)
 
 
 def end_voting_phase(game):
@@ -543,6 +687,22 @@ def end_game(game):
         'final_scoreboard': final_scoreboard
     }, room=game.game_id)
 
+    # Schedule game cleanup after players have time to see results
+    threading.Timer(30.0, cleanup_finished_game, [game.game_id]).start()
+
+
+def cleanup_finished_game(game_id):
+    """Clean up a finished game after delay"""
+    game = game_manager.get_game(game_id)
+    if game and game.state == "finished":
+        # Remove the game from the manager after it's been finished for a while
+        # This prevents memory leaks from old games
+        logger.info(f"Cleaning up finished game {game_id}")
+        # Note: Only cleanup if no players are still connected
+        connected_players = sum(1 for p in game.players.values() if p.get('connected', False))
+        if connected_players == 0:
+            game_manager.games.pop(game_id, None)
+
 
 def emit_lobby_update(game_id):
     """Emit lobby update to all players in the game"""
@@ -566,6 +726,24 @@ def emit_lobby_update(game_id):
     }, room=game_id)
 
 
+def emit_midgame_joiner_state(game, player_id):
+    """Send appropriate state to a player who joined mid-game"""
+    # Check if player is active in current round
+    player = game.players.get(player_id)
+    if not player or not player.get('active_in_round', True):
+        # Player is waiting for next round - show waiting screen
+        socketio.emit('midgame_waiting', {
+            'message': 'You joined mid-game. Please wait for the next round to begin!',
+            'current_round': game.current_round,
+            'total_rounds': game.settings['rounds'],
+            'game_state': game.state
+        }, room=get_player_room(game_manager, game.game_id, player_id))
+        return
+
+    # Player is active, send them the current game state
+    emit_game_state_to_player(game, player_id)
+
+
 def emit_game_state_to_player(game, player_id):
     """Send current game state to a reconnecting player"""
     if game.state == "submission":
@@ -585,10 +763,13 @@ def emit_game_state_to_player(game, player_id):
         }, room=get_player_room(game_manager, game.game_id, player_id))
 
     elif game.state == "voting":
-        # Send voting options
+        # Send voting options, but exclude bribes player submitted themselves
         bribes_for_player = []
-        for submitter_id, submissions in game.bribes[game.current_round].items(
-        ):
+        for submitter_id, submissions in game.bribes[game.current_round].items():
+            # Skip bribes submitted by the voting player themselves
+            if submitter_id == player_id:
+                continue
+
             for target_id, bribe in submissions.items():
                 if target_id == player_id:
                     bribes_for_player.append({

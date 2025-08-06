@@ -28,7 +28,7 @@ class TestEssentialIntegration:
             
             # Basic connectivity test
             assert game_id is not None
-            assert len(game_id) == 8
+            assert len(game_id) == 4  # Changed to 4-character codes
             
             # Verify we got the expected events
             game_data = helper.get_event('game_created')
