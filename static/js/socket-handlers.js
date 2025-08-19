@@ -10,18 +10,22 @@ socket.on('joined_game', (data) => {
     const storageKey = `bribery_game_${gameId}`;
     const existingData = localStorage.getItem(storageKey);
     let isHostFlag = data.is_host;
+    let username = data.username;
 
-    // Preserve host flag if it was set during game creation
+    // Preserve host flag and username if it was set during game creation/joining
     if (existingData) {
         const playerData = JSON.parse(existingData);
         if (playerData.isHost && !data.is_host) {
             isHostFlag = true;  // Keep host flag if it was set earlier
         }
+        if (playerData.username) {
+            username = playerData.username; // Keep username from join form
+        }
     }
 
     localStorage.setItem(storageKey, JSON.stringify({
         playerId: playerId,
-        username: data.username,
+        username: username,
         isHost: isHostFlag,
         timestamp: Date.now()
     }));

@@ -24,10 +24,11 @@ function initializeGame() {
         if (playerData.isHost) {
             console.log('Host joining lobby as:', username);
         } else {
-            console.log('Attempting to rejoin as:', username, 'with ID:', storedPlayerId);
+            console.log('Player joining as:', username, 'with ID:', storedPlayerId);
         }
     } else {
-        // Only prompt for username if we don't have stored data
+        // This should rarely happen now that we store usernames on the join page
+        // But keep as fallback for direct URL access
         username = prompt('Enter your username:') || 'Anonymous';
     }
 

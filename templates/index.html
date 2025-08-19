@@ -383,6 +383,15 @@
                 return;
             }
 
+            // Store the player's username in localStorage before joining the game
+            // This prevents the duplicate username prompt in game-core.js
+            const storageKey = `bribery_game_${gameId}`;
+            localStorage.setItem(storageKey, JSON.stringify({
+                username: username,
+                isHost: false,
+                timestamp: Date.now()
+            }));
+
             socket.emit('join_game', {
                 username: username,
                 game_id: gameId
