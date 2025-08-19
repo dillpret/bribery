@@ -119,6 +119,10 @@ def handle_join_game(data):
         emit('error', {'message': 'Game not found'})
         return
 
+    # AUTHENTICATION FLOW: Server-side player identification
+    # This implements a two-tier authentication strategy:
+    # 1. Try to match by stored player ID (exact match, highest priority)
+    # 2. Fall back to username matching (for device changes/direct access)
     # Check if player is rejoining (priority: stored player ID > username match)
     existing_player_id = None    # First, try to use stored player ID if provided (page refresh scenario)
     if stored_player_id and stored_player_id in game.players:

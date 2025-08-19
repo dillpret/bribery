@@ -7,6 +7,9 @@ socket.on('joined_game', (data) => {
     updateStatus('Connected to game');
 
     // Store player info for page refresh scenarios
+    // AUTHENTICATION FLOW: This is the third part of the authentication system
+    // that updates localStorage with the server-provided player ID while 
+    // preserving the username from form submission and host status
     const storageKey = `bribery_game_${gameId}`;
     const existingData = localStorage.getItem(storageKey);
     let isHostFlag = data.is_host;

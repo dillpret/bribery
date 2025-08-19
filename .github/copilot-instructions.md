@@ -18,17 +18,7 @@ Act as a thoughtful peer reviewer, not a cheerleader. Be direct and honest - it'
 Focus on code quality, best practices, and potential issues rather than just being supportive.
 
 ## Language and Localisation
-**Use UK English throughout** - All documentation, frontend text, comments, and user-facing content should use British English spelling and terminology:
-- "colour" not "color"
-- "centre" not "center" 
-- "realise" not "realize"
-- "favourite" not "favorite"
-- "customise" not "customize"
-- "behaviour" not "behavior"
-- "honour" not "honor"
-- "licence" (noun) / "license" (verb)
-- "grey" not "gray"
-
+**Use UK English throughout** - All documentation, frontend text, comments, and user-facing content should use British English spelling and terminology
 This applies to all user-facing strings, documentation files, code comments, and error messages.
 
 ## Documentation Philosophy
@@ -48,6 +38,15 @@ Prefer:
 - **Essential README/deployment docs only** - For external users who need them
 
 Avoid creating standalone documentation that duplicates information or won't be regularly updated.
+
+**Documentation Update Policy:**
+- Always update documentation when modifying related code
+- Keep documentation in sync with implementation details
+- This includes:
+  - These Copilot instructions
+  - Code comments in modified files
+  - Technical docs in the `docs/` folder
+  - Markdown files that reference the changed functionality
 
 ## PowerShell Command Examples
 ```powershell
@@ -72,6 +71,25 @@ command1 && command2 # Use command1; command2
 - **Testing:** Optimised 3-tier suite (Unit: 0.69s, Integration: ~30s, UI: Selenium)
 - **Database:** SQLite with game state management
 - **Mobile:** Responsive design with touch optimization
+
+## Technical Implementation Details
+
+### Frontend Architecture
+- **Authentication Flow:** Hybrid approach using UI forms and localStorage
+  - Initial authentication via index.html forms for hosts and joiners
+  - Credentials stored in localStorage with key pattern `bribery_game_${gameId}`
+  - Reconnection via player ID (primary) or username matching (fallback)
+  - Prompt fallback for direct URL access only
+
+- **State Management:**
+  - Client: localStorage persistence + in-memory variables (playerId, targets, etc.)
+  - Server: Game objects in memory with round history and player mapping
+  - Synchronization: Socket events with full state broadcasts on changes
+
+- **Component Structure:**
+  - Core Logic: game-core.js (initialization), socket-handlers.js (events), ui-handlers.js (interaction)
+  - UI Components: Divided into game phases in game.html with modular CSS
+  - See `docs/TECHNICAL_ARCHITECTURE.md` for component maps and flows
 
 ## Game Logic Documentation
 For understanding game behaviour, rules, and implementation details:

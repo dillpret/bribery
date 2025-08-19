@@ -11,6 +11,10 @@ let timer = null;
 // Initialize game connection
 function initializeGame() {
     // Check if we have stored player info for this game (page refresh or host coming from creation)
+    // AUTHENTICATION FLOW: This is the main reconnection mechanism that supports:
+    // 1. Page refreshes (retrieving stored credentials)
+    // 2. Direct URL access (fallback to prompt)
+    // 3. Returning players (via stored player ID)
     const storageKey = `bribery_game_${gameId}`;
     const storedPlayer = localStorage.getItem(storageKey);
 

@@ -385,6 +385,8 @@
 
             // Store the player's username in localStorage before joining the game
             // This prevents the duplicate username prompt in game-core.js
+            // AUTHENTICATION FLOW: This is part of the session persistence system
+            // and ensures consistent username handling across page navigation
             const storageKey = `bribery_game_${gameId}`;
             localStorage.setItem(storageKey, JSON.stringify({
                 username: username,
@@ -421,6 +423,8 @@
             currentPlayerId = data.player_id;
 
             // Store the host username for when they join the game lobby
+            // AUTHENTICATION FLOW: This localStorage entry is used in game-core.js to prevent
+            // duplicate username prompts and maintain session persistence across page navigation
             const username = document.getElementById('host-username').value.trim();
             const storageKey = `bribery_game_${data.game_id}`;
             localStorage.setItem(storageKey, JSON.stringify({
