@@ -30,11 +30,19 @@ py -m bandit -r src/       # Security scan
 ```
 
 ## Testing
-```bash
+```powershell
+# Install ALL test dependencies first
+py -m pip install -r requirements.txt
+py -m pip install -r requirements-dev.txt
+
+# Run tests
 py -m pytest                # Full suite
-py -m pytest tests/unit/    # Unit tests
-py -m pytest tests/ui/      # Browser tests (requires Chrome)
+py -m pytest tests/unit/    # Unit tests (fastest)
+py -m pytest tests/integration/  # Integration tests
+py -m pytest tests/ui/      # Browser tests (requires Selenium & Chrome)
 ```
+
+> **Test Dependencies:** UI tests require Selenium which is included in requirements-dev.txt. See Copilot instructions for detailed test troubleshooting.
 
 ## Key Features
 - **Mobile-Optimised**: Touch-friendly interface with mobile image upload

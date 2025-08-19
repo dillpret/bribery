@@ -2,40 +2,20 @@
 
 // Connection and lobby events
 socket.on('joined_game', (data) => {
-    playerId = data.player_id;
-    isHost = data.is_host;
+    // Update state with server response data
+    // AUTHENTICATION FLOW: This updates our state with the server-provided data
+    // while preserving any existing values that might be important
+    GameState.update(data);
+    
+    // Get the updated auth state for local use
+    const authState = GameState.get('auth');
     updateStatus('Connected to game');
 
-    // Store player info for page refresh scenarios
-    // AUTHENTICATION FLOW: This is the third part of the authentication system
-    // that updates localStorage with the server-provided player ID while 
-    // preserving the username from form submission and host status
-    const storageKey = `bribery_game_${gameId}`;
-    const existingData = localStorage.getItem(storageKey);
-    let isHostFlag = data.is_host;
-    let username = data.username;
-
-    // Preserve host flag and username if it was set during game creation/joining
-    if (existingData) {
-        const playerData = JSON.parse(existingData);
-        if (playerData.isHost && !data.is_host) {
-            isHostFlag = true;  // Keep host flag if it was set earlier
-        }
-        if (playerData.username) {
-            username = playerData.username; // Keep username from join form
-        }
-    }
-
-    localStorage.setItem(storageKey, JSON.stringify({
-        playerId: playerId,
-        username: username,
-        isHost: isHostFlag,
-        timestamp: Date.now()
-    }));
-
+    // Set UI state based on game state
     if (data.game_state === 'lobby') {
         hideAllScreens();
         document.getElementById('lobby').classList.remove('hidden');
+        GameState.set('ui', { activeScreen: 'lobby' });
     } else {
         hideAllScreens();
         document.getElementById('waiting-screen').classList.remove('hidden');
@@ -56,6 +36,7 @@ socket.on('midgame_waiting', (data) => {
     `;
 
     updateStatus('Waiting for next round to begin...');
+    GameState.set('ui', { activeScreen: 'waiting' });
 });
 
 socket.on('lobby_update', (data) => {
@@ -78,6 +59,9 @@ socket.on('lobby_update', (data) => {
         <p><strong>Custom Prompts:</strong> ${data.settings.custom_prompts ? 'Enabled' : 'Disabled'}</p>
     `;
 
+    // Get host status from state
+    const isHost = GameState.get('auth', 'isHost');
+    
     if (isHost) {
         document.getElementById('host-controls').classList.remove('hidden');
         const startBtn = document.getElementById('start-game-btn');
@@ -86,12 +70,19 @@ socket.on('lobby_update', (data) => {
     }
 
     updateStatus(`${data.player_count} players in lobby`);
+    
+    // Store game settings
+    GameState.set('game', {
+        totalRounds: data.settings.rounds,
+        playerCount: data.player_count
+    });
 });
 
 // Prompt selection events
 socket.on('prompt_selection_started', (data) => {
     hideAllScreens();
     document.getElementById('prompt-selection').classList.remove('hidden');
+    GameState.set('ui', { activeScreen: 'prompt_selection' });
 
     document.getElementById('prompt-round-title').textContent = `Round ${data.round} of ${data.total_rounds}`;
 

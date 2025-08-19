@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Browser automation helper functions for UI tests
+
+If you see import errors with Selenium or webdriver_manager:
+Run: py -m pip install -r requirements-dev.txt
 """
 
 import os
@@ -19,6 +22,8 @@ try:
     SELENIUM_AVAILABLE = True
 except ImportError:
     SELENIUM_AVAILABLE = False
+    print("Selenium imports failed - UI tests will be skipped")
+    print("To run UI tests: py -m pip install -r requirements-dev.txt")
 
 class BrowserHelper:
     """Helper class for browser automation in tests"""
@@ -31,6 +36,38 @@ class BrowserHelper:
             
         chrome_options = Options()
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--window-size=1920,1080')
+        # Suppress Google service errors
+        chrome_options.add_argument('--disable-background-networking')
+        chrome_options.add_argument('--disable-background-timer-throttling')
+        chrome_options.add_argument('--disable-backgrounding-occluded-windows')
+    
+    @staticmethod
+    def create_chrome_driver(headless=True):
+        """Create Chrome driver with optimised settings
+        
+        Args:
+            headless (bool): Whether to run Chrome in headless mode
+            
+        Returns:
+            WebDriver or None: Chrome WebDriver instance or None if not available
+            
+        Raises:
+            RuntimeError: If dependencies are missing with clear installation instructions
+        """
+        if not SELENIUM_AVAILABLE:
+            raise RuntimeError(
+                "Selenium is required for UI tests but not installed.\n"
+                "Install it with: py -m pip install -r requirements-dev.txt"
+            )
+            
+        # Create Chrome options
+        chrome_options = Options()
+        if headless:
+            chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--disable-gpu')

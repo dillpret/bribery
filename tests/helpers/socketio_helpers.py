@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Socket.IO helper functions for integration tests
+
+If you see "ModuleNotFoundError: No module named 'socketio'" errors:
+Run: py -m pip install python-socketio
 """
 
 import socketio

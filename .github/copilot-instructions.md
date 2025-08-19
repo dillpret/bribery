@@ -114,6 +114,16 @@ The testing framework uses a session-scoped Flask test server on port 5001 manag
 - **Integration Tests (`tests/integration/`)** - Do NOT require test server (use mocks/direct calls)
 - **Unit Tests (`tests/unit/`)** - Do NOT require test server (pure unit testing)
 
+**Test Environment Setup:**
+- Install ALL dependencies before running tests: 
+  ```powershell
+  py -m pip install -r requirements.txt
+  py -m pip install -r requirements-dev.txt
+  ```
+- Core test dependencies are in requirements.txt
+- UI test dependencies (Selenium) are in requirements-dev.txt
+- Virtual environment is recommended but not required
+
 **Test Server Behaviour:**
 - Automatically starts on port 5001 if not already running
 - Session-scoped - shared across all UI tests in a run
@@ -124,7 +134,10 @@ The testing framework uses a session-scoped Flask test server on port 5001 manag
 - UI test timeouts usually indicate port conflicts or server startup failures
 - Run UI tests individually if full suite times out: `py -m pytest tests/ui/test_file.py::test_name -v`
 - Development servers on port 5000 can interfere with test server startup
-- Check `get_terminal_output` for server error details if UI tests fail
+- Check terminal output for server error details if UI tests fail
+
+**Handling Rare Errors:**
+- Missing dependencies: Ensure both requirements.txt and requirements-dev.txt are installed
 
 ## Recent Major Work Completed
 - **Test Optimization:** Reduced test suite from 10+ minutes to 30 seconds

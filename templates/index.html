@@ -308,6 +308,7 @@
     </div>
 
     <script src="/static/socket.io.min.js"></script>
+    <script src="/static/js/auth-module.js"></script>
     <script>
         const socket = io();
         let currentGameId = null;
@@ -368,6 +369,9 @@
                 custom_prompts: document.getElementById('custom-prompts').value === 'true'
             };
 
+            // Set up authentication for host
+            Authentication.setupHost(username, null); // gameId will be set when server responds
+
             socket.emit('create_game', {
                 username: username,
                 ...settings
@@ -383,16 +387,8 @@
                 return;
             }
 
-            // Store the player's username in localStorage before joining the game
-            // This prevents the duplicate username prompt in game-core.js
-            // AUTHENTICATION FLOW: This is part of the session persistence system
-            // and ensures consistent username handling across page navigation
-            const storageKey = `bribery_game_${gameId}`;
-            localStorage.setItem(storageKey, JSON.stringify({
-                username: username,
-                isHost: false,
-                timestamp: Date.now()
-            }));
+            // Set up authentication for player
+            Authentication.setupPlayer(username, gameId);
 
             socket.emit('join_game', {
                 username: username,
@@ -422,16 +418,8 @@
             currentGameId = data.game_id;
             currentPlayerId = data.player_id;
 
-            // Store the host username for when they join the game lobby
-            // AUTHENTICATION FLOW: This localStorage entry is used in game-core.js to prevent
-            // duplicate username prompts and maintain session persistence across page navigation
-            const username = document.getElementById('host-username').value.trim();
-            const storageKey = `bribery_game_${data.game_id}`;
-            localStorage.setItem(storageKey, JSON.stringify({
-                username: username,
-                isHost: true,
-                timestamp: Date.now()
-            }));
+            // Update authentication with server-provided data
+            Authentication.updateFromServer(data);
 
             hideAll();
             document.getElementById('game-created').classList.remove('hidden');
@@ -442,6 +430,10 @@
         socket.on('joined_game', (data) => {
             currentGameId = data.game_id;
             currentPlayerId = data.player_id;
+            
+            // Update authentication with server-provided data
+            Authentication.updateFromServer(data);
+            
             window.location.href = `/bribery/${data.game_id}`;
         });
 

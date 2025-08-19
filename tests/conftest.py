@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 """
 pytest configuration and fixtures for the Bribery game tests
+
+Dependencies:
+- pytest (from requirements.txt)
+- Flask (from requirements.txt)
+- requests (from requirements.txt)
+- For UI tests: selenium, webdriver-manager (from requirements-dev.txt)
+
+Setup:
+1. py -m pip install -r requirements.txt
+2. py -m pip install -r requirements-dev.txt
+
+Troubleshooting:
+- If UI tests fail with Selenium errors: Ensure requirements-dev.txt is installed
+- If test server fails to start: Check for process using port 5001
+- For detailed test architecture, see .github/copilot-instructions.md
 """
 
 import pytest

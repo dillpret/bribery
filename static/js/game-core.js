@@ -1,45 +1,30 @@
 // Core game variables and initialization
 const socket = io();
 const gameId = document.querySelector('meta[name="game-id"]').content;
-let isHost = false;
-let playerId = null;
-let currentTargets = [];
-let submissions = {};
-let selectedVote = null;
 let timer = null;
 
 // Initialize game connection
 function initializeGame() {
-    // Check if we have stored player info for this game (page refresh or host coming from creation)
     // AUTHENTICATION FLOW: This is the main reconnection mechanism that supports:
     // 1. Page refreshes (retrieving stored credentials)
     // 2. Direct URL access (fallback to prompt)
     // 3. Returning players (via stored player ID)
-    const storageKey = `bribery_game_${gameId}`;
-    const storedPlayer = localStorage.getItem(storageKey);
-
-    let username, storedPlayerId = null;
-
-    if (storedPlayer) {
-        const playerData = JSON.parse(storedPlayer);
-        username = playerData.username;
-        storedPlayerId = playerData.playerId;
-
-        if (playerData.isHost) {
-            console.log('Host joining lobby as:', username);
-        } else {
-            console.log('Player joining as:', username, 'with ID:', storedPlayerId);
-        }
+    
+    // Initialize authentication state from localStorage or prompt fallback
+    const authState = GameState.init(gameId);
+    
+    // Log connection attempt
+    if (authState.isHost) {
+        console.log('Host joining lobby as:', authState.username);
     } else {
-        // This should rarely happen now that we store usernames on the join page
-        // But keep as fallback for direct URL access
-        username = prompt('Enter your username:') || 'Anonymous';
+        console.log('Player joining as:', authState.username, 'with ID:', authState.playerId);
     }
 
+    // Connect to game via socket
     socket.emit('join_game', {
         game_id: gameId,
-        username: username,
-        player_id: storedPlayerId  // Send stored player ID if available
+        username: authState.username,
+        player_id: authState.playerId  // Send stored player ID if available
     });
 }
 

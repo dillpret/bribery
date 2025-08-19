@@ -2,6 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 UI tests using browser automation
+
+Dependencies:
+- pytest (from requirements.txt)
+- selenium (from requirements-dev.txt)
+- webdriver-manager (from requirements-dev.txt)
+- Chrome browser (installed on system)
+
+Common Issues:
+- If 'selenium' import fails: Run 'py -m pip install -r requirements-dev.txt'
+- If browser fails to start: Chrome may be outdated or missing
+- For timeout issues: Check test server is running on port 5001
 """
 
 import pytest
