@@ -145,6 +145,22 @@ def clean_game_state():
     # and when the server session ends. No additional cleanup needed here.
 
 @pytest.fixture
+def chrome_driver():
+    """Create a Chrome driver for UI tests"""
+    from helpers.browser_helpers import BrowserHelper
+    
+    # Create the driver
+    driver = BrowserHelper.create_chrome_driver()
+    if not driver:
+        pytest.skip("Chrome driver could not be created - UI tests will be skipped")
+    
+    yield driver
+    
+    # Clean up
+    if driver:
+        driver.quit()
+
+@pytest.fixture
 def game_manager_instance():
     """Provide access to the game manager for tests"""
     try:
@@ -177,3 +193,17 @@ def suppress_logs():
     """Automatically suppress verbose logs for all tests"""
     with suppress_socketio_logs():
         yield
+
+@pytest.fixture
+def socketio_helper_manager(test_server):
+    """Create a SocketIO helper manager for testing"""
+    try:
+        # Import here to avoid import errors when selenium is not installed
+        from helpers.socketio_helpers import SocketIOHelperManager
+        manager = SocketIOHelperManager(test_server['socketio_url'])
+        yield manager
+        # Clean up
+        manager.disconnect_all()
+    except ImportError:
+        pytest.skip("SocketIO helper not available - socketio tests will be skipped")
+        yield None
