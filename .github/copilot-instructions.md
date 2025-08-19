@@ -34,7 +34,7 @@ This applies to all user-facing strings, documentation files, code comments, and
 ## Documentation Philosophy
 **Minimise documentation bloat.** Each new document is a maintenance commitment that ages the codebase if not maintained. 
 
-**Before creating ANY new file, ask:**
+**Before creating ANY new file or documentation, ask:**
 1. Does this solve an actual problem the user has right now?
 2. Will this need maintenance as code changes?
 3. Is this information available elsewhere?
@@ -166,7 +166,6 @@ py -m pre_commit install  # Enable automatic checks before commits
 - `.pre-commit-config.yaml` - Pre-commit hook configuration
 - `pyproject.toml` - Tool configurations (Black, isort, mypy, pytest)
 - `.vscode/settings.json` - VS Code auto-formatting settings
-- `CODE_REVIEW_CHECKLIST.md` - Manual review guidelines
 
 **Key Quality Standards Enforced:**
 - Input validation on all socket handlers
