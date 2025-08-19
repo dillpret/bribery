@@ -1,0 +1,110 @@
+/* Landing page component styles */
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+h1 {
+    color: #764ba2;
+    margin-bottom: 20px;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    line-height: 1.4;
+}
+
+.time-input-container {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.time-input-container input[type="number"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.time-input-container select {
+    flex: 0 0 auto;
+    width: 120px;
+    min-width: 100px;
+}
+
+/* On smaller screens, stack vertically */
+@media (max-width: 480px) {
+    .time-input-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .time-input-container select {
+        width: 100%;
+    }
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Desktop styles */
+@media (min-width: 640px) {
+    .container {
+        padding: 40px;
+    }
+
+    .settings-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+    }
+
+    .subtitle {
+        margin-bottom: 30px;
+    }
+}
+
+.or-divider {
+    margin: 30px 0;
+    color: #999;
+    font-size: 18px;
+}
+
+.game-id-display {
+    background: #f8f9fa;
+    border: 2px dashed #667eea;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.game-id-code {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+    letter-spacing: 2px;
+}
+
+.error {
+    background: #ffe6e6;
+    color: #d00;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}

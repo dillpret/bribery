@@ -5,6 +5,7 @@
 @import url('components/game-phases.css');
 @import url('components/scoreboard.css');
 @import url('components/mobile.css');
+@import url('components/index.css');
 
 /* Global styles - Mobile First */
 * {

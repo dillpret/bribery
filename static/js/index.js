@@ -1,0 +1,155 @@
+// Index page functionality
+const socket = io();
+let currentGameId = null;
+let currentPlayerId = null;
+
+function showMainMenu() {
+    hideAll();
+    document.getElementById('main-menu').classList.remove('hidden');
+}
+
+function showHostGame() {
+    hideAll();
+    document.getElementById('host-game').classList.remove('hidden');
+}
+
+function showJoinGame() {
+    hideAll();
+    document.getElementById('join-game').classList.remove('hidden');
+}
+
+function hideAll() {
+    document.querySelectorAll('.container > div').forEach(div => {
+        div.classList.add('hidden');
+    });
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('hidden');
+    setTimeout(() => {
+        errorDiv.classList.add('hidden');
+    }, 5000);
+}
+
+function getTimeInSeconds(baseId) {
+    const value = parseInt(document.getElementById(baseId + '-value').value);
+    const unit = document.getElementById(baseId + '-unit').value;
+
+    if (isNaN(value) || value < 1) {
+        return unit === 'minutes' ? 120 : 60; // Default fallback
+    }
+
+    return unit === 'minutes' ? value * 60 : value;
+}
+
+function createGame() {
+    const username = document.getElementById('host-username').value.trim();
+    if (!username) {
+        showError('Please enter a username');
+        return;
+    }
+
+    const settings = {
+        rounds: parseInt(document.getElementById('rounds').value),
+        submission_time: getTimeInSeconds('submission-time'),
+        voting_time: getTimeInSeconds('voting-time'),
+        custom_prompts: document.getElementById('custom-prompts').value === 'true'
+    };
+
+    // Set up authentication for host
+    Authentication.setupHost(username, null); // gameId will be set when server responds
+
+    socket.emit('create_game', {
+        username: username,
+        ...settings
+    });
+}
+
+function joinGame() {
+    const username = document.getElementById('join-username').value.trim();
+    const gameId = document.getElementById('game-id').value.trim().toUpperCase();
+
+    if (!username || !gameId) {
+        showError('Please enter both username and game ID');
+        return;
+    }
+
+    // Set up authentication for player
+    Authentication.setupPlayer(username, gameId);
+
+    socket.emit('join_game', {
+        username: username,
+        game_id: gameId
+    });
+}
+
+function copyGameLink() {
+    const linkInput = document.getElementById('game-link');
+    linkInput.select();
+    document.execCommand('copy');
+
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    setTimeout(() => {
+        button.textContent = originalText;
+    }, 2000);
+}
+
+function goToLobby() {
+    window.location.href = `/bribery/${currentGameId}`;
+}
+
+// Socket event handlers
+socket.on('game_created', (data) => {
+    currentGameId = data.game_id;
+    currentPlayerId = data.player_id;
+
+    // Update authentication with server-provided data
+    Authentication.updateFromServer(data);
+
+    hideAll();
+    document.getElementById('game-created').classList.remove('hidden');
+    document.getElementById('created-game-id').textContent = data.game_id;
+    document.getElementById('game-link').value = `${window.location.origin}/bribery/${data.game_id}`;
+});
+
+socket.on('joined_game', (data) => {
+    currentGameId = data.game_id;
+    currentPlayerId = data.player_id;
+    
+    // Update authentication with server-provided data
+    Authentication.updateFromServer(data);
+    
+    window.location.href = `/bribery/${data.game_id}`;
+});
+
+socket.on('error', (data) => {
+    showError(data.message);
+});
+
+// DOM event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Auto-uppercase game ID input
+    const gameIdInput = document.getElementById('game-id');
+    if (gameIdInput) {
+        gameIdInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    }
+
+    // Enter key submission
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            if (!document.getElementById('main-menu').classList.contains('hidden')) {
+                return;
+            } else if (!document.getElementById('host-game').classList.contains('hidden')) {
+                createGame();
+            } else if (!document.getElementById('join-game').classList.contains('hidden')) {
+                joinGame();
+            }
+        }
+    });
+});
