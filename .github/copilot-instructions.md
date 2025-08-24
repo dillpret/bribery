@@ -32,6 +32,8 @@ This applies to all user-facing strings, documentation files, code comments, and
 
 If any answer violates the principles below, **don't create the file**.
 
+**IMPORTANT REMINDER: Follow this documentation strategy strictly! Prefer inline comments and existing documentation over creating new files.**
+
 Prefer:
 - **AI instruction files** - Actively used, therefore actively maintained
 - **Inline code comments** - Maintained alongside the code they describe
@@ -202,3 +204,18 @@ py -m pre_commit install  # Enable automatic checks before commits
 - Organised imports (isort)
 - Type hints for new functions
 - Comprehensive test coverage
+
+## Testing Philosophy
+**Avoid UI/Selenium Tests:** We've found UI tests with Selenium to be too brittle and difficult to maintain:
+- They often break with minor UI changes
+- They introduce timing/flakiness issues
+- They're slow to run
+- They require significant maintenance effort
+
+**Instead, prefer:**
+1. **Pure Unit Tests:** Test specific components in isolation
+2. **Integration Tests with SocketIO:** Test game flow through socket events
+3. **Static Analysis Tests:** Verify code structure without actual execution
+4. **Manual Testing:** For complex UI interactions during development
+
+For JavaScript features, use static analysis of the code structure instead of UI-driven tests.

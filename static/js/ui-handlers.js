@@ -25,6 +25,61 @@ function submitTargetBribe(targetId) {
     submitBribe(targetId, content, type);
 }
 
+/**
+ * Auto-submits any non-empty bribes when the timer expires
+ */
+function autoSubmitPendingBribes() {
+    // Get all target areas that haven't been submitted yet
+    const allTargetButtons = document.querySelectorAll('button[onclick^="submitTargetBribe"]');
+    
+    allTargetButtons.forEach(button => {
+        // Skip already submitted bribes (button will be disabled)
+        if (button.disabled) {
+            return;
+        }
+        
+        // Extract target ID from the onclick attribute
+        const targetIdMatch = button.getAttribute('onclick').match(/submitTargetBribe\('([^']+)'\)/);
+        if (!targetIdMatch) {
+            return;
+        }
+        
+        const targetId = targetIdMatch[1];
+        
+        // Check if there's content to submit
+        let content = '';
+        
+        // Check if there's already a submission object (e.g., from image upload)
+        if (submissions[targetId]) {
+            content = submissions[targetId].content;
+            const type = submissions[targetId].type;
+            submitBribe(targetId, content, type);
+        } else {
+            // Otherwise check if there's text in the textarea
+            const textarea = document.getElementById(`submission-${targetId}`);
+            if (textarea && textarea.value.trim()) {
+                content = textarea.value.trim();
+                submitBribe(targetId, content, 'text');
+            }
+        }
+        
+        // If content was found and submitted, update the UI
+        if (content) {
+            button.textContent = 'Auto-Submitted';
+            button.disabled = true;
+            button.style.background = '#ff9800'; // Different color to show auto-submission
+            
+            // Also disable the textarea
+            const textarea = document.getElementById(`submission-${targetId}`);
+            if (textarea) {
+                textarea.disabled = true;
+                textarea.style.backgroundColor = '#f0f0f0';
+                textarea.style.cursor = 'not-allowed';
+            }
+        }
+    });
+}
+
 function setupDragDrop(targetId) {
     const dropArea = document.getElementById(`drop-${targetId}`);
     const textarea = document.getElementById(`submission-${targetId}`);

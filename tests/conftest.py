@@ -179,12 +179,13 @@ def suppress_logs():
 def socketio_helper_manager(test_server):
     """Create a SocketIO helper manager for testing"""
     try:
-        # Import here to avoid import errors when selenium is not installed
-        from helpers.socketio_helpers import SocketIOHelperManager
-        manager = SocketIOHelperManager(test_server['socketio_url'])
+        # Import here to avoid import errors when socketio is not installed
+        from helpers.socketio_helpers import MultiPlayerHelper
+        manager = MultiPlayerHelper(test_server['socketio_url'])
         yield manager
         # Clean up
         manager.disconnect_all()
-    except ImportError:
-        pytest.skip("SocketIO helper not available - socketio tests will be skipped")
+    except ImportError as e:
+        print(f"Import error: {e}")
+        pytest.skip("SocketIO helper not available - ensure 'python-socketio' is installed by running: py -m pip install -r requirements.txt")
         yield None

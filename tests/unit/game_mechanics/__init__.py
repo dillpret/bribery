@@ -15,3 +15,22 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.
 
 from game.game import Game
 from game.game_manager import GameManager
+
+# Import test classes for re-export
+from .test_round_flow import TestRoundFlowLogic
+from .test_scoring import TestScoringSystem
+from .test_state_management import TestGameStateManagement
+from .test_edge_cases import TestEdgeCasesAndTolerances
+from .test_multi_round import TestMultiRoundLogic
+
+# Custom prompts isn't exported since we don't have that test class yet
+# from .test_custom_prompts import TestCustomPrompts
+
+__all__ = [
+    'TestRoundFlowLogic',
+    'TestScoringSystem',
+    'TestGameStateManagement', 
+    'TestEdgeCasesAndTolerances',
+    'TestMultiRoundLogic',
+    # 'TestCustomPrompts'
+]

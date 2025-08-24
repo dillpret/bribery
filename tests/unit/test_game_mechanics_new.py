@@ -15,8 +15,8 @@ from tests.unit.game_mechanics import (
     TestScoringSystem,
     TestGameStateManagement,
     TestEdgeCasesAndTolerances,
-    TestMultiRoundLogic,
-    TestCustomPrompts
+    TestMultiRoundLogic
+    # TestCustomPrompts is not available yet
 )
 
 # This file now serves as a compatibility layer

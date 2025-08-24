@@ -111,7 +111,17 @@ socket.on('prompt_selection_started', (data) => {
     };
 
     updateStatus('Choose your prompt for this round!');
-    startTimer(data.time_limit);
+    startTimer(data.time_limit, () => {
+        // Auto-select prompt if user has made a selection but not confirmed
+        const dropdown = document.getElementById('prompt-dropdown');
+        const customInput = document.getElementById('custom-prompt-input');
+        const confirmButton = document.getElementById('confirm-prompt-btn');
+        
+        // Only auto-select if the button is enabled (means they've selected but not confirmed)
+        if (!confirmButton.disabled && (dropdown.value || customInput.value.trim())) {
+            selectPrompt();
+        }
+    });
 });
 
 socket.on('prompt_selected', (data) => {
@@ -137,9 +147,15 @@ socket.on('round_started', (data) => {
     }
 
     updateStatus('Submit your bribes!');
-    startTimer(data.time_limit);
-
+    
+    // Initialize submissions tracker
     submissions = {};
+    
+    // Set up auto-submission when timer expires
+    startTimer(data.time_limit, () => {
+        // Auto-submit any non-empty, non-submitted bribes
+        autoSubmitPendingBribes();
+    });
 
     // Re-enable all form elements for new round
     document.querySelectorAll('textarea[id^="submission-"]').forEach(textarea => {
@@ -274,7 +290,12 @@ socket.on('voting_phase', (data) => {
     });
 
     updateStatus('Vote for your favourite bribe!');
-    startTimer(data.time_limit);
+    startTimer(data.time_limit, () => {
+        // Auto-submit vote if one is selected but not submitted
+        if (selectedVote && !document.getElementById('submit-vote-btn').disabled) {
+            submitVote();
+        }
+    });
     document.getElementById('submit-vote-btn').disabled = true;
 });
 
