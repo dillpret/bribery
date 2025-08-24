@@ -9,9 +9,11 @@ import random
 import threading
 
 from flask_socketio import emit
-from game import Game, GameManager, PlayerSession
+from src.game.game import Game
+from src.game.game_manager import GameManager
+from src.game.player_session import PlayerSession
 
-from ..utils import get_player_room, load_prompts
+from ..utils import get_player_room, load_prompts, generate_random_bribe
 from .progress_tracking import emit_submission_progress, emit_voting_progress
 
 logger = logging.getLogger(__name__)
@@ -142,6 +144,38 @@ def check_all_submissions_complete(game):
 
 def end_submission_phase(game):
     """End the submission phase and start voting"""
+    from ..utils import generate_random_bribe
+    
+    # Before starting voting phase, add random bribes for any missing submissions
+    active_player_ids = game.get_active_player_ids()
+    
+    # Check each player and their targets for missing submissions
+    for player_id in active_player_ids:
+        # Get the targets this player should have submitted bribes to
+        targets = game.round_pairings[game.current_round].get(player_id, [])
+        
+        # Skip if player has no targets (shouldn't happen, but just in case)
+        if not targets:
+            continue
+        
+        # Initialize player's bribes dict if it doesn't exist
+        if player_id not in game.bribes[game.current_round]:
+            game.bribes[game.current_round][player_id] = {}
+        
+        # Check for each target if a submission exists
+        for target_id in targets:
+            if target_id not in game.bribes[game.current_round][player_id]:
+                # Generate a random bribe for this missing submission
+                random_bribe, is_random = generate_random_bribe()
+                
+                # Add it to the game state
+                game.bribes[game.current_round][player_id][target_id] = {
+                    'content': random_bribe,
+                    'type': 'text',
+                    'is_random': True  # Flag it as randomly generated
+                }
+    
+    # Now change the game state to voting
     game.state = "voting"
 
     # Send voting options to each active player
@@ -156,10 +190,13 @@ def end_submission_phase(game):
 
             for target_id, bribe in submissions.items():
                 if target_id == player_id:
+                    # Don't add the "(randomly generated)" indicator during voting phase
+                    # Players shouldn't know which bribes are random until afterwards
                     bribes_for_player.append({
                         'id': f"{submitter_id}_{target_id}",
                         'content': bribe['content'],
-                        'type': bribe['type']
+                        'type': bribe['type'],
+                        'is_random': bribe.get('is_random', False)  # Keep track but don't show in UI yet
                     })
 
         # Get the player's prompt for this round
@@ -191,38 +228,52 @@ def end_voting_phase(game):
     vote_results = []
 
     for voter_id, bribe_id in game.votes[game.current_round].items():
-        # Parse bribe_id to get submitter
-        submitter_id = bribe_id.split('_')[0]
-
+        # Parse bribe_id to get submitter and target
+        parts = bribe_id.split('_')
+        if len(parts) != 2:
+            continue
+            
+        submitter_id, target_id = parts
+        
+        # Check if this bribe is random
+        is_random = False
+        try:
+            is_random = game.bribes[game.current_round][submitter_id][target_id].get('is_random', False)
+        except (KeyError, AttributeError):
+            pass
+        
+        # Award points (half point for random bribes)
         if submitter_id not in round_scores:
             round_scores[submitter_id] = 0
-        round_scores[submitter_id] += 1
+            
+        # Award half a point for randomly generated bribes
+        if is_random:
+            round_scores[submitter_id] += 0.5
+        else:
+            round_scores[submitter_id] += 1
 
-        # Get the prompt owner ID (the person who received the bribe)
-        prompt_owner_id = None
-        prompt_text = ""
-        for target_id, bribes in game.submissions[game.current_round].items():
-            if bribe_id in bribes:
-                prompt_owner_id = target_id
-                # Get the prompt text for this target
-                prompt_text = game.prompts[game.current_round].get(target_id, "No prompt found")
-                break
-        
-        # Get the winning bribe content and type
-        winning_bribe_content = ""
+        # Get the bribe content and type
+        bribe_content = ""
         bribe_type = "text"
-        if prompt_owner_id and bribe_id in game.submissions[game.current_round].get(prompt_owner_id, {}):
-            winning_bribe = game.submissions[game.current_round][prompt_owner_id][bribe_id]
-            winning_bribe_content = winning_bribe.get('content', '')
-            bribe_type = winning_bribe.get('type', 'text')
+        prompt_text = game.get_prompt_for_target(game.current_round, target_id)
+        
+        try:
+            bribe = game.bribes[game.current_round][submitter_id][target_id]
+            bribe_content = bribe.get('content', '')
+            if is_random:
+                bribe_content += " (randomly generated)"
+            bribe_type = bribe.get('type', 'text')
+        except (KeyError, AttributeError):
+            pass
 
         vote_results.append({
             'voter': game.players[voter_id]['username'],
             'winner': game.players[submitter_id]['username'],
-            'prompt_owner': game.players[prompt_owner_id]['username'] if prompt_owner_id else "Unknown",
+            'prompt_owner': game.players[target_id]['username'],
             'prompt': prompt_text,
-            'winning_bribe': winning_bribe_content,
-            'bribe_type': bribe_type
+            'winning_bribe': bribe_content,
+            'bribe_type': bribe_type,
+            'is_random': is_random
         })
 
     # Update total scores

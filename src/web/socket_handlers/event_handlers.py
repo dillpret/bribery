@@ -268,7 +268,8 @@ def handle_submit_bribe(data):
 
     game.bribes[game.current_round][player_id][target_id] = {
         'content': submission,
-        'type': data.get('type', 'text')
+        'type': data.get('type', 'text'),
+        'is_random': False  # Player-submitted bribes are not random
     }
 
     emit('bribe_submitted', {'target_id': target_id})

@@ -22,6 +22,7 @@ The game implementation follows these key patterns:
 2. **Round-Based Structure**: Multiple rounds with player pairings and submissions
 3. **Scoring System**: Vote tracking and point accumulation
 4. **Error Tolerance**: Handling edge cases like disconnections and late joiners
+5. **Random Bribe System**: Generates bribes for disconnected or inactive players
 
 ## Test Structure
 
@@ -39,7 +40,8 @@ Implementation: `tests/unit/game_mechanics/test_round_flow.py`
 ### Scoring System (TestScoringSystem)
 
 Tests how scores are calculated and accumulated:
-- Basic scoring (1 point per vote)
+- Basic scoring (1 point per vote for regular bribes)
+- Half-point scoring (0.5 points per vote for randomly generated bribes)
 - Score accumulation across rounds
 - Handling missing votes
 - Final ranking and podium positions
@@ -112,11 +114,30 @@ Rounds progress when submissions and votes are complete:
 ### Scoring
 
 ```python
-# Scores are tallied based on votes
+# Scores are tallied based on votes with special handling for random bribes
 round_scores = {}
 for voter_id, bribe_id in game.votes[game.current_round].items():
-    submitter_id = bribe_id.split('_')[0]
-    round_scores[submitter_id] = round_scores.get(submitter_id, 0) + 1
+    parts = bribe_id.split('_')
+    if len(parts) != 2:
+        continue
+        
+    submitter_id, target_id = parts
+    
+    # Check if this bribe is random
+    is_random = False
+    try:
+        is_random = game.bribes[game.current_round][submitter_id][target_id].get('is_random', False)
+    except (KeyError, AttributeError):
+        pass
+    
+    # Award full or half points based on whether the bribe was randomly generated
+    if submitter_id not in round_scores:
+        round_scores[submitter_id] = 0
+        
+    if is_random:
+        round_scores[submitter_id] += 0.5  # Half point for random bribes
+    else:
+        round_scores[submitter_id] += 1    # Full point for player submissions
 ```
 
 ## Testing Considerations
@@ -148,6 +169,37 @@ Our testing approach focuses exclusively on unit tests for reliability and speed
    - Each feature has dedicated test file(s)
    - Tests are grouped by feature or component
    - Setup code is shared where appropriate
+
+## Random Bribe System
+
+The random bribe system generates fun, silly bribes when players disconnect or fail to submit in time:
+
+### Data Source
+- Random bribes are loaded from `data/random_bribes.txt`
+- The file contains two sections: "Nouns" and "Activities"
+- Bribes are randomly selected from either section
+
+### Implementation Details
+- Function `generate_random_bribe()` in `src/web/utils.py` returns a random bribe and a flag
+- Called during `end_submission_phase()` for any missing submissions
+- Bribes are marked with `is_random=True` in the data structure
+- UI displays "(randomly generated)" suffix for these bribes **only during results phase**
+- Scoring awards 0.5 points instead of 1 point for random bribes that win votes
+
+### Edge Cases Handled
+- Missing players (disconnections)
+- Timeout without submission
+- Partial submissions (only one of two required bribes submitted)
+
+```python
+# Example of how random bribes are generated
+def generate_random_bribe():
+    nouns, activities = load_random_bribes()
+    if random.random() < 0.5:
+        return random.choice(nouns), True
+    else:
+        return random.choice(activities), True
+```
    - Common assertions are factored into helper methods
 
 These patterns are implemented across all tests in the `tests/unit/` directory.

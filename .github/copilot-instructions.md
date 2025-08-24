@@ -114,6 +114,16 @@ These documents define how the game should behave and is implemented, including 
 - Modular JavaScript in `static/js/` (game-core, socket-handlers, ui-handlers)
 - Mobile-first responsive design principles
 
+## Testing Standards
+- **Test-Driven Development**: Write tests before or alongside new functionality
+- **Complete Coverage**: Every feature must have corresponding unit tests
+- **Test Isolation**: Tests should not depend on external services or state
+- **Mock Dependencies**: Use mocks and patches for external dependencies
+- **Test Organization**: Group tests by feature in dedicated files under `tests/unit/`
+- **Naming Convention**: Test files should be named `test_*.py` and test classes `Test*`
+- **Test Both Paths**: Cover both happy paths and error/edge cases
+- **Test Readability**: Tests should clearly show what they're verifying
+
 ## Test Server Architecture
 The testing framework uses a session-scoped Flask test server on port 5001 managed by `tests/conftest.py`:
 
@@ -212,6 +222,13 @@ py -m pre_commit install  # Enable automatic checks before commits
 - Reduce maintenance overhead
 - Avoid timing-related issues with asynchronous socket events
 - Focus on testing core logic in isolation
+
+**IMPORTANT: Every new feature or change must include corresponding unit tests.** When implementing new functionality:
+- Create dedicated test files in `tests/unit/` that verify all aspects of the feature
+- Test both happy paths and edge cases
+- Verify error handling where applicable
+- Mock external dependencies for isolation
+- Ensure tests are fast and deterministic
 
 **Instead, prefer:**
 1. **Pure Unit Tests:** Test specific components in isolation

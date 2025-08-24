@@ -41,6 +41,7 @@ Each round consists of three or four phases depending on the Custom Prompts sett
 - **Prompt Display**: Shows target player's chosen prompt for personalized bribing
 - **Completion**: Round advances when all players submit both bribes OR time expires
 - **Pairing Algorithm**: Circular shuffling ensures each player receives exactly 2 bribes
+- **Random Bribes**: If a player disconnects or doesn't submit in time, a random silly bribe is generated from `random_bribes.txt` and marked as "(randomly generated)"
 
 #### Phase 2: Voting (Anonymous Selection)
 - **Anonymous Display**: Players see only the 2 bribes submitted TO them (submitter names hidden)
@@ -49,8 +50,11 @@ Each round consists of three or four phases depending on the Custom Prompts sett
 - **Completion**: Phase ends when all players vote OR time expires
 
 #### Phase 3: Scoreboard (Results)
-- **Scoring**: 1 point per vote received
+- **Scoring**: 
+  - 1 point per vote received for player-submitted bribes
+  - 0.5 points per vote received for randomly generated bribes
 - **Display**: Round results show who voted for whom, current standings
+- **Random Bribes**: Randomly generated bribes are marked with "(randomly generated)" **only during results phase**
 - **Duration**: 5-second automatic advance to next round or final results
 
 ### 3. Game Progression
