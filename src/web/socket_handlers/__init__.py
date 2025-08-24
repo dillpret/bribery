@@ -47,6 +47,7 @@ def register_socket_handlers(socketio_instance):
         handle_start_game,
         handle_submit_bribe,
         handle_submit_vote,
+        handle_get_game_state,
     )
 
     # Register all handlers
@@ -60,6 +61,7 @@ def register_socket_handlers(socketio_instance):
     socketio.on_event('return_to_lobby', handle_return_to_lobby)
     socketio.on_event('next_round', handle_next_round)
     socketio.on_event('disconnect', handle_disconnect)
+    socketio.on_event('get_game_state', handle_get_game_state)
 
 
 # Import these after the function definition to avoid circular imports

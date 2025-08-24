@@ -411,3 +411,32 @@ def handle_disconnect():
             emit_lobby_update(player_session.game_id)
 
         game_manager.remove_player_session(request.sid)
+
+
+def handle_get_game_state(data):
+    """Handle request for current game state"""
+    # Input validation
+    if not isinstance(data, dict):
+        emit('error', {'message': 'Invalid request data'})
+        return
+
+    game_id = data.get('game_id')
+    if not game_id or not isinstance(game_id, str):
+        emit('error', {'message': 'Game ID is required'})
+        return
+    
+    game = game_manager.get_game(game_id)
+    if not game:
+        emit('error', {'message': 'Game not found'})
+        return
+    
+    # Return current game state
+    state_data = {
+        'game_id': game_id,
+        'state': game.state,
+        'round': game.current_round,
+        'total_rounds': game.total_rounds,
+        'players_count': len(game.players)
+    }
+    
+    emit('game_state', state_data)

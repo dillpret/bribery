@@ -139,6 +139,10 @@ The testing framework uses a session-scoped Flask test server on port 5001 manag
 - Test timeouts usually indicate port conflicts or server startup failures
 - Development servers on port 5000 can interfere with test server startup
 - Check terminal output for server error details if tests fail
+- Do NOT attempt to read terminal output after running integration tests, as they may block or produce unexpected results
+
+**SocketIO Test Behavior:**
+- Wait for manual output from the user rather than trying to read test output after running tests
 
 ## Recent Major Work Completed
 - **Test Optimization:** Reduced test suite from 10+ minutes to 30 seconds

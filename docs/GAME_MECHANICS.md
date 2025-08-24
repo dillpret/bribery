@@ -126,6 +126,50 @@ for voter_id, bribe_id in game.votes[game.current_round].items():
 3. **Helper Methods**: Tests use helper methods that don't exist in the actual classes
 4. **Test Isolation**: Each test class tests a specific aspect of the game mechanics
 
+## Socket.IO Testing Approach
+
+Socket.IO testing is inherently complex due to its asynchronous nature. Our implementation uses robust patterns to ensure test reliability:
+
+### Key Testing Patterns
+
+1. **Unique Test Identifiers**: Each test uses unique identifiers that incorporate:
+   - Test run ID (shared across the test session)
+   - Timestamp
+   - Random component
+   - Test-specific prefix
+
+2. **Server Readiness**: Tests verify server readiness before proceeding:
+   ```python
+   ensure_server_ready(test_server)
+   ```
+
+3. **Explicit Event Clearing**: Clear events before critical operations:
+   ```python
+   helper.clear_events()
+   ```
+
+4. **Retry Logic**: Implement retries for potentially flaky operations:
+   ```python
+   for attempt in range(max_attempts):
+       game_id = host.create_game(...)
+       if game_id is not None:
+           break
+   ```
+
+5. **Progressive Timing**: Use appropriate delays at critical points:
+   ```python
+   time.sleep(0.3)  # Brief pause before game start
+   ```
+
+6. **Detailed Diagnostics**: Capture detailed state on failures:
+   ```python
+   if not start_result:
+       host_status = host.get_detailed_connection_status()
+       logger.error(f"Game start failed. Status: {host_status}")
+   ```
+
+These patterns are implemented in `tests/integration/test_socketio_integration.py` which serves as the canonical reference for Socket.IO testing in this project.
+
 ## Recommendations for Future Development
 
 1. **API Consistency**: Align the tested API with the actual implementation
