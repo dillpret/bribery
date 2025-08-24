@@ -95,12 +95,88 @@ curl http://localhost:5000
 sudo journalctl -u bribery-game -f
 ```
 
-## Step 6: Set Up Domain (Optional)
-1. **Free Domain**: Use [Freenom](https://freenom.com) or [No-IP](https://www.noip.com)
-2. **Point DNS** to your Oracle instance public IP
-3. **SSL Certificate**: Use Let's Encrypt (see SSL setup below)
+## Step 6: Set Up Domain and Cloudflare
+1. **Register Domain**: Use any domain registrar or free services like [Freenom](https://freenom.com) or [No-IP](https://www.noip.com)
+2. **Set Up Cloudflare**:
+   - Create a Cloudflare account at [cloudflare.com](https://www.cloudflare.com)
+   - Add your domain to Cloudflare
+   - Update your domain's nameservers to those provided by Cloudflare
+   - Create an A record pointing your subdomain (e.g., bribery.yourdomain.com) to your Oracle instance public IP
+   - Set SSL/TLS mode to "Flexible" in Cloudflare dashboard (SSL/TLS → Overview)
+   - Enable "Always Use HTTPS" in SSL/TLS → Edge Certificates
 
-## SSL Setup (Optional but Recommended)
+3. **Configure Nginx with Cloudflare Support**:
+```bash
+# Manually update Nginx configuration if needed
+sudo nano /etc/nginx/sites-available/bribery-game
+```
+
+Example Nginx configuration with Cloudflare support:
+```
+server {
+    listen 80;
+    server_name bribery.yourdomain.com;  # Replace with your actual domain
+    
+    # Simple approach - trust Cloudflare headers
+    real_ip_header CF-Connecting-IP;
+    
+    # Root directory for static files
+    root /var/www/bribery-game;
+    
+    # Try to serve static files directly first
+    location /static/ {
+        alias /var/www/bribery-game/static/;
+        expires 30d;
+    }
+    
+    # Pass everything else to the Flask application
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_buffering off;
+        
+        # Try the URI itself, then fall back to proxy
+        try_files $uri @proxy;
+    }
+    
+    # Named location for the proxy pass
+    location @proxy {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+For high-security applications that need to verify Cloudflare IPs (optional):
+```
+# Add this before the location block for stricter security
+# This verifies requests are actually coming from Cloudflare
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+# Additional Cloudflare IPs... (see Cloudflare documentation)
+```
+
+After updating the configuration:
+```bash
+# Test the configuration
+sudo nginx -t
+
+# If test passes, reload Nginx
+sudo systemctl reload nginx
+```
+
+## Alternative: SSL Setup with Let's Encrypt (If Not Using Cloudflare)
 ```bash
 # Install Certbot
 sudo apt install snapd
@@ -111,6 +187,29 @@ sudo certbot --nginx -d yourdomain.com
 
 # Auto-renewal is set up automatically
 ```
+
+## Verify Cloudflare Setup
+After configuring your domain with Cloudflare:
+
+1. **Check Cloudflare Connection**:
+   - Visit your site through the browser (https://bribery.yourdomain.com)
+   - Check that the connection is secure (padlock icon in browser)
+   - Verify Cloudflare is active by checking response headers:
+     ```bash
+     curl -I https://bribery.yourdomain.com | grep CF-
+     ```
+     This should show several Cloudflare headers (CF-Ray, CF-Cache-Status, etc.)
+
+2. **Test WebSocket Connection**:
+   - Create a game on your site
+   - Join with another browser/device
+   - Confirm real-time updates work correctly
+
+3. **Troubleshoot Cloudflare Issues**:
+   - If WebSockets aren't working, ensure WebSocket support is enabled in Cloudflare:
+     - Go to Network → WebSockets in Cloudflare dashboard and enable it
+   - If connections are dropping, check Cloudflare's Timeout settings:
+     - Go to Network → Configuration and increase timeout values
 
 ## Monitoring & Maintenance
 ```bash

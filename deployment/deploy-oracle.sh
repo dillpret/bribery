@@ -74,8 +74,21 @@ EOF
 sudo tee /etc/nginx/sites-available/bribery-game > /dev/null <<EOF
 server {
     listen 80;
-    server_name _;
-
+    server_name bribery.highsc.org;  # Replace with your actual domain
+    
+    # Simple Cloudflare support - trusts CF-Connecting-IP header
+    real_ip_header CF-Connecting-IP;
+    
+    # Root directory for static files
+    root /var/www/bribery-game;
+    
+    # Try to serve static files directly first
+    location /static/ {
+        alias /var/www/bribery-game/static/;
+        expires 30d;
+    }
+    
+    # Pass everything else to the Flask application
     location / {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
@@ -88,6 +101,18 @@ server {
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_buffering off;
+        
+        # Try the URI itself, then as a file, then as a directory, then fall back to proxy
+        try_files \$uri @proxy;
+    }
+    
+    # Named location for the proxy pass
+    location @proxy {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
 EOF
@@ -119,6 +144,12 @@ echo ""
 echo "🌐 Your game should be accessible at:"
 echo "   http://$(curl -s ifconfig.me)"
 echo "   http://your-oracle-instance-ip"
+echo ""
+echo "☁️  If using Cloudflare with Flexible SSL:"
+echo "   1. Create an A record pointing to your server IP"
+echo "   2. Set SSL/TLS mode to 'Flexible' in Cloudflare dashboard"
+echo "   3. Enable 'Always Use HTTPS' for secure connections"
+echo "   4. Visit https://your-domain.com to access your game"
 echo ""
 echo "🔧 Useful commands:"
 echo "   Check logs: sudo journalctl -u bribery-game -f"
