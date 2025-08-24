@@ -6,9 +6,10 @@
     padding: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     max-width: 500px;
-    width: 100%;
+    width: calc(100% - 20px); /* Ensure there's room for padding */
     text-align: center;
     position: relative;
+    margin: 0 auto;
 }
 
 h1 {
@@ -63,7 +64,6 @@ h1 {
     .time-controls select {
         width: 100%;
     }
-}
 }
 
 .settings-grid {

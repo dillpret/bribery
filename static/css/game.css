@@ -5,7 +5,6 @@
 @import url('components/game-phases.css');
 @import url('components/scoreboard.css');
 @import url('components/mobile.css');
-@import url('components/index.css');
 @import url('components/host-settings.css');
 @import url('components/player-list-panel.css');
 @import url('components/results-display.css');
@@ -28,7 +27,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px; /* Default more comfortable reading width */
     margin: 0 auto;
     background: white;
     border-radius: 20px;
@@ -37,6 +36,7 @@ body {
     min-height: calc(100vh - 20px);
     display: flex;
     flex-direction: column;
+    width: calc(100% - 20px); /* Ensure proper padding on sides */
 }
 
 .header {
@@ -45,6 +45,25 @@ body {
     padding-bottom: 15px;
     border-bottom: 2px solid #eee;
     flex-shrink: 0;
+}
+
+/* Responsive container widths for different screen sizes */
+@media screen and (max-width: 768px) {
+    .container {
+        max-width: 100%; /* Full width on mobile */
+    }
+}
+
+@media screen and (min-width: 1600px) and (max-width: 2199px) {
+    .container {
+        max-width: 1000px; /* Comfortable width on large screens */
+    }
+}
+
+@media screen and (min-width: 2200px) {
+    .container {
+        max-width: 1200px; /* Wider on very large screens */
+    }
 }
 
 h1 {

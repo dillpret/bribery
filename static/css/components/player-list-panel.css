@@ -198,12 +198,22 @@
         height: 40px;
         font-size: 20px;
     }
+    
+    .container.with-player-panel {
+        margin-right: auto;
+        max-width: 1200px;
+        width: calc(100% - 20px);
+    }
 }
 
 /* Tablet & desktop - side panel mode */
 @media screen and (min-width: 769px) {
     .container.with-player-panel {
-        padding-right: 320px;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: calc(min(1000px, 100% - 340px)); /* Max width capped at 1000px, but also accounting for player panel */
+        transform: translateX(-150px); /* Shift left to center it in the remaining space */
+        width: auto;
     }
     
     .player-list-panel {
@@ -218,5 +228,23 @@
     
     .player-list-toggle {
         display: none;
+    }
+}
+
+/* Large desktop screens - more comfortable reading width */
+@media screen and (min-width: 1600px) {
+    .container.with-player-panel {
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateX(-150px); /* Shift left to center it in the remaining space */
+    }
+}
+
+/* Extra large monitors */
+@media screen and (min-width: 2200px) {
+    .container.with-player-panel {
+        max-width: 1200px;
+        transform: translateX(-150px); /* Maintain the same offset for consistent positioning */
     }
 }
