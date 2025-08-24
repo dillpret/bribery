@@ -32,6 +32,7 @@ Individual feature tests in `tests/unit/`:
 3. **test_midgame_joining.py**: Tests players joining mid-game
 4. **test_host_username_flow.py**: Tests host username experience
 5. **test_game_state_management.py**: Tests broader game state scenarios
+6. **test_player_kick_logic.py**: Tests player kick functionality and player list data
 
 ## Test Implementation Pattern
 
