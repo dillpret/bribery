@@ -6,6 +6,8 @@
 @import url('components/scoreboard.css');
 @import url('components/mobile.css');
 @import url('components/index.css');
+@import url('components/host-settings.css');
+@import url('components/player-list-panel.css');
 
 /* Global styles - Mobile First */
 * {

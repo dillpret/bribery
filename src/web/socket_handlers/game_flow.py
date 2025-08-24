@@ -213,7 +213,9 @@ def end_voting_phase(game):
         scoreboard.append({
             'username': game.players[player_id]['username'],
             'round_score': round_scores.get(player_id, 0),
-            'total_score': total_score
+            'total_score': total_score,
+            'player_id': player_id,
+            'is_host': player_id == game.host_id
         })
 
     scoreboard.sort(key=lambda x: x['total_score'], reverse=True)
@@ -255,7 +257,9 @@ def end_game(game):
     for player_id, total_score in game.scores.items():
         final_scoreboard.append({
             'username': game.players[player_id]['username'],
-            'total_score': total_score
+            'total_score': total_score,
+            'player_id': player_id,
+            'is_host': player_id == game.host_id
         })
 
     final_scoreboard.sort(key=lambda x: x['total_score'], reverse=True)
@@ -294,15 +298,17 @@ def emit_lobby_update(game_id):
 
     player_list = []
     for player_id, player in game.players.items():
-        if player['connected']:
-            player_list.append({
-                'username': player['username'],
-                'is_host': player_id == game.host_id
-            })
+        player_list.append({
+            'username': player['username'],
+            'is_host': player_id == game.host_id,
+            'connected': player['connected'],
+            'score': game.scores.get(player_id, 0),
+            'player_id': player_id  # Send player_id for kick functionality
+        })
 
     socketio.emit('lobby_update', {
         'players': player_list,
-        'player_count': len(player_list),
+        'player_count': len([p for p in player_list if p['connected']]),
         'settings': game.settings,
         'can_start': game.can_start_game()
     }, room=game_id)

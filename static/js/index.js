@@ -57,16 +57,17 @@ function createGame() {
         return;
     }
 
-    const settings = {
-        rounds: parseInt(document.getElementById('rounds').value),
-        submission_time: getTimeInSeconds('submission-time'),
-        voting_time: getTimeInSeconds('voting-time'),
-        results_time: getTimeInSeconds('results-time'),
-        custom_prompts: document.getElementById('custom-prompts').value === 'true'
-    };
-
     // Set up authentication for host
     Authentication.setupHost(username, null); // gameId will be set when server responds
+
+    // Use default settings, which will be configurable in the lobby
+    const settings = {
+        rounds: 3,
+        submission_time: 0,
+        voting_time: 0,
+        results_time: 0,
+        custom_prompts: true
+    };
 
     socket.emit('create_game', {
         username: username,
@@ -146,22 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.value = e.target.value.toUpperCase();
         });
     }
-
-    // Setup timer mode toggles
-    ['submission-time', 'voting-time', 'results-time'].forEach(timerId => {
-        const modeSelect = document.getElementById(`${timerId}-mode`);
-        const controls = document.getElementById(`${timerId}-controls`);
-        
-        if (modeSelect && controls) {
-            // Set initial state
-            controls.classList.toggle('hidden', modeSelect.value === 'off');
-            
-            // Add change listener
-            modeSelect.addEventListener('change', function() {
-                controls.classList.toggle('hidden', this.value === 'off');
-            });
-        }
-    });
 
     // Enter key submission
     document.addEventListener('keypress', function(e) {

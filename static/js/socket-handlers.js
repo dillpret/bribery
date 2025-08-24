@@ -54,19 +54,98 @@ socket.on('lobby_update', (data) => {
     settingsDisplay.innerHTML = `
         <h3>Game Settings:</h3>
         <p><strong>Rounds:</strong> ${data.settings.rounds}</p>
-        <p><strong>Submission Time:</strong> ${data.settings.submission_time} seconds</p>
-        <p><strong>Voting Time:</strong> ${data.settings.voting_time} seconds</p>
+        <p><strong>Submission Time:</strong> ${data.settings.submission_time ? data.settings.submission_time + ' seconds' : 'Wait for all players'}</p>
+        <p><strong>Voting Time:</strong> ${data.settings.voting_time ? data.settings.voting_time + ' seconds' : 'Wait for all players'}</p>
         <p><strong>Custom Prompts:</strong> ${data.settings.custom_prompts ? 'Enabled' : 'Disabled'}</p>
     `;
 
     // Get host status from state
     const isHost = GameState.get('auth', 'isHost');
     
+    // Handle host controls and settings
     if (isHost) {
+        // Show host game controls
         document.getElementById('host-controls').classList.remove('hidden');
         const startBtn = document.getElementById('start-game-btn');
         startBtn.disabled = !data.can_start;
         startBtn.textContent = data.can_start ? 'Start Game' : 'Need at least 3 players';
+        
+        // Show host settings
+        const hostSettings = document.getElementById('host-settings');
+        hostSettings.classList.remove('hidden');
+        
+        // Update settings form values to match current game settings
+        document.getElementById('rounds').value = data.settings.rounds;
+        
+        // Set submission time
+        const submissionTime = data.settings.submission_time;
+        document.getElementById('submission-time-mode').value = submissionTime ? 'timed' : 'off';
+        if (submissionTime) {
+            document.getElementById('submission-time-controls').classList.remove('hidden');
+            if (submissionTime >= 60 && submissionTime % 60 === 0) {
+                document.getElementById('submission-time-value').value = submissionTime / 60;
+                document.getElementById('submission-time-unit').value = 'minutes';
+            } else {
+                document.getElementById('submission-time-value').value = submissionTime;
+                document.getElementById('submission-time-unit').value = 'seconds';
+            }
+        } else {
+            document.getElementById('submission-time-controls').classList.add('hidden');
+        }
+        
+        // Set voting time
+        const votingTime = data.settings.voting_time;
+        document.getElementById('voting-time-mode').value = votingTime ? 'timed' : 'off';
+        if (votingTime) {
+            document.getElementById('voting-time-controls').classList.remove('hidden');
+            if (votingTime >= 60 && votingTime % 60 === 0) {
+                document.getElementById('voting-time-value').value = votingTime / 60;
+                document.getElementById('voting-time-unit').value = 'minutes';
+            } else {
+                document.getElementById('voting-time-value').value = votingTime;
+                document.getElementById('voting-time-unit').value = 'seconds';
+            }
+        } else {
+            document.getElementById('voting-time-controls').classList.add('hidden');
+        }
+        
+        // Set results time
+        const resultsTime = data.settings.results_time;
+        document.getElementById('results-time-mode').value = resultsTime ? 'timed' : 'off';
+        if (resultsTime) {
+            document.getElementById('results-time-controls').classList.remove('hidden');
+            if (resultsTime >= 60 && resultsTime % 60 === 0) {
+                document.getElementById('results-time-value').value = resultsTime / 60;
+                document.getElementById('results-time-unit').value = 'minutes';
+            } else {
+                document.getElementById('results-time-value').value = resultsTime;
+                document.getElementById('results-time-unit').value = 'seconds';
+            }
+        } else {
+            document.getElementById('results-time-controls').classList.add('hidden');
+        }
+        
+        // Set custom prompts
+        document.getElementById('custom-prompts').value = data.settings.custom_prompts ? 'true' : 'false';
+        
+        // Setup timer mode toggles
+        ['submission-time', 'voting-time', 'results-time'].forEach(timerId => {
+            const modeSelect = document.getElementById(`${timerId}-mode`);
+            const controls = document.getElementById(`${timerId}-controls`);
+            
+            if (modeSelect && controls) {
+                // Set initial state
+                controls.classList.toggle('hidden', modeSelect.value === 'off');
+                
+                // Add change listener if not already added
+                if (!modeSelect.dataset.listenerAdded) {
+                    modeSelect.addEventListener('change', function() {
+                        controls.classList.toggle('hidden', this.value === 'off');
+                    });
+                    modeSelect.dataset.listenerAdded = 'true';
+                }
+            }
+        });
     }
 
     updateStatus(`${data.player_count} players in lobby`);

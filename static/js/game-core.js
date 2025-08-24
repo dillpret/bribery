@@ -68,6 +68,36 @@ function startGame() {
     socket.emit('start_game');
 }
 
+function getTimeInSeconds(baseId) {
+    // Check if timer is set to "off"
+    const modeSelect = document.getElementById(baseId + '-mode');
+    if (modeSelect && modeSelect.value === 'off') {
+        return 0; // 0 means timer is off
+    }
+
+    const value = parseInt(document.getElementById(baseId + '-value').value);
+    const unit = document.getElementById(baseId + '-unit').value;
+
+    if (isNaN(value) || value < 1) {
+        return unit === 'minutes' ? 120 : 60; // Default fallback
+    }
+
+    return unit === 'minutes' ? value * 60 : value;
+}
+
+function updateSettings() {
+    const settings = {
+        rounds: parseInt(document.getElementById('rounds').value),
+        submission_time: getTimeInSeconds('submission-time'),
+        voting_time: getTimeInSeconds('voting-time'),
+        results_time: getTimeInSeconds('results-time'),
+        custom_prompts: document.getElementById('custom-prompts').value === 'true'
+    };
+
+    socket.emit('update_settings', settings);
+    updateStatus('Updating game settings...');
+}
+
 function selectPrompt() {
     const dropdown = document.getElementById('prompt-dropdown');
     const customInput = document.getElementById('custom-prompt-input');

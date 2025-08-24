@@ -20,10 +20,12 @@ from .game_flow import (
     end_submission_phase,
     end_voting_phase,
     game_manager,
+    socketio,
     start_next_round,
     start_submission_phase,
 )
 from .progress_tracking import emit_voting_progress
+from ..utils import get_player_room
 
 logger = logging.getLogger(__name__)
 
@@ -440,3 +442,114 @@ def handle_get_game_state(data):
     }
     
     emit('game_state', state_data)
+
+
+def handle_update_settings(data):
+    """Handle game settings update from the host"""
+    player_session = game_manager.get_player_session(request.sid)
+    if not player_session:
+        emit('error', {'message': 'You are not in a game session'})
+        return
+
+    game = game_manager.get_game(player_session.game_id)
+    if not game:
+        emit('error', {'message': 'Game not found'})
+        return
+    
+    # Only the host can update settings
+    if player_session.player_id != game.host_id:
+        emit('error', {'message': 'Only the host can update game settings'})
+        return
+        
+    # Only allow settings updates in lobby state
+    if game.state != "lobby":
+        emit('error', {'message': 'Settings can only be updated in the lobby'})
+        return
+    
+    # Input validation for each setting
+    if 'rounds' in data and isinstance(data['rounds'], int) and 1 <= data['rounds'] <= 10:
+        game.settings['rounds'] = data['rounds']
+        
+    if 'submission_time' in data and isinstance(data['submission_time'], int) and 0 <= data['submission_time'] <= 600:
+        game.settings['submission_time'] = data['submission_time']
+        
+    if 'voting_time' in data and isinstance(data['voting_time'], int) and 0 <= data['voting_time'] <= 600:
+        game.settings['voting_time'] = data['voting_time']
+        
+    if 'results_time' in data and isinstance(data['results_time'], int) and 0 <= data['results_time'] <= 600:
+        game.settings['results_time'] = data['results_time']
+        
+    if 'custom_prompts' in data and isinstance(data['custom_prompts'], bool):
+        game.settings['custom_prompts'] = data['custom_prompts']
+    
+    # Broadcast updated settings to all players
+    emit_lobby_update(player_session.game_id)
+    
+    # Confirm to the host that settings were updated
+    emit('settings_updated', {'success': True})
+
+
+def handle_kick_player(data):
+    """Handle kicking a player from the game"""
+    # Input validation
+    if not isinstance(data, dict):
+        emit('error', {'message': 'Invalid request data'})
+        return
+
+    player_id = data.get('player_id')
+    game_id = data.get('game_id')
+    
+    if not player_id or not game_id:
+        emit('error', {'message': 'Missing required fields'})
+        return
+    
+    # Get player session
+    player_session = game_manager.get_player_session(request.sid)
+    if not player_session:
+        emit('error', {'message': 'Not in a game'})
+        return
+    
+    # Get game
+    game = game_manager.get_game(game_id)
+    if not game:
+        emit('error', {'message': 'Game not found'})
+        return
+    
+    # Check if requester is the host
+    if player_session.player_id != game.host_id:
+        emit('error', {'message': 'Only the host can kick players'})
+        return
+    
+    # Check if player exists
+    if player_id not in game.players:
+        emit('error', {'message': 'Player not found'})
+        return
+    
+    # Don't allow host to kick themselves
+    if player_id == game.host_id:
+        emit('error', {'message': 'Host cannot kick themselves'})
+        return
+    
+    # Get the player's username for the kick message
+    kicked_username = game.players[player_id]['username']
+    
+    # Remove player from game
+    game.remove_player(player_id)
+    
+    # Notify the kicked player
+    socketio.emit('kicked_from_game', {
+        'message': f'You have been kicked from the game by the host'
+    }, room=get_player_room(player_id))
+    
+    # Notify all players in the game
+    socketio.emit('player_kicked', {
+        'player_id': player_id,
+        'username': kicked_username,
+        'message': f'{kicked_username} has been kicked from the game'
+    }, room=game_id)
+    
+    # Update lobby for all remaining players
+    emit_lobby_update(game_id)
+    
+    # Return success to the host
+    emit('kick_player_result', {'success': True})

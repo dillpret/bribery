@@ -1,0 +1,222 @@
+/* Player list panel styles */
+.player-list-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: white;
+    border-left: 2px solid #eee;
+    border-bottom: 2px solid #eee;
+    border-bottom-left-radius: 15px;
+    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    max-width: 90vw;
+    height: 100%;
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    padding: 20px 15px;
+}
+
+.player-list-panel.visible {
+    transform: translateX(0);
+}
+
+/* Button to toggle player list */
+.player-list-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 101;
+    background: #764ba2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.player-list-toggle:hover {
+    background: #667eea;
+}
+
+/* Player list items */
+.player-score-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.player-score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.player-score-item:last-child {
+    border-bottom: none;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.player-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.player-status.online {
+    background-color: #4CAF50;
+}
+
+.player-status.offline {
+    background-color: #F44336;
+}
+
+.player-name {
+    font-weight: 500;
+}
+
+.host-badge {
+    background: #764ba2;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+.player-score {
+    font-weight: bold;
+    color: #764ba2;
+}
+
+.kick-button {
+    background: #F44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.player-score-item:hover .kick-button {
+    opacity: 1;
+}
+
+/* Confirmation modal for kicking players */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.confirmation-modal {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.confirmation-modal h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.confirmation-modal p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal-buttons button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.confirm-kick {
+    background: #F44336;
+    color: white;
+}
+
+.cancel-kick {
+    background: #eee;
+    color: #333;
+}
+
+/* Media queries for mobile */
+@media screen and (max-width: 768px) {
+    .player-list-panel {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+    }
+    
+    .player-list-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Tablet & desktop - side panel mode */
+@media screen and (min-width: 769px) {
+    .container.with-player-panel {
+        padding-right: 320px;
+    }
+    
+    .player-list-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 100%;
+        transform: translateX(0);
+        border-radius: 0;
+    }
+    
+    .player-list-toggle {
+        display: none;
+    }
+}
