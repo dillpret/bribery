@@ -94,10 +94,17 @@ command1 && command2 # Use command1; command2
 ## Game Logic Documentation
 For understanding game behaviour, rules, and implementation details:
 - **`docs/GAME_RULES.md`** - Canonical business rules including Custom Prompts mode
-- **`docs/IMPLEMENTATION_ANALYSIS.md`** - Technical analysis of implementation vs. original vision
+- **`docs/GAME_MECHANICS.md`** - Technical implementation of game mechanics and testing structure
+- **`docs/TECHNICAL_ARCHITECTURE.md`** - Component maps and system flows
 - **`docs/initial_prompt.txt`** - Original game concept and requirements
 
-These documents define how the game should behave, including edge cases for reconnection, late joining, scoring, state management, and the new Custom Prompts feature. Reference these when making changes that affect core game logic.
+These documents define how the game should behave and is implemented, including edge cases for reconnection, late joining, scoring, state management, and the new Custom Prompts feature. 
+
+**When answering questions or suggesting code changes:**
+1. Always check these docs first rather than scanning the entire codebase
+2. For questions about game rules, refer to GAME_RULES.md
+3. For questions about implementation, refer to GAME_MECHANICS.md and TECHNICAL_ARCHITECTURE.md
+4. For questions about specific test classes, use GAME_MECHANICS.md to locate relevant files
 
 ## Key Development Standards
 - Use `py -m pytest` for all testing (Windows PowerShell compatibility)
