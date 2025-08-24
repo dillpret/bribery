@@ -11,7 +11,20 @@ sudo apt update && sudo apt upgrade -y
 
 # Install Python 3.11 and pip
 echo "🐍 Installing Python 3.11 and dependencies..."
-sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip nginx git
+if ! command -v python3.11 &> /dev/null; then
+    echo "Installing Python 3.11 and related packages..."
+    sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
+else
+    echo "Python 3.11 already installed, skipping..."
+fi
+
+# Install nginx and git if not present
+if ! command -v nginx &> /dev/null; then
+    sudo apt install -y nginx
+fi
+if ! command -v git &> /dev/null; then
+    sudo apt install -y git
+fi
 
 # Create app directory
 echo "📁 Setting up application directory..."
@@ -23,17 +36,47 @@ echo "📋 Copying application files..."
 rsync -av --exclude='.venv' --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.pyc' ./ /var/www/bribery-game/
 cd /var/www/bribery-game
 
-# Create virtual environment
+# Create virtual environment if it doesn't exist or recreate if requested
 echo "🔧 Setting up Python virtual environment..."
-python3.11 -m venv venv
+RECREATE_VENV=${RECREATE_VENV:-0}  # Default to not recreate
+
+if [ ! -d "venv" ] || [ "$RECREATE_VENV" -eq 1 ]; then
+    if [ -d "venv" ] && [ "$RECREATE_VENV" -eq 1 ]; then
+        echo "Recreating virtual environment as requested..."
+        rm -rf venv
+    else
+        echo "Virtual environment doesn't exist, creating..."
+    fi
+    python3.11 -m venv venv
+else
+    echo "Virtual environment already exists, skipping creation..."
+fi
+
 source venv/bin/activate
 
 # Upgrade pip and install dependencies
+echo "📦 Upgrading pip and installing dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
 
-# Install additional production dependencies
-pip install gunicorn[eventlet]
+# Check if requirements have changed by creating a hash file
+REQUIREMENTS_HASH_FILE="venv/.requirements-hash"
+CURRENT_HASH=$(md5sum requirements.txt | awk '{ print $1 }')
+
+if [ ! -f "$REQUIREMENTS_HASH_FILE" ] || [ "$(cat $REQUIREMENTS_HASH_FILE)" != "$CURRENT_HASH" ]; then
+    echo "Requirements have changed or first installation, installing dependencies..."
+    pip install -r requirements.txt
+    echo "$CURRENT_HASH" > "$REQUIREMENTS_HASH_FILE"
+else
+    echo "Requirements unchanged, skipping dependency installation..."
+fi
+
+# Install additional production dependencies if not already present
+if ! pip freeze | grep -q "gunicorn"; then
+    echo "Installing production dependencies..."
+    pip install gunicorn[eventlet]
+else
+    echo "Production dependencies already installed, skipping..."
+fi
 
 # Make sure prompts.txt exists and is readable
 echo "📝 Checking prompts file..."
@@ -51,7 +94,8 @@ fi
 
 # Create systemd service
 echo "⚙️  Creating systemd service..."
-sudo tee /etc/systemd/system/bribery-game.service > /dev/null <<EOF
+SERVICE_FILE="/etc/systemd/system/bribery-game.service"
+SERVICE_CONTENT=$(cat <<EOF
 [Unit]
 Description=Bribery Game Flask App
 After=network.target
@@ -69,9 +113,21 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOF
+)
+
+# Check if service file exists and is different
+if [ ! -f "$SERVICE_FILE" ] || [ "$(echo "$SERVICE_CONTENT" | md5sum)" != "$(cat $SERVICE_FILE | md5sum)" ]; then
+    echo "Creating or updating systemd service file..."
+    echo "$SERVICE_CONTENT" | sudo tee $SERVICE_FILE > /dev/null
+    SERVICE_UPDATED=1
+else
+    echo "Systemd service file unchanged, skipping..."
+    SERVICE_UPDATED=0
+fi
 
 # Configure Nginx
-sudo tee /etc/nginx/sites-available/bribery-game > /dev/null <<EOF
+NGINX_FILE="/etc/nginx/sites-available/bribery-game"
+NGINX_CONTENT=$(cat <<EOF
 server {
     listen 80;
     server_name bribery.highsc.org;  # Replace with your actual domain
@@ -116,24 +172,52 @@ server {
     }
 }
 EOF
+)
+
+# Check if nginx config exists and is different
+if [ ! -f "$NGINX_FILE" ] || [ "$(echo "$NGINX_CONTENT" | md5sum)" != "$(cat $NGINX_FILE | md5sum)" ]; then
+    echo "Creating or updating nginx config file..."
+    echo "$NGINX_CONTENT" | sudo tee $NGINX_FILE > /dev/null
+    NGINX_UPDATED=1
+else
+    echo "Nginx config file unchanged, skipping..."
+    NGINX_UPDATED=0
+fi
 
 # Enable site
 sudo ln -sf /etc/nginx/sites-available/bribery-game /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
-# Open firewall ports
-sudo ufw allow 22
-sudo ufw allow 80
-sudo ufw allow 443
-sudo ufw --force enable
+# Open firewall ports if ufw is active
+if command -v ufw &> /dev/null; then
+    echo "Configuring firewall..."
+    sudo ufw allow 22
+    sudo ufw allow 80
+    sudo ufw allow 443
+    if ! sudo ufw status | grep -q "Status: active"; then
+        sudo ufw --force enable
+    fi
+fi
 
-# Start services
-echo "🔄 Starting services..."
+# Reload/restart services as needed
+echo "🔄 Managing services..."
 sudo systemctl daemon-reload
-sudo systemctl enable bribery-game
-sudo systemctl start bribery-game
-sudo systemctl enable nginx
-sudo systemctl restart nginx
+
+if [ "$SERVICE_UPDATED" -eq 1 ] || ! systemctl is-active --quiet bribery-game; then
+    echo "Enabling and (re)starting bribery-game service..."
+    sudo systemctl enable bribery-game
+    sudo systemctl restart bribery-game
+else
+    echo "bribery-game service already running with current config, not restarting..."
+fi
+
+if [ "$NGINX_UPDATED" -eq 1 ]; then
+    echo "Restarting nginx service due to config changes..."
+    sudo systemctl restart nginx
+else
+    echo "Reloading nginx configuration..."
+    sudo systemctl reload nginx
+fi
 
 echo ""
 echo "🎉 Deployment complete!"
