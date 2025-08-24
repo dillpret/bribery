@@ -19,8 +19,4 @@ pre-commit==4.2.0
 pytest-cov==4.0.0  # Coverage reporting
 pytest-mock==3.11.1  # Mocking utilities
 pytest-xdist==3.5.0  # Parallel test execution
-
-# UI Testing 
-selenium==4.18.1  # Browser automation
-webdriver-manager==4.0.1  # Chrome driver management
 pytest-html==4.1.1  # HTML test reports

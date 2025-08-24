@@ -39,10 +39,7 @@ py -m pip install -r requirements-dev.txt
 py -m pytest                # Full suite
 py -m pytest tests/unit/    # Unit tests (fastest)
 py -m pytest tests/integration/  # Integration tests
-py -m pytest tests/ui/      # Browser tests (requires Selenium & Chrome)
 ```
-
-> **Test Dependencies:** UI tests require Selenium which is included in requirements-dev.txt. See Copilot instructions for detailed test troubleshooting.
 
 ## Key Features
 - **Mobile-Optimised**: Touch-friendly interface with mobile image upload

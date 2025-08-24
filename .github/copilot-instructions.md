@@ -68,7 +68,7 @@ command1 && command2 # Use command1; command2
 ## Project Architecture
 - **Backend:** Flask + SocketIO for real-time gameplay
 - **Frontend:** Modular HTML/CSS/JS components (refactored from monolithic template)
-- **Testing:** Optimised 3-tier suite (Unit: 0.69s, Integration: ~30s, UI: Selenium)
+- **Testing:** Optimised 2-tier suite (Unit: 0.69s, Integration: ~30s)
 - **Database:** SQLite with game state management
 - **Mobile:** Responsive design with touch optimization
 
@@ -104,13 +104,11 @@ These documents define how the game should behave, including edge cases for reco
 - Component-based CSS architecture in `static/css/components/`
 - Modular JavaScript in `static/js/` (game-core, socket-handlers, ui-handlers)
 - Mobile-first responsive design principles
-- Selenium UI tests with ChromeDriver fallback strategies
 
 ## Test Server Architecture
 The testing framework uses a session-scoped Flask test server on port 5001 managed by `tests/conftest.py`:
 
 **Test Server Requirements:**
-- **UI Tests (`tests/ui/`)** - REQUIRE test server (uses `test_server` fixture)
 - **Integration Tests (`tests/integration/`)** - Do NOT require test server (use mocks/direct calls)
 - **Unit Tests (`tests/unit/`)** - Do NOT require test server (pure unit testing)
 
@@ -121,28 +119,21 @@ The testing framework uses a session-scoped Flask test server on port 5001 manag
   py -m pip install -r requirements-dev.txt
   ```
 - Core test dependencies are in requirements.txt
-- UI test dependencies (Selenium) are in requirements-dev.txt
 - Virtual environment is recommended but not required
 
 **Test Server Behaviour:**
 - Automatically starts on port 5001 if not already running
-- Session-scoped - shared across all UI tests in a run
+- Session-scoped - shared across all tests in a run
 - Uses optimised configuration (reduced logging, CSRF disabled)
-- May conflict with development server on port 5000
 
 **Common Issues:**
-- UI test timeouts usually indicate port conflicts or server startup failures
-- Run UI tests individually if full suite times out: `py -m pytest tests/ui/test_file.py::test_name -v`
+- Test timeouts usually indicate port conflicts or server startup failures
 - Development servers on port 5000 can interfere with test server startup
-- Check terminal output for server error details if UI tests fail
-
-**Handling Rare Errors:**
-- Missing dependencies: Ensure both requirements.txt and requirements-dev.txt are installed
+- Check terminal output for server error details if tests fail
 
 ## Recent Major Work Completed
 - **Test Optimization:** Reduced test suite from 10+ minutes to 30 seconds
 - **Template Refactoring:** Converted 1000+ line monolithic HTML to 95-line modular template
-- **UI Test Fixes:** Implemented robust ChromeDriver creation with network fallbacks
 - **CSS Modularization:** Created component-based architecture (lobby, buttons, forms, game-phases, scoreboard, mobile)
 - **Deployment Readiness:** Oracle Cloud deployment files validated and ready
 - **Custom Prompts Feature:** Complete implementation allowing players to choose individual prompts
@@ -154,7 +145,6 @@ static/css/components/    # Modular CSS components
 static/js/               # Modular JavaScript
 tests/unit/              # Fast unit tests (0.69s)
 tests/integration/       # Focused integration tests (~30s)
-tests/ui/               # Selenium browser tests
 templates/              # Clean modular HTML templates
 deployment/             # Oracle Cloud deployment (tested, ready)
 ```

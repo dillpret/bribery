@@ -6,14 +6,11 @@ Dependencies:
 - pytest (from requirements.txt)
 - Flask (from requirements.txt)
 - requests (from requirements.txt)
-- For UI tests: selenium, webdriver-manager (from requirements-dev.txt)
 
 Setup:
 1. py -m pip install -r requirements.txt
-2. py -m pip install -r requirements-dev.txt
 
 Troubleshooting:
-- If UI tests fail with Selenium errors: Ensure requirements-dev.txt is installed
 - If test server fails to start: Check for process using port 5001
 - For detailed test architecture, see .github/copilot-instructions.md
 """
@@ -143,22 +140,6 @@ def clean_game_state():
     
     # After test: The game cleanup happens when SocketIO clients disconnect
     # and when the server session ends. No additional cleanup needed here.
-
-@pytest.fixture
-def chrome_driver():
-    """Create a Chrome driver for UI tests"""
-    from helpers.browser_helpers import BrowserHelper
-    
-    # Create the driver
-    driver = BrowserHelper.create_chrome_driver()
-    if not driver:
-        pytest.skip("Chrome driver could not be created - UI tests will be skipped")
-    
-    yield driver
-    
-    # Clean up
-    if driver:
-        driver.quit()
 
 @pytest.fixture
 def game_manager_instance():
