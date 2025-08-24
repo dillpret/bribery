@@ -330,8 +330,38 @@ socket.on('round_results', (data) => {
     // Show scoreboard
     displayScoreboard(data.scoreboard, 'scoreboard');
 
-    updateStatus('Round complete!');
-    stopTimer();
+    // Add next round button for host if timer is disabled
+    if (!data.timer_enabled && Authentication.isHost()) {
+        // Create next round button
+        const nextRoundBtn = document.createElement('button');
+        nextRoundBtn.id = 'next-round-btn';
+        nextRoundBtn.textContent = 'Continue to Next Round';
+        nextRoundBtn.classList.add('action-button');
+        nextRoundBtn.onclick = () => socket.emit('next_round');
+        
+        // Add button to scoreboard phase
+        const scoreboardPhase = document.getElementById('scoreboard-phase');
+        scoreboardPhase.appendChild(nextRoundBtn);
+        
+        updateStatus('You control when to advance to the next round');
+    } else {
+        updateStatus('Round complete!');
+        if (data.timer_enabled) {
+            startTimer(data.results_time || 5, 'Next round in: ');
+        }
+    }
+    
+    if (!data.timer_enabled && !Authentication.isHost()) {
+        updateStatus('Waiting for host to start next round...');
+    }
+});
+
+socket.on('host_controls_next_round', () => {
+    if (Authentication.isHost()) {
+        updateStatus('You control when to advance to the next round');
+    } else {
+        updateStatus('Waiting for host to start next round...');
+    }
 });
 
 socket.on('game_finished', (data) => {

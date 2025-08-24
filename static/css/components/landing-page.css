@@ -27,16 +27,27 @@ h1 {
 
 .time-input-container {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    align-items: stretch;
 }
 
+.time-input-container select,
 .time-input-container input[type="number"] {
+    width: 100%;
+}
+
+.time-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.time-controls input[type="number"] {
     flex: 1;
     min-width: 0;
 }
 
-.time-input-container select {
+.time-controls select {
     flex: 0 0 auto;
     width: 120px;
     min-width: 100px;
@@ -44,14 +55,15 @@ h1 {
 
 /* On smaller screens, stack vertically */
 @media (max-width: 480px) {
-    .time-input-container {
+    .time-controls {
         flex-direction: column;
         gap: 8px;
     }
 
-    .time-input-container select {
+    .time-controls select {
         width: 100%;
     }
+}
 }
 
 .settings-grid {
@@ -107,4 +119,9 @@ h1 {
     padding: 10px;
     border-radius: 5px;
     margin: 10px 0;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
 }

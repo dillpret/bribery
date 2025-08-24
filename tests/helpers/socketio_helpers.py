@@ -88,7 +88,7 @@ class SocketIOHelper:
             self.events['error'] = data  # Keep latest
     
     def create_game(self, username: str = "TestHost", rounds: int = 3, 
-                   submission_time: int = 60, voting_time: int = 30) -> Optional[str]:
+                   submission_time: int = 60, voting_time: int = 30, results_time: int = 5) -> Optional[str]:
         """Create a game and return the game ID"""
         import random
         import time as time_module
@@ -101,7 +101,8 @@ class SocketIOHelper:
             'username': unique_username,
             'rounds': rounds,
             'submission_time': submission_time,
-            'voting_time': voting_time
+            'voting_time': voting_time,
+            'results_time': results_time
         })
         
         # Wait for game creation with shorter timeout
@@ -223,14 +224,15 @@ class MultiPlayerHelper:
                                 player_names: List[str] = None, 
                                 rounds: int = 1, 
                                 submission_time: int = 15, 
-                                voting_time: int = 10) -> Optional[str]:
+                                voting_time: int = 10,
+                                results_time: int = 5) -> Optional[str]:
         """Create a game and add multiple players"""
         if player_names is None:
             player_names = ["Player1", "Player2"]
         
         # Add host
         host = self.add_player(host_name)
-        game_id = host.create_game(host_name, rounds, submission_time, voting_time)
+        game_id = host.create_game(host_name, rounds, submission_time, voting_time, results_time)
         
         if not game_id:
             return None

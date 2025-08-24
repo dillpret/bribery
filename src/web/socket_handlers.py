@@ -41,6 +41,7 @@ def register_socket_handlers(socketio_instance):
     socketio.on_event('submit_vote', handle_submit_vote)
     socketio.on_event('restart_game', handle_restart_game)
     socketio.on_event('return_to_lobby', handle_return_to_lobby)
+    socketio.on_event('next_round', handle_next_round)  # New handler for host to advance to next round
     socketio.on_event('disconnect', handle_disconnect)
 
 
@@ -68,8 +69,9 @@ def handle_create_game(data):
 
     settings = {
         'rounds': data.get('rounds', 3),
-        'submission_time': data.get('submission_time', 60),
-        'voting_time': data.get('voting_time', 30),
+        'submission_time': data.get('submission_time', 0),  # 0 means wait for all players
+        'voting_time': data.get('voting_time', 0),  # 0 means wait for all players
+        'results_time': data.get('results_time', 0),  # 0 means host controls next round
         'custom_prompts': data.get('custom_prompts', False)
     }
 
@@ -342,16 +344,33 @@ def handle_restart_game():
     game.current_round = 0
     game.bribes = {}
     game.votes = {}
-    game.scores = {pid: 0 for pid in game.players}
-    game.current_prompt = ""
+    game.scores = {player_id: 0 for player_id in game.players}
     game.round_pairings = {}
-
-    if game.round_timer:
-        game.round_timer.cancel()
-        game.round_timer = None
 
     socketio.emit('game_restarted', room=game.game_id)
     emit_lobby_update(game.game_id)
+
+
+def handle_next_round():
+    """Handle host advancing to the next round (when results_time is 0)"""
+    player_session = game_manager.get_player_session(request.sid)
+    if not player_session:
+        return
+
+    game = game_manager.get_game(player_session.game_id)
+    if not game:
+        return
+
+    if player_session.player_id != game.host_id:
+        emit('error', {'message': 'Only the host can advance to the next round'})
+        return
+
+    if game.state != "scoreboard":
+        emit('error', {'message': 'Not in scoreboard phase'})
+        return
+
+    # Advance to next round or end game
+    continue_or_end_game(game)
 
 
 def handle_return_to_lobby():
@@ -477,12 +496,14 @@ def start_submission_phase(game):
             'targets': target_data
         }, room=get_player_room(game_manager, game.game_id, player_id))
 
-    # Start submission timer
-    game.round_timer = threading.Timer(
-        game.settings['submission_time'],
-        end_submission_phase,
-        [game])
-    game.round_timer.start()
+    # Set up timer or wait for all submissions
+    if game.settings['submission_time'] > 0:
+        # Start submission timer if time is set
+        game.round_timer = threading.Timer(
+            game.settings['submission_time'],
+            end_submission_phase,
+            [game])
+        game.round_timer.start()
     
     # Emit initial submission progress
     emit_submission_progress(game)
@@ -499,8 +520,11 @@ def check_all_submissions_complete(game):
     emit_submission_progress(game)
 
     if actual_submissions >= expected_submissions:
+        # If timer is active, cancel it
         if game.round_timer:
             game.round_timer.cancel()
+        
+        # Proceed to voting phase
         end_submission_phase(game)
 
 
@@ -603,10 +627,12 @@ def end_submission_phase(game):
             'time_limit': game.settings['voting_time']
         }, room=get_player_room(game_manager, game.game_id, player_id))
 
-    # Start voting timer
-    game.round_timer = threading.Timer(
-        game.settings['voting_time'], end_voting_phase, [game])
-    game.round_timer.start()
+    # Set up timer or wait for all votes
+    if game.settings['voting_time'] > 0:
+        # Start voting timer if time is set
+        game.round_timer = threading.Timer(
+            game.settings['voting_time'], end_voting_phase, [game])
+        game.round_timer.start()
     
     # Emit initial voting progress
     emit_voting_progress(game)
@@ -651,11 +677,19 @@ def end_voting_phase(game):
     socketio.emit('round_results', {
         'round': game.current_round,
         'vote_results': vote_results,
-        'scoreboard': scoreboard
+        'scoreboard': scoreboard,
+        'timer_enabled': game.settings['results_time'] > 0,
+        'results_time': game.settings['results_time']
     }, room=game.game_id)
 
     # Wait a bit then continue to next round or end game
-    threading.Timer(5.0, continue_or_end_game, [game]).start()
+    if game.settings['results_time'] > 0:
+        # Use timer if results_time is set
+        threading.Timer(game.settings['results_time'], continue_or_end_game, [game]).start()
+    else:
+        # Otherwise, let the host control when to continue
+        socketio.emit('host_controls_next_round', {}, 
+                      room=get_player_room(game_manager, game.game_id, game.host_id))
 
 
 def continue_or_end_game(game):
