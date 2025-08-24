@@ -162,9 +162,13 @@ def end_submission_phase(game):
                         'type': bribe['type']
                     })
 
+        # Get the player's prompt for this round
+        player_prompt = game.get_prompt_for_target(game.current_round, player_id)
+
         socketio.emit('voting_phase', {
             'bribes': bribes_for_player,
-            'time_limit': game.settings['voting_time']
+            'time_limit': game.settings['voting_time'],
+            'player_prompt': player_prompt
         }, room=get_player_room(game_manager, game.game_id, player_id))
 
     # Set up timer or wait for all votes

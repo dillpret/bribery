@@ -251,6 +251,13 @@ socket.on('voting_phase', (data) => {
     const votingOptions = document.getElementById('voting-options');
     votingOptions.innerHTML = '';
     selectedVote = null;
+    
+    // Display the player's prompt at the top of the voting screen
+    const playerPromptElement = document.getElementById('voting-player-prompt');
+    if (playerPromptElement) {
+        playerPromptElement.textContent = data.player_prompt;
+        playerPromptElement.classList.remove('hidden');
+    }
 
     data.bribes.forEach(bribe => {
         const option = document.createElement('div');
