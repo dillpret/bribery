@@ -1,26 +1,28 @@
 """
 Socket.IO event handlers for the Bribery game
+
+This module is maintained for backward compatibility.
+The actual handlers have been moved to the socket_handlers package.
 """
 
 import logging
-import random
-import string
-import threading
-import uuid
 
-from flask import request
-from flask_socketio import emit, join_room
+from .socket_handlers import (
+    emit_submission_progress,
+    emit_voting_progress,
+    get_game_manager,
+    register_socket_handlers,
+)
 
-from game import Game, GameManager, PlayerSession
-
-from .utils import get_player_room, load_prompts
+# Re-export the public interface for backward compatibility
+__all__ = [
+    'register_socket_handlers',
+    'get_game_manager',
+    'emit_submission_progress',
+    'emit_voting_progress',
+]
 
 logger = logging.getLogger(__name__)
-
-# We'll need to get the game manager instance
-# This will be set when the handlers are registered
-game_manager = None
-socketio = None
 
 
 def register_socket_handlers(socketio_instance):

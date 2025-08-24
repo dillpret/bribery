@@ -37,9 +37,9 @@ class TestProgressTrackingIntegration:
         game.bribes = {1: {}}
         
         # Mock the socketio emit function  
-        with patch('src.web.socket_handlers.socketio', self.mock_socketio):
+        with patch('src.web.socket_handlers.progress_tracking.socketio', self.mock_socketio):
             # Import here to get the patched version
-            from src.web.socket_handlers import emit_submission_progress
+            from src.web.socket_handlers.progress_tracking import emit_submission_progress
             
             # Test initial state (0/3)
             emit_submission_progress(game)
@@ -91,8 +91,8 @@ class TestProgressTrackingIntegration:
         game.votes = {1: {}}
         
         # Mock the socketio emit function
-        with patch('src.web.socket_handlers.socketio', self.mock_socketio):
-            from src.web.socket_handlers import emit_voting_progress
+        with patch('src.web.socket_handlers.progress_tracking.socketio', self.mock_socketio):
+            from src.web.socket_handlers.progress_tracking import emit_voting_progress
             
             # Test with 2 remaining players (should show names)
             game.votes[1]["player1"] = "bribe1"
@@ -126,8 +126,8 @@ class TestProgressTrackingIntegration:
         game.current_round = 1
         game.bribes = {1: {}}
         
-        with patch('src.web.socket_handlers.socketio', self.mock_socketio):
-            from src.web.socket_handlers import emit_submission_progress
+        with patch('src.web.socket_handlers.progress_tracking.socketio', self.mock_socketio):
+            from src.web.socket_handlers.progress_tracking import emit_submission_progress
             
             # Should only count 3 active players
             emit_submission_progress(game)
