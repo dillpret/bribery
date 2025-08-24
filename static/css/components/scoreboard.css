@@ -3,14 +3,21 @@
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-    margin: 20px 0;
+    margin: 20px auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
+    max-width: 800px;
+}
+
+/* Vote Results Container */
+#vote-results {
+    max-width: 900px;
+    margin: 0 auto 20px;
 }
 
 /* Next Round Button Styles */
 #next-round-btn {
-    margin-top: 20px;
+    margin: 20px auto 0;
     padding: 12px 24px;
     font-size: 16px;
     font-weight: 600;
@@ -21,6 +28,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: block;
 }
 
 #next-round-btn:hover {

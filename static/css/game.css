@@ -8,6 +8,7 @@
 @import url('components/index.css');
 @import url('components/host-settings.css');
 @import url('components/player-list-panel.css');
+@import url('components/results-display.css');
 
 /* Global styles - Mobile First */
 * {

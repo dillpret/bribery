@@ -198,9 +198,31 @@ def end_voting_phase(game):
             round_scores[submitter_id] = 0
         round_scores[submitter_id] += 1
 
+        # Get the prompt owner ID (the person who received the bribe)
+        prompt_owner_id = None
+        prompt_text = ""
+        for target_id, bribes in game.submissions[game.current_round].items():
+            if bribe_id in bribes:
+                prompt_owner_id = target_id
+                # Get the prompt text for this target
+                prompt_text = game.prompts[game.current_round].get(target_id, "No prompt found")
+                break
+        
+        # Get the winning bribe content and type
+        winning_bribe_content = ""
+        bribe_type = "text"
+        if prompt_owner_id and bribe_id in game.submissions[game.current_round].get(prompt_owner_id, {}):
+            winning_bribe = game.submissions[game.current_round][prompt_owner_id][bribe_id]
+            winning_bribe_content = winning_bribe.get('content', '')
+            bribe_type = winning_bribe.get('type', 'text')
+
         vote_results.append({
             'voter': game.players[voter_id]['username'],
-            'winner': game.players[submitter_id]['username']
+            'winner': game.players[submitter_id]['username'],
+            'prompt_owner': game.players[prompt_owner_id]['username'] if prompt_owner_id else "Unknown",
+            'prompt': prompt_text,
+            'winning_bribe': winning_bribe_content,
+            'bribe_type': bribe_type
         })
 
     # Update total scores

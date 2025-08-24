@@ -423,15 +423,67 @@ socket.on('round_results', (data) => {
 
     document.getElementById('scoreboard-title').textContent = `Round ${data.round} Results`;
 
-    // Show vote results
+    // Show detailed vote results with prompts and bribes
     const voteResults = document.getElementById('vote-results');
-    voteResults.innerHTML = '<h3>Vote Results:</h3>';
+    voteResults.innerHTML = '<h3>Round Results:</h3>';
+    
+    // Create a container for the detailed results
+    const detailedResultsContainer = document.createElement('div');
+    detailedResultsContainer.className = 'detailed-results-container';
+    
+    // Group results by player who received the prompt
+    const resultsByPromptOwner = {};
+    
     data.vote_results.forEach(result => {
-        const voteItem = document.createElement('div');
-        voteItem.className = 'vote-item';
-        voteItem.textContent = `${result.voter} chose ${result.winner}'s bribe`;
-        voteResults.appendChild(voteItem);
+        if (!resultsByPromptOwner[result.prompt_owner]) {
+            resultsByPromptOwner[result.prompt_owner] = {
+                prompt: result.prompt,
+                winner: result.winner,
+                winning_bribe: result.winning_bribe,
+                bribe_type: result.bribe_type || 'text'
+            };
+        }
     });
+    
+    // Display each player's prompt and the winning bribe
+    Object.keys(resultsByPromptOwner).forEach(promptOwner => {
+        const result = resultsByPromptOwner[promptOwner];
+        
+        const resultCard = document.createElement('div');
+        resultCard.className = 'result-card';
+        
+        // Create prompt section
+        const promptSection = document.createElement('div');
+        promptSection.className = 'prompt-section';
+        promptSection.innerHTML = `
+            <div class="prompt-owner">${promptOwner}'s prompt:</div>
+            <div class="prompt-text">${result.prompt}</div>
+        `;
+        
+        // Create winning bribe section
+        const winningBribeSection = document.createElement('div');
+        winningBribeSection.className = 'winning-bribe-section';
+        
+        // Handle different bribe types (text, image, gif)
+        let bribeContent = '';
+        if (result.bribe_type === 'image' || result.bribe_type === 'gif') {
+            bribeContent = `<img src="${result.winning_bribe}" alt="Winning bribe" class="bribe-image">`;
+        } else {
+            bribeContent = `<div class="bribe-text">${result.winning_bribe}</div>`;
+        }
+        
+        winningBribeSection.innerHTML = `
+            <div class="winning-bribe-header">Winning bribe from <span class="winner-name">${result.winner}</span>:</div>
+            <div class="bribe-content">${bribeContent}</div>
+        `;
+        
+        // Assemble the card
+        resultCard.appendChild(promptSection);
+        resultCard.appendChild(winningBribeSection);
+        detailedResultsContainer.appendChild(resultCard);
+    });
+    
+    voteResults.appendChild(detailedResultsContainer);
     voteResults.classList.remove('hidden');
 
     // Show scoreboard
