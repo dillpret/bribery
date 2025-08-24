@@ -2,6 +2,25 @@
 
 This document provides essential technical implementation details to understand the codebase structure, component relationships, and key user flows.
 
+## Testing Architecture
+
+The project employs a unit-testing-only approach:
+
+```
+Testing Architecture:
+- Unit Tests: Isolated component tests that run in ~0.5 seconds
+  - Located in tests/unit/
+  - Organized by feature and component
+  - No dependencies on external services or runtime environment
+  - Used for all feature testing and verification
+  
+- No Integration Tests: We intentionally avoid integration tests due to:
+  - Maintenance overhead
+  - Timing issues with asynchronous operations
+  - Slow execution time
+  - Fragility when components change
+```
+
 ## Frontend Component Structure
 
 ```

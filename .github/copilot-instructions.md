@@ -70,7 +70,7 @@ command1 && command2 # Use command1; command2
 ## Project Architecture
 - **Backend:** Flask + SocketIO for real-time gameplay
 - **Frontend:** Modular HTML/CSS/JS components (refactored from monolithic template)
-- **Testing:** Optimised 2-tier suite (Unit: 0.69s, Integration: ~30s)
+- **Testing:** Unit testing only
 - **Database:** SQLite with game state management
 - **Mobile:** Responsive design with touch optimization
 
@@ -118,7 +118,6 @@ These documents define how the game should behave and is implemented, including 
 The testing framework uses a session-scoped Flask test server on port 5001 managed by `tests/conftest.py`:
 
 **Test Server Requirements:**
-- **Integration Tests (`tests/integration/`)** - Do NOT require test server (use mocks/direct calls)
 - **Unit Tests (`tests/unit/`)** - Do NOT require test server (pure unit testing)
 
 **Test Environment Setup:**
@@ -144,20 +143,12 @@ The testing framework uses a session-scoped Flask test server on port 5001 manag
 **SocketIO Test Behavior:**
 - Wait for manual output from the user rather than trying to read test output after running tests
 
-## Recent Major Work Completed
-- **Test Optimization:** Reduced test suite from 10+ minutes to 30 seconds
-- **Template Refactoring:** Converted 1000+ line monolithic HTML to 95-line modular template
-- **CSS Modularization:** Created component-based architecture (lobby, buttons, forms, game-phases, scoreboard, mobile)
-- **Deployment Readiness:** Oracle Cloud deployment files validated and ready
-- **Custom Prompts Feature:** Complete implementation allowing players to choose individual prompts
-
 ## Project Structure
 ```
 src/game_logic/           # Core game mechanics (unit tested)
 static/css/components/    # Modular CSS components
 static/js/               # Modular JavaScript
 tests/unit/              # Fast unit tests (0.69s)
-tests/integration/       # Focused integration tests (~30s)
 templates/              # Clean modular HTML templates
 deployment/             # Oracle Cloud deployment (tested, ready)
 ```
@@ -216,10 +207,15 @@ py -m pre_commit install  # Enable automatic checks before commits
 - They're slow to run
 - They require significant maintenance effort
 
+**We only do unit tests, no integration tests.** This decision was made to:
+- Keep the test suite fast and reliable
+- Reduce maintenance overhead
+- Avoid timing-related issues with asynchronous socket events
+- Focus on testing core logic in isolation
+
 **Instead, prefer:**
 1. **Pure Unit Tests:** Test specific components in isolation
-2. **Integration Tests with SocketIO:** Test game flow through socket events
-3. **Static Analysis Tests:** Verify code structure without actual execution
-4. **Manual Testing:** For complex UI interactions during development
+2. **Static Analysis Tests:** Verify code structure without actual execution
+3. **Manual Testing:** For complex UI interactions during development
 
 For JavaScript features, use static analysis of the code structure instead of UI-driven tests.

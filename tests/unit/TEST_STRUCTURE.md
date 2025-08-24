@@ -2,17 +2,36 @@
 
 ## Overview
 
-This document explains the structure of the game mechanics tests and provides guidance for maintaining and extending them.
+This document explains the structure of our unit tests and provides guidance for maintaining and extending them.
+
+## Testing Philosophy
+
+We have intentionally chosen to use **only unit tests** for the following reasons:
+
+1. **Speed** - Our entire test suite runs in under 1 second (0.54s)
+2. **Reliability** - Unit tests avoid timing/flakiness issues common with integration tests
+3. **Maintenance** - Unit tests are easier to maintain as they test isolated components
+4. **Focus** - We can test core logic precisely without worrying about UI or network issues
 
 ## Current Test Organization
 
-The game mechanics tests are organized in `tests/unit/test_game_mechanics.py` with these test classes:
+The game mechanics tests are organized in various files under `tests/unit/`, with these key test categories:
 
+### Core Game Mechanics
+Located in `tests/unit/game_mechanics/`:
 1. **TestRoundFlowLogic**: Tests round progression based on submissions and votes
 2. **TestScoringSystem**: Tests scoring calculations and accumulation
 3. **TestGameStateManagement**: Tests state transitions and persistence
 4. **TestEdgeCasesAndTolerances**: Tests edge case handling
 5. **TestMultiRoundLogic**: Tests progression across multiple rounds
+
+### Feature Tests
+Individual feature tests in `tests/unit/`:
+1. **test_custom_prompts.py**: Tests custom prompts implementation
+2. **test_mobile_image_upload.py**: Tests mobile responsiveness and image upload
+3. **test_midgame_joining.py**: Tests players joining mid-game
+4. **test_host_username_flow.py**: Tests host username experience
+5. **test_game_state_management.py**: Tests broader game state scenarios
 
 ## Test Implementation Pattern
 
@@ -83,6 +102,7 @@ When maintaining or extending these tests:
 2. **Helper Methods**: Keep helper methods with their respective test classes
 3. **Focused Tests**: Each test should verify a specific aspect of functionality
 4. **Test Naming**: Use descriptive names that indicate what's being tested
+5. **Unit Tests Only**: Remember we only use unit tests, not integration tests
 
 ## Guidelines for Adding New Tests
 
@@ -92,6 +112,8 @@ When adding new tests:
 2. **Create New Classes**: For entirely new features, create new test classes
 3. **Follow Pattern**: Maintain the setup, state manipulation, action, assertion pattern
 4. **Helper Methods**: Add helper methods as needed, but keep them scoped to the test class
+5. **Keep Tests Fast**: Ensure new tests maintain our sub-second test suite performance
+6. **Isolated Unit Tests**: Tests should be isolated and not depend on external services
 
 ## Modularization Strategy
 
@@ -109,3 +131,21 @@ If future refactoring is desired:
 2. **State Dependencies**: Tests may depend on specific state being set manually
 3. **Helper Method Dependencies**: Tests rely on helper methods in their class
 4. **Initialization Assumptions**: Tests may assume specific initialization behavior
+5. **Integration Logic**: Avoid introducing integration test logic into unit tests
+
+## Running Tests
+
+Run the full test suite:
+```powershell
+py -m pytest tests/unit/ -v
+```
+
+Run a specific test file:
+```powershell
+py -m pytest tests/unit/test_file_name.py -v
+```
+
+Run a specific test:
+```powershell
+py -m pytest tests/unit/test_file_name.py::TestClass::test_method -v
+```

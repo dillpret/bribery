@@ -36,9 +36,8 @@ py -m pip install -r requirements.txt
 py -m pip install -r requirements-dev.txt
 
 # Run tests
-py -m pytest                # Full suite
-py -m pytest tests/unit/    # Unit tests (fastest)
-py -m pytest tests/integration/  # Integration tests
+py -m pytest                # Full suite (unit tests only)
+py -m pytest tests/unit/    # Unit tests
 ```
 
 ## Key Features
