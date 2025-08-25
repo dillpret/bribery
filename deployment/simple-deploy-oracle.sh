@@ -30,18 +30,45 @@ echo "📋 Copying application files..."
 rsync -av --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.pyc' --exclude='.git' --exclude='.github' ./ /var/www/bribery-game/
 cd /var/www/bribery-game
 
-# Install Python packages globally (with sudo)
-echo "📦 Installing dependencies system-wide..."
-sudo -H pip3 install --upgrade pip
-sudo -H pip3 install -r requirements.txt
-sudo -H pip3 install gunicorn eventlet
+# Install Python packages, handling externally-managed-environment
+echo "📦 Installing dependencies..."
 
-# Create a simple start script
+# Create a virtual environment in a standard location
+echo "Creating a global virtual environment..."
+sudo mkdir -p /opt/bribery-env
+sudo python3 -m venv /opt/bribery-env || {
+    echo "Error creating standard virtual environment, trying with --system-site-packages"
+    sudo python3 -m venv /opt/bribery-env --system-site-packages
+}
+
+# If virtual env creation failed, try the break-system-packages approach
+if [ ! -d "/opt/bribery-env" ]; then
+    echo "WARNING: Could not create virtual environment, using --break-system-packages"
+    sudo -H pip3 install --upgrade pip --break-system-packages
+    sudo -H pip3 install -r requirements.txt --break-system-packages
+    sudo -H pip3 install gunicorn eventlet --break-system-packages
+    PYTHON_PATH="/usr/bin/python3"
+else
+    # Install packages in the virtual environment
+    echo "Installing packages in global virtual environment..."
+    sudo /opt/bribery-env/bin/pip install --upgrade pip
+    sudo /opt/bribery-env/bin/pip install -r requirements.txt
+    sudo /opt/bribery-env/bin/pip install gunicorn eventlet
+    PYTHON_PATH="/opt/bribery-env/bin/python3"
+fi
+
+# Create a simple start script using the proper Python path
 echo "📝 Creating startup script..."
-cat > start.sh << 'EOF'
+cat > start.sh << EOF
 #!/bin/bash
 cd /var/www/bribery-game
-python3 -m gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 deployment.wsgi:app
+if [ -f "/opt/bribery-env/bin/python3" ]; then
+    # Use our virtual environment if it exists
+    /opt/bribery-env/bin/python3 -m gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 deployment.wsgi:app
+else
+    # Fall back to system Python
+    python3 -m gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 deployment.wsgi:app
+fi
 EOF
 
 chmod +x start.sh
@@ -58,11 +85,15 @@ After=network.target
 User=$USER
 Group=www-data
 WorkingDirectory=/var/www/bribery-game
-Environment="PATH=/usr/bin:/usr/local/bin"
+Environment="PATH=/opt/bribery-env/bin:/usr/bin:/usr/local/bin"
+Environment="PYTHONPATH=/var/www/bribery-game"
 Environment="FLASK_ENV=production"
 Environment="PORT=5000"
 ExecStart=/var/www/bribery-game/start.sh
 Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

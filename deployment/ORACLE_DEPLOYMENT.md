@@ -105,9 +105,9 @@ Common issues include:
 - Service not starting
 - Permissions issues
 
-#### Emergency Deployment Option
+#### Ultra-Simple Deployment Option
 
-If you're experiencing persistent issues with the virtual environment:
+If you're experiencing persistent issues with Python package management:
 
 ```bash
 # SSH into your instance
@@ -117,15 +117,16 @@ ssh -i /path/to/your/private-key ubuntu@YOUR_PUBLIC_IP
 git clone YOUR_REPO_URL
 cd YOUR_REPO_DIRECTORY
 
-# Use the simplified deployment script
-chmod +x deployment/simple-deploy-oracle.sh
-./deployment/simple-deploy-oracle.sh
+# Use the ultra-simple deployment script
+chmod +x deployment/ultra-simple-deploy.sh
+./deployment/ultra-simple-deploy.sh
 ```
 
-This simplified script:
-- Installs Python packages system-wide (no virtual environment)
-- Creates a simple start script
-- Sets up all necessary services
+This ultra-simple approach:
+- Uses system Python with the `--break-system-packages` flag
+- Avoids virtual environments completely
+- Installs all packages directly in the system Python
+- Sets up all necessary services with detailed logging
 
 ## Step 6: Set Up Domain and Cloudflare
 1. **Register Domain**: Use any domain registrar or free services like [Freenom](https://freenom.com) or [No-IP](https://www.noip.com)

@@ -68,15 +68,21 @@ sudo apt install -y python3-virtualenv
 virtualenv -p python3.11 venv  # or python3.10, or python3
 ```
 
-### System-wide Package Installation (Last Resort)
+### Ultra-Simple Deployment (Direct Solution)
 
-If all virtual environment approaches fail, use the simplified deployment script that installs packages system-wide:
+For "externally-managed-environment" errors or when all other approaches fail, use the ultra-simple deployment script:
 
 ```bash
-# Use the simplified deployment script
-chmod +x deployment/simple-deploy-oracle.sh
-./deployment/simple-deploy-oracle.sh
+# Use the ultra-simple deployment script
+chmod +x deployment/ultra-simple-deploy.sh
+./deployment/ultra-simple-deploy.sh
 ```
+
+This script:
+- Uses `--break-system-packages` flag to override Python's externally managed environment restriction
+- Bypasses virtual environment complexity entirely
+- Installs packages directly to system Python
+- Provides verbose logging for easier troubleshooting
 
 ## Nginx Configuration Issues
 
