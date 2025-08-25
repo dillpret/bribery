@@ -12,11 +12,14 @@ jobs:
     # Skip workflow if commit message contains [skip ci]
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # This is needed for pushing to the repository
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Need full history for tags
+          token: ${{ secrets.GH_PAT }}  # Use PAT for checkout to handle pushes
 
       - name: Read current version
         id: current_version
@@ -38,12 +41,12 @@ jobs:
           git config user.email "actions@github.com"
           git add VERSION
           git commit -m "Bump version to ${{ steps.new_version.outputs.VERSION }} [skip ci]"
-          git push "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git" HEAD:master
+          git push
 
       - name: Create and push tag
         run: |
           git tag -a "v${{ steps.new_version.outputs.VERSION }}" -m "Release v${{ steps.new_version.outputs.VERSION }}"
-          git push "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git" "v${{ steps.new_version.outputs.VERSION }}"
+          git push --tags
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.8.0
