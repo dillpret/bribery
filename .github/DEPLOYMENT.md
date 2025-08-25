@@ -4,10 +4,11 @@ This repository is configured to automatically deploy to Oracle Cloud when chang
 
 ## Setting Up GitHub Secrets
 
-Before the automatic deployment will work, you need to set up two required secrets in your GitHub repository:
+Before the automatic deployment will work, you need to set up three required secrets in your GitHub repository:
 
 1. **ORACLE_SSH_PRIVATE_KEY**: Your SSH private key that has access to the Oracle Cloud instance
 2. **ORACLE_HOST_IP**: The public IP address of your Oracle Cloud instance
+3. **GH_PAT**: A GitHub Personal Access Token with repo permissions
 
 ### How to Add Secrets to Your GitHub Repository
 
@@ -27,6 +28,15 @@ Before the automatic deployment will work, you need to set up two required secre
 
 1. Create a new secret with the name `ORACLE_HOST_IP`
 2. Enter the public IP address of your Oracle Cloud instance (e.g., `123.456.789.012`)
+
+### GH_PAT (GitHub Personal Access Token)
+
+1. Go to your GitHub account settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Click "Generate new token" → "Generate new token (classic)"
+3. Give it a descriptive name like "Bribery Game Auto-Versioning"
+4. Select the "repo" scope (this gives access to push to your repositories)
+5. Click "Generate token" and copy the token value
+6. Create a new secret with the name `GH_PAT` and paste the token value
 
 ## Deployment Process
 
