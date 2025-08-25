@@ -33,14 +33,32 @@ Before the automatic deployment will work, you need to set up two required secre
 When you push changes to the master branch, GitHub Actions will:
 
 1. Check out your code
-2. Set up SSH access to your Oracle Cloud instance
-3. Copy the repository files to your server
-4. Run the deployment script (`deployment/deploy-oracle.sh`)
+2. Read the current version from the `VERSION` file
+3. Automatically increment the patch version
+4. Commit the updated version back to the repository
+5. Create a git tag with the new version (e.g., v0.0.2)
+6. Set up SSH access to your Oracle Cloud instance
+7. Copy the repository files to your server
+8. Run the deployment script (`deployment/github-actions-update.sh`)
+
+## Version Management
+
+The deployment process automatically increments the patch version with every deployment. For minor or major version updates:
+
+```powershell
+# Update minor version (0.1.0 -> 0.2.0)
+py scripts\bump_version.py minor
+
+# Update major version (1.0.0 -> 2.0.0) 
+py scripts\bump_version.py major
+```
+
+See `.github/VERSION.md` for more details on version management.
 
 ## Troubleshooting
 
 If the deployment fails, check the following:
 
 1. Verify your SSH key has access to the server
-2. Ensure the `deploy-oracle.sh` script is executable
+2. Ensure the `github-actions-update.sh` script is executable
 3. Check the GitHub Actions logs for specific error messages

@@ -4,13 +4,46 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'VERSION'  # Ignore changes to just the VERSION file
 
 jobs:
   deploy:
+    # Skip workflow if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Need full history for tags
+
+      - name: Read current version
+        id: current_version
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Increment patch version
+        id: new_version
+        run: |
+          CURRENT_VERSION=${{ steps.current_version.outputs.VERSION }}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "$NEW_VERSION" > VERSION
+
+      - name: Commit version update
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add VERSION
+          git commit -m "Bump version to ${{ steps.new_version.outputs.VERSION }} [skip ci]"
+          git push
+
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ steps.new_version.outputs.VERSION }}" -m "Release v${{ steps.new_version.outputs.VERSION }}"
+          git push origin "v${{ steps.new_version.outputs.VERSION }}"
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.8.0
