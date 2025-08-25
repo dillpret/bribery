@@ -25,28 +25,18 @@ jobs:
         id: current_version
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Increment patch version
-        id: new_version
-        run: |
-          CURRENT_VERSION=${{ steps.current_version.outputs.VERSION }}
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "$NEW_VERSION" > VERSION
-
-      - name: Commit version update
+      - name: Create and push tag
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add VERSION
-          git commit -m "Bump version to ${{ steps.new_version.outputs.VERSION }} [skip ci]"
-          git push
-
-      - name: Create and push tag
-        run: |
-          git tag -a "v${{ steps.new_version.outputs.VERSION }}" -m "Release v${{ steps.new_version.outputs.VERSION }}"
-          git push --tags
+          # Check if tag already exists
+          if ! git rev-parse "v${{ steps.current_version.outputs.VERSION }}" >/dev/null 2>&1; then
+            echo "Creating tag v${{ steps.current_version.outputs.VERSION }}"
+            git tag -a "v${{ steps.current_version.outputs.VERSION }}" -m "Release v${{ steps.current_version.outputs.VERSION }}"
+            git push --tags
+          else
+            echo "Tag v${{ steps.current_version.outputs.VERSION }} already exists, skipping tag creation"
+          fi
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.8.0
