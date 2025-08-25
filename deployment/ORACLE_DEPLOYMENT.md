@@ -95,6 +95,16 @@ curl http://localhost:5000
 sudo journalctl -u bribery-game -f
 ```
 
+### Troubleshooting Deployment Issues
+
+If you encounter any issues during deployment, refer to [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common problems and solutions.
+
+Common issues include:
+- Python virtual environment setup failures (exit code 127)
+- Nginx configuration problems
+- Service not starting
+- Permissions issues
+
 ## Step 6: Set Up Domain and Cloudflare
 1. **Register Domain**: Use any domain registrar or free services like [Freenom](https://freenom.com) or [No-IP](https://www.noip.com)
 2. **Set Up Cloudflare**:

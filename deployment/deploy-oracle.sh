@@ -9,21 +9,79 @@ echo "🚀 Starting Oracle Cloud deployment..."
 echo "📦 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
-# Install Python 3.11 and pip
-echo "🐍 Installing Python 3.11 and dependencies..."
+# Install Python - First try with Python 3.11, with fallbacks
+echo "🐍 Installing Python and dependencies..."
+
+# Debug output for environment
+echo "System information:"
+lsb_release -a || cat /etc/os-release
+echo "Architecture: $(uname -m)"
+
+# First try to install Python 3.11 (preferred)
 if ! command -v python3.11 &> /dev/null; then
-    echo "Installing Python 3.11 and related packages..."
+    echo "Attempting to install Python 3.11..."
     sudo apt update
     sudo apt install -y software-properties-common
-    sudo add-apt-repository -y ppa:deadsnakes/ppa
-    sudo apt update
-    sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
-    echo "Python installation complete. Version check:"
-    python3.11 --version
+    
+    # Try adding deadsnakes PPA (may fail on some Oracle Linux instances)
+    if sudo add-apt-repository -y ppa:deadsnakes/ppa; then
+        sudo apt update
+        sudo apt install -y python3.11 python3.11-venv python3.11-dev python3.11-distutils
+        
+        # Verify installation
+        if command -v python3.11 &> /dev/null; then
+            echo "Python 3.11 installed successfully!"
+            python3.11 --version
+            PYTHON_CMD="python3.11"
+        else
+            echo "Python 3.11 installation failed, will try Python 3.10"
+        fi
+    else
+        echo "Failed to add deadsnakes PPA (common on Oracle Linux), trying alternative approach"
+    fi
 else
-    echo "Python 3.11 already installed, skipping..."
+    echo "Python 3.11 already installed"
     python3.11 --version
+    PYTHON_CMD="python3.11"
 fi
+
+# If Python 3.11 install failed, try Python 3.10
+if [ -z "$PYTHON_CMD" ] && ! command -v python3.10 &> /dev/null; then
+    echo "Attempting to install Python 3.10..."
+    sudo apt update
+    sudo apt install -y python3.10 python3.10-venv python3.10-dev
+    
+    if command -v python3.10 &> /dev/null; then
+        echo "Python 3.10 installed successfully!"
+        python3.10 --version
+        PYTHON_CMD="python3.10"
+    else
+        echo "Python 3.10 installation failed, will try system Python"
+    fi
+elif [ -z "$PYTHON_CMD" ] && command -v python3.10 &> /dev/null; then
+    echo "Python 3.10 already installed"
+    python3.10 --version
+    PYTHON_CMD="python3.10"
+fi
+
+# Fallback to system Python if neither 3.11 nor 3.10 worked
+if [ -z "$PYTHON_CMD" ]; then
+    echo "Falling back to system Python..."
+    sudo apt update
+    sudo apt install -y python3 python3-venv python3-dev
+    python3 --version
+    PYTHON_CMD="python3"
+fi
+
+# Install pip and other essential packages
+echo "Installing pip and other essential packages..."
+sudo apt install -y python3-pip
+
+# Ensure venv is installed
+echo "Installing venv package for ${PYTHON_CMD}..."
+sudo apt install -y python3-venv
+
+echo "Python setup complete. Using: ${PYTHON_CMD} ($(${PYTHON_CMD} --version 2>&1))"
 
 # Install nginx and git if not present
 if ! command -v nginx &> /dev/null; then
@@ -55,36 +113,43 @@ if [ ! -d "venv" ] || [ "$RECREATE_VENV" -eq 1 ]; then
         echo "Virtual environment doesn't exist, creating..."
     fi
     
-    # Check if python3.11 command exists and try to create venv
-    if command -v python3.11 &> /dev/null; then
-        echo "Creating virtual environment with python3.11..."
-        python3.11 -m venv venv || {
-            echo "Error creating venv with python3.11, checking path..."
-            which python3.11
-            echo "Trying alternative approach..."
-            sudo apt-get install -y python3.11-venv
-            python3.11 -m venv venv
+    echo "Creating virtual environment with ${PYTHON_CMD}..."
+    
+    # First attempt using the module approach
+    ${PYTHON_CMD} -m venv venv || {
+        echo "Error creating venv with module approach, trying alternatives..."
+        
+        # Try installing venv packages specific to the Python version
+        echo "Installing venv packages for ${PYTHON_CMD}..."
+        PYTHON_VERSION=$(${PYTHON_CMD} --version 2>&1 | cut -d ' ' -f 2 | cut -d '.' -f 1-2)
+        sudo apt-get install -y python${PYTHON_VERSION}-venv || sudo apt-get install -y python3-venv
+        
+        # Try again with the module approach
+        ${PYTHON_CMD} -m venv venv || {
+            echo "Still failing with module approach, trying virtualenv..."
+            
+            # Try using virtualenv as a fallback
+            echo "Installing virtualenv as a fallback..."
+            sudo apt-get install -y python3-virtualenv
+            virtualenv -p ${PYTHON_CMD} venv || {
+                echo "All attempts to create virtual environment failed."
+                echo "Creating a simple directory structure as a last resort..."
+                mkdir -p venv/bin
+                echo "#!/bin/bash" > venv/bin/activate
+                echo "export PATH=$(dirname $(which ${PYTHON_CMD})):\$PATH" >> venv/bin/activate
+                echo "Using system Python directly without a true virtual environment."
+            }
         }
-    else
-        echo "Python 3.11 not found in PATH, checking alternative locations..."
-        if [ -f "/usr/bin/python3.11" ]; then
-            echo "Found Python at /usr/bin/python3.11, using it..."
-            /usr/bin/python3.11 -m venv venv
-        else
-            echo "Falling back to system default Python..."
-            python3 --version
-            python3 -m venv venv
-        fi
-    fi
+    }
 else
     echo "Virtual environment already exists, skipping creation..."
 fi
 
 source venv/bin/activate
 
-# Check if venv was actually created and activated
-if [ ! -d "venv" ] || [ ! -f "venv/bin/activate" ]; then
-    echo "ERROR: Virtual environment creation failed or is incomplete!"
+# Check if venv was created
+if [ ! -d "venv" ]; then
+    echo "ERROR: Virtual environment directory not created!"
     echo "Directory listing:"
     ls -la
     echo "Python versions available:"
@@ -92,24 +157,52 @@ if [ ! -d "venv" ] || [ ! -f "venv/bin/activate" ]; then
     exit 1
 fi
 
-echo "Virtual environment created successfully, activating..."
-source venv/bin/activate
+echo "Activating virtual environment (or fallback)..."
+if [ -f "venv/bin/activate" ]; then
+    source venv/bin/activate
+    echo "Virtual environment activated successfully."
+else
+    echo "WARNING: Standard virtual environment activation script not found."
+    echo "Using fallback approach..."
+    export PATH=$PWD/venv/bin:$PATH
+    if [ -z "$VIRTUAL_ENV" ]; then
+        export VIRTUAL_ENV=$PWD/venv
+    fi
+fi
 
-# Verify the environment is working
-echo "Python version in virtual environment:"
-python --version
+# Verify Python is working
+echo "Python version in environment:"
+python --version || ${PYTHON_CMD} --version
 
-# Upgrade pip and install dependencies
+# Upgrade pip and install dependencies with fallbacks
 echo "📦 Upgrading pip and installing dependencies..."
-pip install --upgrade pip
+pip install --upgrade pip || python -m pip install --upgrade pip || ${PYTHON_CMD} -m pip install --upgrade pip || sudo apt install -y python3-pip
 
 # Check if requirements have changed by creating a hash file
 REQUIREMENTS_HASH_FILE="venv/.requirements-hash"
 CURRENT_HASH=$(md5sum requirements.txt | awk '{ print $1 }')
 
+# Function to install packages with fallbacks
+install_packages() {
+    echo "Installing packages: $@"
+    pip install $@ || python -m pip install $@ || ${PYTHON_CMD} -m pip install $@ || {
+        echo "ERROR: Failed to install packages with pip. Trying system package manager..."
+        for pkg in $@; do
+            sudo apt install -y python3-$(echo $pkg | tr '[:upper:]' '[:lower:]')
+        done
+    }
+}
+
+# Install requirements with fallbacks
 if [ ! -f "$REQUIREMENTS_HASH_FILE" ] || [ "$(cat $REQUIREMENTS_HASH_FILE)" != "$CURRENT_HASH" ]; then
     echo "Requirements have changed or first installation, installing dependencies..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt || python -m pip install -r requirements.txt || ${PYTHON_CMD} -m pip install -r requirements.txt || {
+        echo "ERROR: Failed to install from requirements.txt directly."
+        echo "Trying to install key packages individually..."
+        
+        # Install core dependencies individually
+        install_packages flask flask-socketio
+    }
     echo "$CURRENT_HASH" > "$REQUIREMENTS_HASH_FILE"
 else
     echo "Requirements unchanged, skipping dependency installation..."
@@ -118,10 +211,17 @@ fi
 # Install additional production dependencies if not already present
 if ! pip freeze | grep -q "gunicorn"; then
     echo "Installing production dependencies..."
-    pip install gunicorn[eventlet]
+    install_packages "gunicorn[eventlet]" eventlet
 else
     echo "Production dependencies already installed, skipping..."
 fi
+
+# Verify critical packages are installed
+echo "Verifying critical packages..."
+python -c "import flask, flask_socketio" || {
+    echo "ERROR: Critical packages verification failed. Attempting emergency installation..."
+    sudo apt-get install -y python3-flask python3-flask-socketio
+}
 
 # Make sure prompts.txt exists and is readable
 echo "📝 Checking prompts file..."
