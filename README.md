@@ -40,6 +40,15 @@ py -m pytest                # Full suite (unit tests only)
 py -m pytest tests/unit/    # Unit tests
 ```
 
+## Deployment
+This repository uses GitHub Actions for automated deployment to Oracle Cloud.
+
+- **Auto-deployment**: Push to the `master` branch to trigger automatic deployment
+- **Configuration**: Set up required secrets in GitHub repository settings
+- **Documentation**: See `.github/DEPLOYMENT.md` for setup instructions
+
+For manual deployment, see `deployment/ORACLE_DEPLOYMENT.md`.
+
 ## Key Features
 - **Mobile-Optimised**: Touch-friendly interface with mobile image upload
 - **Custom Time Settings**: Flexible timer configuration for different group sizes  
