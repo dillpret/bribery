@@ -4,7 +4,7 @@ This document provides solutions to common deployment issues when deploying the 
 
 ## Python Virtual Environment Issues (Exit Code 127)
 
-If you encounter the error `Process completed with exit code 127` during deployment when setting up the Python virtual environment:
+If you encounter the error `Process completed with exit code 127` during deployment when setting up the Python virtual environment, or if the virtual environment setup consistently fails:
 
 ### Manual Deployment Steps
 
@@ -66,6 +66,16 @@ If the standard venv module fails:
 ```bash
 sudo apt install -y python3-virtualenv
 virtualenv -p python3.11 venv  # or python3.10, or python3
+```
+
+### System-wide Package Installation (Last Resort)
+
+If all virtual environment approaches fail, use the simplified deployment script that installs packages system-wide:
+
+```bash
+# Use the simplified deployment script
+chmod +x deployment/simple-deploy-oracle.sh
+./deployment/simple-deploy-oracle.sh
 ```
 
 ## Nginx Configuration Issues
@@ -134,3 +144,27 @@ sudo netstat -tuln | grep 5000
 # Test the application locally
 curl http://localhost:5000
 ```
+
+## No Output from journalctl
+
+If `sudo journalctl -u bribery-game -f` doesn't show any output:
+
+```bash
+# Check if the service exists
+ls -la /etc/systemd/system/bribery-game.service
+
+# Check if the service is enabled
+systemctl is-enabled bribery-game
+
+# Try manually starting the service and check for errors
+sudo systemctl restart bribery-game
+sudo systemctl status bribery-game
+
+# Look for any Python processes running
+ps aux | grep python
+
+# Check system-wide logs
+sudo journalctl -f
+```
+
+If the service isn't creating any log entries, it may not be properly defined or started. Try using the simple deployment script which creates a straightforward service definition.

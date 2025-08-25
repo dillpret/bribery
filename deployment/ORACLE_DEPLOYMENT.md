@@ -105,6 +105,28 @@ Common issues include:
 - Service not starting
 - Permissions issues
 
+#### Emergency Deployment Option
+
+If you're experiencing persistent issues with the virtual environment:
+
+```bash
+# SSH into your instance
+ssh -i /path/to/your/private-key ubuntu@YOUR_PUBLIC_IP
+
+# Clone your repository (if needed)
+git clone YOUR_REPO_URL
+cd YOUR_REPO_DIRECTORY
+
+# Use the simplified deployment script
+chmod +x deployment/simple-deploy-oracle.sh
+./deployment/simple-deploy-oracle.sh
+```
+
+This simplified script:
+- Installs Python packages system-wide (no virtual environment)
+- Creates a simple start script
+- Sets up all necessary services
+
 ## Step 6: Set Up Domain and Cloudflare
 1. **Register Domain**: Use any domain registrar or free services like [Freenom](https://freenom.com) or [No-IP](https://www.noip.com)
 2. **Set Up Cloudflare**:

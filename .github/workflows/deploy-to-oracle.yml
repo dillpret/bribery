@@ -52,4 +52,4 @@ jobs:
         run: |
           ssh ubuntu@${{ secrets.ORACLE_HOST_IP }} "mkdir -p ~/deployment-temp"
           scp -r ./* ubuntu@${{ secrets.ORACLE_HOST_IP }}:~/deployment-temp/
-          ssh ubuntu@${{ secrets.ORACLE_HOST_IP }} "cd ~/deployment-temp && chmod +x deployment/github-actions-update.sh && ./deployment/github-actions-update.sh && rm -rf ~/deployment-temp"
+          ssh ubuntu@${{ secrets.ORACLE_HOST_IP }} "cd ~/deployment-temp && chmod +x deployment/simple-github-actions-update.sh && ./deployment/simple-github-actions-update.sh && rm -rf ~/deployment-temp"
