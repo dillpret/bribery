@@ -13,9 +13,16 @@ sudo apt update && sudo apt upgrade -y
 echo "🐍 Installing Python 3.11 and dependencies..."
 if ! command -v python3.11 &> /dev/null; then
     echo "Installing Python 3.11 and related packages..."
+    sudo apt update
+    sudo apt install -y software-properties-common
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt update
     sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
+    echo "Python installation complete. Version check:"
+    python3.11 --version
 else
     echo "Python 3.11 already installed, skipping..."
+    python3.11 --version
 fi
 
 # Install nginx and git if not present
@@ -47,12 +54,50 @@ if [ ! -d "venv" ] || [ "$RECREATE_VENV" -eq 1 ]; then
     else
         echo "Virtual environment doesn't exist, creating..."
     fi
-    python3.11 -m venv venv
+    
+    # Check if python3.11 command exists and try to create venv
+    if command -v python3.11 &> /dev/null; then
+        echo "Creating virtual environment with python3.11..."
+        python3.11 -m venv venv || {
+            echo "Error creating venv with python3.11, checking path..."
+            which python3.11
+            echo "Trying alternative approach..."
+            sudo apt-get install -y python3.11-venv
+            python3.11 -m venv venv
+        }
+    else
+        echo "Python 3.11 not found in PATH, checking alternative locations..."
+        if [ -f "/usr/bin/python3.11" ]; then
+            echo "Found Python at /usr/bin/python3.11, using it..."
+            /usr/bin/python3.11 -m venv venv
+        else
+            echo "Falling back to system default Python..."
+            python3 --version
+            python3 -m venv venv
+        fi
+    fi
 else
     echo "Virtual environment already exists, skipping creation..."
 fi
 
 source venv/bin/activate
+
+# Check if venv was actually created and activated
+if [ ! -d "venv" ] || [ ! -f "venv/bin/activate" ]; then
+    echo "ERROR: Virtual environment creation failed or is incomplete!"
+    echo "Directory listing:"
+    ls -la
+    echo "Python versions available:"
+    compgen -c python | grep python || echo "No Python commands found"
+    exit 1
+fi
+
+echo "Virtual environment created successfully, activating..."
+source venv/bin/activate
+
+# Verify the environment is working
+echo "Python version in virtual environment:"
+python --version
 
 # Upgrade pip and install dependencies
 echo "📦 Upgrading pip and installing dependencies..."
