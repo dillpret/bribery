@@ -64,7 +64,18 @@ def bump_version(version_part='patch'):
     with open(VERSION_FILE, 'w') as f:
         f.write(new_version)
     
-    print(f"Version bumped from {current_version} to {new_version}")
+    # When running as a pre-commit hook, stage the VERSION file
+    # This doesn't create a new commit, just includes the change in the current commit
+    if os.environ.get('PRE_COMMIT_HOOK') == '1' or '--stage' in sys.argv:
+        try:
+            import subprocess
+            subprocess.run(['git', 'add', VERSION_FILE], check=True)
+            print(f"Version bumped from {current_version} to {new_version} and staged for commit")
+        except Exception as e:
+            print(f"Failed to stage VERSION file: {e}")
+    else:
+        print(f"Version bumped from {current_version} to {new_version}")
+    
     return new_version
 
 
@@ -73,12 +84,23 @@ if __name__ == '__main__':
     version_part = 'patch'
     
     # Parse command line arguments
-    if len(sys.argv) > 1:
-        version_part = sys.argv[1].lower()
+    args = sys.argv[1:]
+    staging_requested = False
+    
+    # Filter out any special flags
+    filtered_args = []
+    for arg in args:
+        if arg == '--stage':
+            staging_requested = True
+        else:
+            filtered_args.append(arg)
+    
+    if filtered_args:
+        version_part = filtered_args[0].lower()
     
     # Ensure the version part is valid
     if version_part not in ['major', 'minor', 'patch']:
-        print("Usage: py scripts\\bump_version.py [major|minor|patch]")
+        print("Usage: py scripts\\bump_version.py [major|minor|patch] [--stage]")
         sys.exit(1)
     
     # Bump the version
