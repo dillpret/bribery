@@ -79,74 +79,147 @@ jobs:
           git tag -a "v${{ steps.current_version.outputs.VERSION }}" -m "Release version ${{ steps.current_version.outputs.VERSION }}"
           git push origin "v${{ steps.current_version.outputs.VERSION }}"
           
-      - name: Deploy to Oracle Cloud
+      - name: Debug and Deploy to Oracle Cloud
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.ORACLE_HOST_IP }}
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
-            # Ensure Nginx is installed
-            if ! command -v nginx &> /dev/null; then
-              echo "Installing Nginx..."
-              sudo apt-get update
-              sudo apt-get install -y nginx
-            fi
+            echo "=== STARTING DIAGNOSTIC PROCESS ==="
             
-            # Pull the latest image
-            docker pull ghcr.io/${{ github.repository }}:latest
+            # Check for any processes using port 80
+            echo "Checking processes using port 80..."
+            sudo lsof -i :80 || echo "No process found using lsof"
+            sudo ss -tulpn | grep :80 || echo "No process found using ss"
             
-            # Stop and remove the existing container if it exists
+            # Check Docker status
+            echo "Checking Docker status..."
+            docker ps -a
+            
+            # Stop and remove any existing container
+            echo "Stopping any existing containers..."
             docker stop bribery-game || true
             docker rm bribery-game || true
             
+            # Check Nginx status and configuration
+            echo "Checking Nginx status..."
+            sudo systemctl status nginx || true
+            
+            echo "Checking Nginx configuration directories..."
+            ls -la /etc/nginx/
+            ls -la /etc/nginx/sites-enabled/ || true
+            ls -la /etc/nginx/sites-available/ || true
+            ls -la /etc/nginx/conf.d/ || true
+            
+            # Complete Nginx configuration dump
+            echo "Full Nginx configuration dump..."
+            sudo nginx -T || echo "Failed to dump Nginx configuration"
+            
+            # Radical approach: Remove Nginx completely and reinstall
+            echo "Completely removing Nginx..."
+            sudo systemctl stop nginx
+            sudo apt-get remove --purge nginx nginx-common nginx-full -y
+            sudo apt-get autoremove -y
+            sudo rm -rf /etc/nginx/
+            
+            echo "Reinstalling Nginx..."
+            sudo apt-get update
+            sudo apt-get install -y nginx
+            
+            # Pull the latest image
+            echo "Pulling Docker image..."
+            docker pull ghcr.io/${{ github.repository }}:latest
+            
             # Run the new container on port 8080 (internal)
+            echo "Starting Docker container on port 8080..."
             docker run -d --name bribery-game \
               -p 8080:5000 \
               --restart unless-stopped \
               ghcr.io/${{ github.repository }}:latest
             
-            # Remove all existing Nginx configs to avoid conflicts
-            echo "Removing any existing Nginx configurations..."
-            sudo rm -f /etc/nginx/sites-enabled/*
+            # Create a very simple Nginx configuration
+            echo "Creating minimal Nginx configuration..."
+            sudo mkdir -p /etc/nginx/sites-available/
+            sudo mkdir -p /etc/nginx/sites-enabled/
             
-            # Configure Nginx as a reverse proxy
-            echo "Configuring Nginx as a reverse proxy..."
             sudo tee /etc/nginx/sites-available/bribery-game > /dev/null << 'EOL'
             server {
                 listen 80 default_server;
                 listen [::]:80 default_server;
+                
                 server_name _;
-            
+                
                 location / {
                     proxy_pass http://127.0.0.1:8080;
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                    
-                    # WebSocket support (needed for SocketIO)
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection "upgrade";
+                    proxy_set_header Host $host;
                 }
             }
             EOL
             
-            # Enable the site
+            # Create minimal nginx.conf
+            sudo tee /etc/nginx/nginx.conf > /dev/null << 'EOL'
+            user www-data;
+            worker_processes auto;
+            pid /run/nginx.pid;
+            include /etc/nginx/modules-enabled/*.conf;
+            
+            events {
+                worker_connections 768;
+            }
+            
+            http {
+                sendfile on;
+                tcp_nopush on;
+                tcp_nodelay on;
+                keepalive_timeout 65;
+                types_hash_max_size 2048;
+                
+                include /etc/nginx/mime.types;
+                default_type application/octet-stream;
+                
+                ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+                ssl_prefer_server_ciphers on;
+                
+                access_log /var/log/nginx/access.log;
+                error_log /var/log/nginx/error.log;
+                
+                include /etc/nginx/sites-enabled/*;
+            }
+            EOL
+            
+            # Enable our site
             sudo ln -sf /etc/nginx/sites-available/bribery-game /etc/nginx/sites-enabled/
             
-            # Restart Nginx completely
-            echo "Restarting Nginx..."
-            sudo systemctl restart nginx
+            # Test the configuration
+            echo "Testing Nginx configuration..."
+            sudo nginx -t
             
-            # Verify the Docker container is running
-            echo "Verifying Docker container status..."
+            # Start Nginx
+            echo "Starting Nginx..."
+            sudo systemctl start nginx
+            
+            # Verify everything is running
+            echo "Verifying services..."
             docker ps
+            sudo systemctl status nginx
             
-            # Verify Nginx is listening on port 80
-            echo "Verifying Nginx is listening on port 80..."
-            sudo ss -tulpn | grep :80
+            # Test local connectivity
+            echo "Testing local connectivity..."
+            curl -v http://localhost:8080 || echo "Failed to connect to Docker container"
+            curl -v http://localhost || echo "Failed to connect through Nginx"
+            
+            # Check logs
+            echo "Checking Docker logs..."
+            docker logs bribery-game
+            
+            echo "Checking Nginx error log..."
+            sudo tail -n 20 /var/log/nginx/error.log
+            
+            echo "=== DIAGNOSTIC PROCESS COMPLETE ==="
             
             # Clean up unused images
             docker image prune -f
