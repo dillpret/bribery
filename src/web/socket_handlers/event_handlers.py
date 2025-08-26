@@ -204,8 +204,10 @@ def handle_select_prompt(data):
 
     prompt = data.get('prompt', '').strip()
     if not prompt:
-        emit('error', {'message': 'Prompt cannot be empty'})
-        return
+        # If prompt is empty, select a random one from the list
+        from ..utils import load_prompts
+        available_prompts = load_prompts()
+        prompt = random.choice(available_prompts)
 
     # Initialize round data if needed
     if game.current_round not in game.player_prompts:
