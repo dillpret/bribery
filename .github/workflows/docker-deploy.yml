@@ -100,11 +100,30 @@ jobs:
             docker stop bribery-game || true
             docker rm bribery-game || true
             
-            # Run the new container on port 8080 (internal)
+            # Run the new container on port 8080 (internal) with explicit networking
+            echo "Starting Docker container with proper port configuration..."
             docker run -d --name bribery-game \
               -p 8080:5000 \
               --restart unless-stopped \
               ghcr.io/${{ github.repository }}:latest
+              
+            # Ensure iptables rules are correct (safely)
+            echo "Ensuring Docker iptables rules are correct..."
+            # List DOCKER chain rules with line numbers
+            DOCKER_RULES=$(sudo iptables -L DOCKER --line-numbers)
+            echo "Current DOCKER chain rules:"
+            echo "$DOCKER_RULES"
+            
+            # Find any DROP rules and remove them
+            DROP_LINE=$(echo "$DOCKER_RULES" | grep -n "DROP" | cut -d: -f1 | head -1)
+            if [ ! -z "$DROP_LINE" ]; then
+              echo "Found DROP rule at line $DROP_LINE, removing..."
+              sudo iptables -D DOCKER $DROP_LINE || true
+            fi
+            
+            # Make sure we have proper ACCEPT rules
+            sudo iptables -I DOCKER -p tcp -d 172.17.0.0/16 --dport 5000 -j ACCEPT 2>/dev/null || true
+            sudo iptables -I DOCKER -p tcp -d 172.17.0.0/16 --dport 8080 -j ACCEPT 2>/dev/null || true
             
             # Configure Nginx directly in the main configuration
             # This approach is most reliable as it doesn't depend on includes
