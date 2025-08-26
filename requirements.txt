@@ -18,7 +18,9 @@ dnspython==2.4.2
 
 # Testing dependencies
 pytest==8.4.1
-socketio==0.2.1  # Required for test helpers
+# socketio 0.2.1 has a dependency on setuptools==3.3 which conflicts with newer versions
+# Moving this to requirements-test.txt as it's only needed for tests, not production
+# socketio==0.2.1
 
 # Development dependencies (code quality)
 # Install with: py -m pip install -r requirements-dev.txt
