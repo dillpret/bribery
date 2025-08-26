@@ -9,6 +9,8 @@ param(
 function Show-Help {
     Write-Host "Docker Helper for Bribery Game" -ForegroundColor Cyan
     Write-Host ""
+    Write-Host "Note: Docker container uses Python 3.11 for compatibility with all dependencies" -ForegroundColor Yellow
+    Write-Host ""
     Write-Host "Usage:" -ForegroundColor Yellow
     Write-Host "  .\docker-helper.ps1 [command]" -ForegroundColor Yellow
     Write-Host ""

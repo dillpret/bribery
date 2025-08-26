@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 
+# Explicitly using Python 3.11 for compatibility with gevent
 WORKDIR /app
 
 # Install build dependencies
@@ -8,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libc6-dev \
     python3-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements files first to leverage Docker caching

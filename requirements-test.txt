@@ -1,0 +1,18 @@
+# Test-specific requirements
+# These are dependencies needed for running tests
+
+# Main test dependencies
+pytest==8.4.1
+socketio==0.2.1  # Required for test helpers
+
+# Core app dependencies needed for tests
+Flask==2.3.3
+Flask-SocketIO==5.3.6
+python-socketio==5.8.0
+python-engineio==4.7.1
+eventlet==0.35.2
+# Note: gevent is omitted for Python 3.13 compatibility in testing
+requests==2.32.4
+websocket-client==1.8.0
+psutil==5.9.5
+dnspython==2.4.2
