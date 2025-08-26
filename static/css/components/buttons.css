@@ -1,5 +1,5 @@
 /* Button styles - Mobile First */
-button {
+button:not(.player-list-toggle) {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -16,19 +16,19 @@ button {
     touch-action: manipulation;
 }
 
-button:hover,
-button:focus {
+button:not(.player-list-toggle):hover,
+button:not(.player-list-toggle):focus {
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     outline: none;
 }
 
-button:active {
+button:not(.player-list-toggle):active {
     transform: translateY(0);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
-button:disabled {
+button:not(.player-list-toggle):disabled {
     background: #6c757d;
     cursor: not-allowed;
     opacity: 0.6;
