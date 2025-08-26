@@ -371,8 +371,12 @@ socket.on('voting_phase', (data) => {
         option.className = 'bribe-option';
         option.onclick = () => selectVote(bribe.id, option);
 
-        if (bribe.type === 'image') {
-            option.innerHTML = `<img src="${bribe.content}" class="bribe-image" alt="Bribe image">`;
+        if (bribe.type === 'image' || bribe.type === 'gif') {
+            const imageClass = bribe.type === 'gif' ? 'bribe-image gif-preview' : 'bribe-image';
+            option.innerHTML = `
+                <div class="bribe-image-container">
+                    <img src="${bribe.content}" class="${imageClass}" alt="Bribe ${bribe.type}" loading="lazy">
+                </div>`;
         } else {
             option.innerHTML = `<div class="bribe-content">${bribe.content}</div>`;
         }
@@ -487,7 +491,11 @@ socket.on('round_results', (data) => {
         // Handle different bribe types (text, image, gif)
         let bribeContent = '';
         if (result.bribe_type === 'image' || result.bribe_type === 'gif') {
-            bribeContent = `<img src="${result.winning_bribe}" alt="Winning bribe" class="bribe-image">`;
+            const imageClass = result.bribe_type === 'gif' ? 'bribe-image gif-preview' : 'bribe-image';
+            bribeContent = `
+                <div class="bribe-image-container">
+                    <img src="${result.winning_bribe}" class="${imageClass}" alt="Winning bribe" loading="lazy">
+                </div>`;
         } else {
             bribeContent = `<div class="bribe-text">${result.winning_bribe}</div>`;
         }

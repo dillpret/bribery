@@ -140,18 +140,32 @@ function setupMobileImageUpload(targetId) {
 }
 
 function handleFileUpload(file, targetId) {
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const dropArea = document.getElementById(`drop-${targetId}`);
-            dropArea.innerHTML = `<img src="${e.target.result}" class="file-preview" alt="Uploaded image">`;
-            submissions[targetId] = {
-                content: e.target.result,
-                type: 'image'
-            };
-        };
-        reader.readAsDataURL(file);
+    if (!file) {
+        return;
     }
+    
+    // Show loading state
+    const dropArea = document.getElementById(`drop-${targetId}`);
+    dropArea.innerHTML = `<div class="upload-loading">Processing image...</div>`;
+    
+    // Process the image using our utility
+    ImageUtils.processImage(file).then(result => {
+        if (result.error) {
+            // Show error message
+            dropArea.innerHTML = `<div class="upload-error">${result.error}</div>`;
+            return;
+        }
+        
+        // Display image preview with appropriate handling for GIFs
+        const isGif = result.type === 'gif';
+        dropArea.innerHTML = `<img src="${result.content}" class="file-preview${isGif ? ' gif-preview' : ''}" alt="Uploaded ${isGif ? 'GIF' : 'image'}">`;
+        
+        // Store submission data
+        submissions[targetId] = {
+            content: result.content,
+            type: result.type
+        };
+    });
 }
 
 function displayScoreboard(scores, containerId, isFinal = false) {
