@@ -74,6 +74,17 @@ The repository is configured with GitHub Actions for automated testing and deplo
 2. Tests are run on Windows to ensure compatibility
 3. If tests pass, a Docker image is built and pushed to GitHub Container Registry
 4. The image is deployed to Oracle Cloud via SSH
+5. Nginx is automatically configured as a reverse proxy to forward requests from port 80 to the application
+
+### Nginx Reverse Proxy Configuration
+
+The deployment automatically:
+1. Installs Nginx if not already present
+2. Runs the Docker container on port 8080 (internal)
+3. Configures Nginx to proxy requests from port 80 to port 8080
+4. Enables WebSocket support for SocketIO
+5. Removes any default Nginx sites that might conflict
+6. Reloads Nginx to apply the changes
 
 ### Setting Up GitHub Actions Secrets
 
@@ -115,3 +126,22 @@ If deployment to Oracle Cloud fails:
 2. Check that your SSH key has the correct permissions
 3. Verify that port 80 is open in your Oracle Cloud security list
 4. Check the container logs: `docker logs bribery-game`
+
+### Port Conflicts
+
+If you encounter "address already in use" errors:
+
+```bash
+# Check what's using port 80
+sudo lsof -i :80
+# or
+sudo ss -tulpn | grep :80
+
+# The automatic deployment will configure Nginx as a reverse proxy
+# If you need to debug Nginx configuration:
+sudo nginx -t
+sudo systemctl status nginx
+sudo cat /etc/nginx/sites-available/bribery-game
+```
+
+The current deployment uses Nginx as a reverse proxy, so the Docker container runs on port 8080 internally while Nginx handles external requests on port 80. This setup helps avoid port conflicts with other services.

@@ -86,6 +86,13 @@ jobs:
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
+            # Ensure Nginx is installed
+            if ! command -v nginx &> /dev/null; then
+              echo "Installing Nginx..."
+              sudo apt-get update
+              sudo apt-get install -y nginx
+            fi
+            
             # Pull the latest image
             docker pull ghcr.io/${{ github.repository }}:latest
             
@@ -93,11 +100,46 @@ jobs:
             docker stop bribery-game || true
             docker rm bribery-game || true
             
-            # Run the new container
+            # Run the new container on port 8080 (internal)
             docker run -d --name bribery-game \
-              -p 80:5000 \
+              -p 8080:5000 \
               --restart unless-stopped \
               ghcr.io/${{ github.repository }}:latest
+            
+            # Configure Nginx as a reverse proxy
+            echo "Configuring Nginx as a reverse proxy..."
+            sudo tee /etc/nginx/sites-available/bribery-game > /dev/null << 'EOL'
+            server {
+                listen 80;
+                server_name _;  # Will match any domain pointing to this server
+            
+                location / {
+                    proxy_pass http://localhost:8080;
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    
+                    # WebSocket support (needed for SocketIO)
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "upgrade";
+                }
+            }
+            EOL
+            
+            # Enable the site if it's not already enabled
+            if [ ! -f /etc/nginx/sites-enabled/bribery-game ]; then
+              sudo ln -sf /etc/nginx/sites-available/bribery-game /etc/nginx/sites-enabled/
+            fi
+            
+            # Remove the default site if it exists
+            if [ -f /etc/nginx/sites-enabled/default ]; then
+              sudo rm -f /etc/nginx/sites-enabled/default
+            fi
+            
+            # Test Nginx configuration and reload
+            sudo nginx -t && sudo systemctl reload nginx
             
             # Clean up unused images
             docker image prune -f
