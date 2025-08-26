@@ -160,4 +160,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // How To Play button and modal
+    const howToPlayBtn = document.getElementById('how-to-play-btn');
+    const howToPlayModal = document.getElementById('how-to-play-modal');
+    const closeButton = document.querySelector('.close-button');
+
+    if (howToPlayBtn && howToPlayModal) {
+        // Open modal when button is clicked
+        howToPlayBtn.addEventListener('click', function() {
+            howToPlayModal.classList.remove('hidden');
+        });
+
+        // Close modal when close button is clicked
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                howToPlayModal.classList.add('hidden');
+            });
+        }
+
+        // Close modal when clicking outside the modal content
+        howToPlayModal.addEventListener('click', function(e) {
+            if (e.target === howToPlayModal) {
+                howToPlayModal.classList.add('hidden');
+            }
+        });
+
+        // Close modal when Escape key is pressed
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !howToPlayModal.classList.contains('hidden')) {
+                howToPlayModal.classList.add('hidden');
+            }
+        });
+    }
 });

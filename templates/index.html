@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <h1>🎯 Bribery</h1>
-        <p class="subtitle">The ultimate icebreaker game where creativity meets strategy!</p>
+        <p class="subtitle">A casual web game for groups of all sizes (min 3 players)</p>
 
         <!-- Main Menu -->
         <div id="main-menu">
@@ -64,6 +64,29 @@
         <!-- Error Display -->
         <div id="error-message" class="error hidden"></div>
         
+        <!-- How To Play Button -->
+        <button id="how-to-play-btn" class="how-to-play-button">How To Play</button>
+        
+        <!-- How To Play Modal -->
+        <div id="how-to-play-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>How To Play</h2>
+                <div class="instructions">
+                    <p>Bribery is a creative game of persuasion and voting:</p>
+                    <ol>
+                        <li>Each player has one point to give away each round</li>
+                        <li>You'll create or select a prompt for other players to answer</li>
+                        <li>Two players will submit creative "bribes" to win your point</li>
+                        <li>Choose your favourite bribe and award them your point</li>
+                        <li>Meanwhile, you'll be creating bribes to win points from others</li>
+                        <li>The player with the most points at the end wins!</li>
+                    </ol>
+                    <p>It's all about creativity, humour, and knowing your audience!</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Version number (inconspicuous) -->
         <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 20px;">v{{ version }}</div>
     </div>
