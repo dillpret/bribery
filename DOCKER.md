@@ -7,8 +7,11 @@ This directory contains the Docker implementation for the Bribery Game project.
 - `Dockerfile` - Defines the container image for the application
 - `docker-compose.yml` - Defines the service configuration for local development
 - `docker-helper.ps1` - PowerShell script with helpful Docker commands
+- `build-docker.ps1` - PowerShell script for testing Docker builds locally
 - `.dockerignore` - Specifies files to exclude from the Docker build
+- `requirements-docker.txt` - Docker-specific dependencies for reliable builds
 - `.github/workflows/docker-deploy.yml` - GitHub Actions workflow for Docker deployment
+- `.github/workflows/docker-diagnostic.yml` - Diagnostic workflow for troubleshooting Docker builds
 - `deployment/DOCKER_DEPLOYMENT.md` - Documentation for Docker deployment
 - `deployment/install-docker-oracle.sh` - Script to install Docker on Oracle Cloud
 
@@ -29,6 +32,18 @@ This directory contains the Docker implementation for the Bribery Game project.
 3. **Stop the application**:
    ```powershell
    .\docker-helper.ps1 stop
+   ```
+
+4. **Test Docker builds locally**:
+   ```powershell
+   # Build and test without running
+   .\build-docker.ps1 -Test
+   
+   # Build and run the container
+   .\build-docker.ps1 -Run
+   
+   # Clean build (no cache)
+   .\build-docker.ps1 -NoBuildCache
    ```
 
 ### Deploying to Oracle Cloud

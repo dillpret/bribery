@@ -1,0 +1,12 @@
+# Docker-specific requirements
+# These are dependencies needed for successful Docker builds
+
+# Base tools
+wheel>=0.41.2
+setuptools>=69.0.2
+
+# System-level packages that need compilation
+netifaces==0.11.0
+
+# Main requirements
+-r requirements.txt

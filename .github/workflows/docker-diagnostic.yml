@@ -1,0 +1,31 @@
+name: Docker Build Diagnostic
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker-diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Docker Build Test (No Push)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          load: true
+          tags: bribery-game:test
+          # Enable detailed output for better debugging
+          no-cache: true
+          
+      - name: Test Container
+        run: |
+          docker run --rm bribery-game:test python -c "import socket; print(f'Container is working! Python version: {socket.gethostbyname(socket.gethostname())}')"
+          
+      - name: Check Installed Packages
+        run: |
+          docker run --rm bribery-game:test pip list
