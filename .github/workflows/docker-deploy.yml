@@ -107,23 +107,60 @@ jobs:
               --restart unless-stopped \
               ghcr.io/${{ github.repository }}:latest
               
-            # Ensure iptables rules are correct (safely)
-            echo "Ensuring Docker iptables rules are correct..."
-            # List DOCKER chain rules with line numbers
+            # Fix iptables rules comprehensively
+            echo "Setting up firewall rules correctly..."
+            
+            # 1. Check and fix raw table DROP rule
+            echo "Checking raw table for problematic rules..."
+            RAW_RULES=$(sudo iptables-save -t raw)
+            if echo "$RAW_RULES" | grep -q "172.17.0"; then
+              echo "Found problematic rule in raw table, removing..."
+              sudo iptables -t raw -D PREROUTING -d 172.17.0.0/16 ! -i docker0 -j DROP 2>/dev/null || true
+              sudo iptables -t raw -D PREROUTING -d 172.17.0.2/32 ! -i docker0 -j DROP 2>/dev/null || true
+            fi
+            
+            # 2. Allow HTTP and Docker ports in INPUT chain
+            echo "Configuring INPUT chain to allow web traffic..."
+            # Check if port 80 is already allowed
+            INPUT_RULES=$(sudo iptables -L INPUT --line-numbers)
+            if ! echo "$INPUT_RULES" | grep -q "dpt:http"; then
+              echo "Adding rule to allow HTTP traffic..."
+              sudo iptables -I INPUT 4 -p tcp --dport 80 -j ACCEPT || true
+            fi
+            
+            # Allow Docker ports
+            echo "Allowing Docker ports..."
+            sudo iptables -I INPUT 5 -p tcp --dport 8080 -j ACCEPT 2>/dev/null || true
+            sudo iptables -I INPUT 5 -p tcp --dport 5000 -j ACCEPT 2>/dev/null || true
+            
+            # 3. Fix Docker chain rules
+            echo "Fixing Docker chain rules..."
+            # Remove any blanket DROP rules in Docker chain
             DOCKER_RULES=$(sudo iptables -L DOCKER --line-numbers)
             echo "Current DOCKER chain rules:"
             echo "$DOCKER_RULES"
             
-            # Find any DROP rules and remove them
-            DROP_LINE=$(echo "$DOCKER_RULES" | grep -n "DROP" | cut -d: -f1 | head -1)
-            if [ ! -z "$DROP_LINE" ]; then
-              echo "Found DROP rule at line $DROP_LINE, removing..."
-              sudo iptables -D DOCKER $DROP_LINE || true
+            if echo "$DOCKER_RULES" | grep -q "DROP"; then
+              # Find and remove DROP rules
+              DROP_LINES=$(echo "$DOCKER_RULES" | grep -n "DROP" | cut -d: -f1)
+              for line in $DROP_LINES; do
+                echo "Removing DROP rule at line $line..."
+                sudo iptables -D DOCKER $line 2>/dev/null || true
+              done
             fi
             
-            # Make sure we have proper ACCEPT rules
+            # Add proper ACCEPT rules
+            echo "Adding proper ACCEPT rules for container..."
+            CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bribery-game)
+            sudo iptables -I DOCKER -p tcp -d $CONTAINER_IP --dport 5000 -j ACCEPT 2>/dev/null || true
             sudo iptables -I DOCKER -p tcp -d 172.17.0.0/16 --dport 5000 -j ACCEPT 2>/dev/null || true
             sudo iptables -I DOCKER -p tcp -d 172.17.0.0/16 --dport 8080 -j ACCEPT 2>/dev/null || true
+            
+            # 4. Make rules persistent
+            echo "Making iptables rules persistent..."
+            sudo apt-get update
+            sudo apt-get install -y iptables-persistent
+            sudo netfilter-persistent save
             
             # Configure Nginx directly in the main configuration
             # This approach is most reliable as it doesn't depend on includes
