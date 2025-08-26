@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Deployment scripts (obsolete)
+deployment/deploy-oracle.sh
+deployment/github-actions-update.sh
+deployment/simple-deploy-oracle.sh
+deployment/simple-github-actions-update.sh
+deployment/ultra-simple-deploy.sh
+deployment/ultra-simple-update.sh
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env

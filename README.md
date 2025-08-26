@@ -3,13 +3,23 @@
 Flask-SocketIO multiplayer game where players submit creative bribes and vote on submissions.
 
 ## Quick Start
-```bash
+
+### Using Docker (Recommended)
+```powershell
+# Start the application with Docker
+docker-compose up -d
+
+# Access the application at http://localhost:5000
+```
+
+### Traditional Setup
+```powershell
 # Production setup
-pip install -r requirements.txt
+py -m pip install -r requirements.txt
 py -m flask run
 
 # Development setup (includes code quality tools)
-pip install -r requirements.txt -r requirements-dev.txt
+py -m pip install -r requirements.txt -r requirements-dev.txt
 py -m pre_commit install  # Optional: enable git hooks
 ```
 
@@ -41,13 +51,17 @@ py -m pytest tests/unit/    # Unit tests
 ```
 
 ## Deployment
-This repository uses GitHub Actions for automated deployment to Oracle Cloud.
 
-- **Auto-deployment**: Push to the `master` branch to trigger automatic deployment
+### Docker Deployment (Recommended)
+This repository uses GitHub Actions with Docker for automated deployment to Oracle Cloud.
+
+- **Auto-deployment**: Push to the `master` branch to trigger the workflow
+- **Process**: Tests → Build Docker image → Push to registry → Deploy to Oracle Cloud
 - **Configuration**: Set up required secrets in GitHub repository settings
-- **Documentation**: See `.github/DEPLOYMENT.md` for setup instructions
+- **Documentation**: See `deployment/DOCKER_DEPLOYMENT.md` for detailed instructions
 
-For manual deployment, see `deployment/ORACLE_DEPLOYMENT.md`.
+### Legacy Deployment
+For the legacy non-Docker deployment method, see `deployment/ORACLE_DEPLOYMENT.md`.
 
 ## Key Features
 - **Mobile-Optimised**: Touch-friendly interface with mobile image upload

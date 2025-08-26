@@ -1,0 +1,55 @@
+# Github Actions workflow file for setting up and deploying the Docker-based application
+
+name: Setup Docker Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      host_ip:
+        description: 'Oracle Cloud Host IP'
+        required: true
+      ssh_user:
+        description: 'SSH Username'
+        required: true
+        default: 'ubuntu'
+
+jobs:
+  setup-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy Docker Setup Script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ github.event.inputs.host_ip }}
+          username: ${{ github.event.inputs.ssh_user }}
+          key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
+          script: |
+            # Create a temporary directory
+            mkdir -p ~/docker-setup
+            
+      - name: Copy Docker Setup Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ github.event.inputs.host_ip }}
+          username: ${{ github.event.inputs.ssh_user }}
+          key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
+          source: "deployment/install-docker-oracle.sh"
+          target: "~/docker-setup"
+          
+      - name: Run Docker Setup Script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ github.event.inputs.host_ip }}
+          username: ${{ github.event.inputs.ssh_user }}
+          key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
+          script: |
+            # Make the script executable
+            chmod +x ~/docker-setup/deployment/install-docker-oracle.sh
+            
+            # Run the script
+            ~/docker-setup/deployment/install-docker-oracle.sh
+            
+            # Clean up
+            rm -rf ~/docker-setup
