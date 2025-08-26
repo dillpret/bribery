@@ -167,14 +167,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButton = document.querySelector('.close-button');
 
     if (howToPlayBtn && howToPlayModal) {
-        // Open modal when button is clicked
-        howToPlayBtn.addEventListener('click', function() {
-            howToPlayModal.classList.remove('hidden');
+        // Open modal when button is clicked - using delay and style property changes to avoid ad blockers
+        howToPlayBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Small delay to differentiate from automatic popups
+            setTimeout(() => {
+                howToPlayModal.style.display = 'flex';
+                howToPlayModal.classList.remove('hidden');
+            }, 50);
         });
 
         // Close modal when close button is clicked
         if (closeButton) {
             closeButton.addEventListener('click', function() {
+                howToPlayModal.style.display = 'none';
                 howToPlayModal.classList.add('hidden');
             });
         }
@@ -182,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close modal when clicking outside the modal content
         howToPlayModal.addEventListener('click', function(e) {
             if (e.target === howToPlayModal) {
+                howToPlayModal.style.display = 'none';
                 howToPlayModal.classList.add('hidden');
             }
         });
@@ -189,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close modal when Escape key is pressed
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !howToPlayModal.classList.contains('hidden')) {
+                howToPlayModal.style.display = 'none';
                 howToPlayModal.classList.add('hidden');
             }
         });

@@ -30,7 +30,7 @@ body {
 /* How To Play Button and Modal */
 .how-to-play-button {
     background-color: rgba(255, 255, 255, 0.4);
-    color: #444;
+    color: #444 !important;
     padding: 8px 16px;
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 20px;
@@ -38,26 +38,38 @@ body {
     margin-top: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    text-transform: none;
 }
 
 .how-to-play-button:hover {
     background-color: rgba(255, 255, 255, 0.6);
+    color: #444 !important;
 }
 
-.modal {
+.game-instructions-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
+    display: none; /* Changed from flex to none for initial state */
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.modal-content {
+.game-instructions-modal.hidden {
+    display: none;
+}
+
+.game-instructions-modal:not(.hidden) {
+    display: flex;
+}
+
+.game-instructions-modal-content {
     background: white;
     padding: 20px;
     border-radius: 10px;

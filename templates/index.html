@@ -65,13 +65,13 @@
         <div id="error-message" class="error hidden"></div>
         
         <!-- How To Play Button -->
-        <button id="how-to-play-btn" class="how-to-play-button">How To Play</button>
+        <button id="how-to-play-btn" class="how-to-play-button" data-action="open-instructions">How To Play</button>
         
         <!-- How To Play Modal -->
-        <div id="how-to-play-modal" class="modal hidden">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2>How To Play</h2>
+        <div id="how-to-play-modal" class="game-instructions-modal hidden" role="dialog" aria-labelledby="instructions-title">
+            <div class="game-instructions-modal-content">
+                <span class="close-button" data-action="close-instructions">&times;</span>
+                <h2 id="instructions-title">How To Play</h2>
                 <div class="instructions">
                     <p>Bribery is a creative game of persuasion and voting:</p>
                     <ol>
