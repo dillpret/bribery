@@ -1,0 +1,36 @@
+/* Connection status indicator */
+.connection-status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.connection-status.connected {
+    background-color: #4CAF50;
+    box-shadow: 0 0 5px #4CAF50;
+}
+
+.connection-status.disconnected {
+    background-color: #F44336;
+    box-shadow: 0 0 5px #F44336;
+}
+
+.connection-status.connecting {
+    background-color: #FF9800;
+    box-shadow: 0 0 5px #FF9800;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}

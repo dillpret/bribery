@@ -101,12 +101,20 @@ def handle_join_game(data):
         emit('error', {'message': 'Username is required'})
         return
 
+    # Normalize input data
     game_id = game_id.upper().strip()
     username = username.strip()
 
-    game = game_manager.get_game(game_id)
+    # Get game with case-insensitive matching (extra fault tolerance)
+    game = None
+    for gid in game_manager.games:
+        if gid.upper() == game_id.upper():
+            game = game_manager.get_game(gid)
+            game_id = gid  # Use the actual case from the stored game
+            break
+            
     if not game:
-        emit('error', {'message': 'Game not found'})
+        emit('error', {'message': 'Game not found. Check your game code and try again.'})
         return
 
     # Import here to avoid circular imports
@@ -116,17 +124,22 @@ def handle_join_game(data):
     # This implements a two-tier authentication strategy:
     # 1. Try to match by stored player ID (exact match, highest priority)
     # 2. Fall back to username matching (for device changes/direct access)
+    
     # Check if player is rejoining (priority: stored player ID > username match)
-    existing_player_id = None    # First, try to use stored player ID if provided (page refresh scenario)
+    existing_player_id = None
+    
+    # First, try to use stored player ID if provided (page refresh scenario)
     if stored_player_id and stored_player_id in game.players:
         existing_player_id = stored_player_id
+        logger.info(f"Player rejoining with stored ID: {username} ({stored_player_id})")
         # Update username in case it changed
         game.players[existing_player_id]['username'] = username
     else:
         # Fallback to username matching (traditional rejoin)
         for pid, player in game.players.items():
-            if player['username'] == username:
+            if player['username'].lower() == username.lower():  # Case-insensitive match
                 existing_player_id = pid
+                logger.info(f"Player rejoining by username match: {username} ({pid})")
                 break
 
     if existing_player_id:
@@ -143,6 +156,7 @@ def handle_join_game(data):
         game_manager.add_player_session(
             request.sid, PlayerSession(
                 request.sid, player_id, game_id))
+        logger.info(f"New player joined: {username} ({player_id})")
 
     join_room(game_id)
 

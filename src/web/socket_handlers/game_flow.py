@@ -399,6 +399,21 @@ def emit_midgame_joiner_state(game, player_id):
             'total_rounds': game.settings['rounds'],
             'game_state': game.state
         }, room=get_player_room(game_manager, game.game_id, player_id))
+        
+        # Also send them the current player list so they can see who's playing
+        socketio.emit('lobby_update', {
+            'players': [
+                {
+                    'username': p['username'],
+                    'is_host': pid == game.host_id,
+                    'connected': p.get('connected', True),
+                    'score': p.get('score', 0)
+                }
+                for pid, p in game.players.items()
+            ],
+            'player_count': len(game.players)
+        }, room=get_player_room(game_manager, game.game_id, player_id))
+        
         return
 
     # Player is active, send them the current game state
@@ -407,21 +422,53 @@ def emit_midgame_joiner_state(game, player_id):
 
 def emit_game_state_to_player(game, player_id):
     """Send current game state to a reconnecting player"""
+    player_room = get_player_room(game_manager, game.game_id, player_id)
+    
+    # First, always send the player list regardless of game state
+    socketio.emit('lobby_update', {
+        'players': [
+            {
+                'username': p['username'],
+                'is_host': pid == game.host_id,
+                'connected': p.get('connected', True),
+                'score': p.get('score', 0)
+            }
+            for pid, p in game.players.items()
+        ],
+        'player_count': len(game.players)
+    }, room=player_room)
+    
+    # Then handle specific game state
     if game.state == "submission":
+        # Get targets for this player
         targets = game.round_pairings[game.current_round].get(player_id, [])
-        target_names = [game.players[tid]['username'] for tid in targets]
+        target_data = []
+        
+        for target_id in targets:
+            target_prompt = game.get_prompt_for_target(
+                game.current_round, target_id)
+            target_data.append({
+                'id': target_id,
+                'name': game.players[target_id]['username'],
+                'prompt': target_prompt
+            })
 
+        # Send round info
         socketio.emit('round_started', {
             'round': game.current_round,
             'total_rounds': game.settings['rounds'],
-            'prompt': game.current_prompt,
+            'prompt': game.current_prompt if not game.custom_prompts_enabled() else None,
+            'custom_prompts_enabled': game.custom_prompts_enabled(),
             'time_limit': game.settings['submission_time']
-        }, room=get_player_room(game_manager, game.game_id, player_id))
+        }, room=player_room)
 
+        # Send targets
         socketio.emit('your_targets', {
-            'targets': target_names,
-            'target_ids': targets
-        }, room=get_player_room(game_manager, game.game_id, player_id))
+            'targets': target_data
+        }, room=player_room)
+        
+        # Also send progress update
+        emit_submission_progress(game, player_room)
 
     elif game.state == "voting":
         # Send voting options, but exclude bribes player submitted themselves
@@ -436,10 +483,24 @@ def emit_game_state_to_player(game, player_id):
                     bribes_for_player.append({
                         'id': f"{submitter_id}_{target_id}",
                         'content': bribe['content'],
-                        'type': bribe['type']
+                        'type': bribe['type'],
+                        'is_random': bribe.get('is_random', False)  # Keep track but don't show in UI yet
                     })
 
         socketio.emit('voting_phase', {
             'bribes': bribes_for_player,
             'time_limit': game.settings['voting_time']
-        }, room=get_player_room(game_manager, game.game_id, player_id))
+        }, room=player_room)
+        
+        # Also send progress update
+        emit_voting_progress(game, player_room)
+    
+    elif game.state == "scoreboard":
+        # Regenerate and send scoreboard data
+        round_results = game.get_round_results(game.current_round)
+        if round_results:
+            socketio.emit('round_results', {
+                'round': game.current_round,
+                'results': round_results,
+                'time_limit': game.settings['results_time']
+            }, room=player_room)

@@ -8,6 +8,9 @@
 @import url('components/host-settings.css');
 @import url('components/player-list-panel.css');
 @import url('components/results-display.css');
+@import url('components/reconnection.css');
+@import url('components/toasts.css');
+@import url('components/connection-status.css');
 
 /* Global styles - Mobile First */
 * {
