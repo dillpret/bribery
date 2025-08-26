@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+# GitHub Container Registry metadata
+LABEL org.opencontainers.image.source=https://github.com/dillpret/bribery
+
 # Explicitly using Python 3.11 for compatibility with gevent
 WORKDIR /app
 

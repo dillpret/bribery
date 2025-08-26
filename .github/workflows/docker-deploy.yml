@@ -5,6 +5,11 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+# Global permissions for all jobs
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   test:
     runs-on: windows-latest
@@ -31,6 +36,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write  # This is needed for pushing to the container registry
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +55,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -62,8 +68,9 @@ jobs:
           # Add build arguments for better diagnostics
           build-args: |
             BUILDKIT_INLINE_CACHE=1
-          # Enable detailed output for better debugging
-          outputs: type=docker,dest=/tmp/image.tar
+          # Better caching for faster builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           
       - name: Deploy to Oracle Cloud
         uses: appleboy/ssh-action@master

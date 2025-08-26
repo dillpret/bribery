@@ -1,0 +1,37 @@
+name: Setup GitHub Container Registry
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  setup-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create package with proper visibility
+        run: |
+          echo "Creating package with proper visibility"
+          # Build a minimal image to ensure the package exists
+          docker build -t ghcr.io/${{ github.repository }}:init --build-arg BUILDKIT_INLINE_CACHE=1 -f Dockerfile.init .
+          docker push ghcr.io/${{ github.repository }}:init
+      
+      - name: Link package to repository
+        run: |
+          echo "If you're seeing this, you need to manually link the package to your repository:"
+          echo "1. Go to your profile or organization"
+          echo "2. Click on 'Packages'"
+          echo "3. Find 'ghcr.io/${{ github.repository }}'"
+          echo "4. Click on package settings"
+          echo "5. Link to repository '${{ github.repository }}'"
