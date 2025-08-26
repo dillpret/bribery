@@ -106,15 +106,20 @@ jobs:
               --restart unless-stopped \
               ghcr.io/${{ github.repository }}:latest
             
+            # Remove all existing Nginx configs to avoid conflicts
+            echo "Removing any existing Nginx configurations..."
+            sudo rm -f /etc/nginx/sites-enabled/*
+            
             # Configure Nginx as a reverse proxy
             echo "Configuring Nginx as a reverse proxy..."
             sudo tee /etc/nginx/sites-available/bribery-game > /dev/null << 'EOL'
             server {
-                listen 80;
-                server_name _;  # Will match any domain pointing to this server
+                listen 80 default_server;
+                listen [::]:80 default_server;
+                server_name _;
             
                 location / {
-                    proxy_pass http://localhost:8080;
+                    proxy_pass http://127.0.0.1:8080;
                     proxy_set_header Host $host;
                     proxy_set_header X-Real-IP $remote_addr;
                     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -128,18 +133,20 @@ jobs:
             }
             EOL
             
-            # Enable the site if it's not already enabled
-            if [ ! -f /etc/nginx/sites-enabled/bribery-game ]; then
-              sudo ln -sf /etc/nginx/sites-available/bribery-game /etc/nginx/sites-enabled/
-            fi
+            # Enable the site
+            sudo ln -sf /etc/nginx/sites-available/bribery-game /etc/nginx/sites-enabled/
             
-            # Remove the default site if it exists
-            if [ -f /etc/nginx/sites-enabled/default ]; then
-              sudo rm -f /etc/nginx/sites-enabled/default
-            fi
+            # Restart Nginx completely
+            echo "Restarting Nginx..."
+            sudo systemctl restart nginx
             
-            # Test Nginx configuration and reload
-            sudo nginx -t && sudo systemctl reload nginx
+            # Verify the Docker container is running
+            echo "Verifying Docker container status..."
+            docker ps
+            
+            # Verify Nginx is listening on port 80
+            echo "Verifying Nginx is listening on port 80..."
+            sudo ss -tulpn | grep :80
             
             # Clean up unused images
             docker image prune -f
