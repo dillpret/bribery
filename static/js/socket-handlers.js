@@ -190,17 +190,24 @@ socket.on('prompt_selection_started', (data) => {
     };
 
     updateStatus('Choose your prompt for this round!');
-    startTimer(data.time_limit, () => {
-        // Auto-select prompt if user has made a selection but not confirmed
-        const dropdown = document.getElementById('prompt-dropdown');
-        const customInput = document.getElementById('custom-prompt-input');
-        const confirmButton = document.getElementById('confirm-prompt-btn');
-        
-        // Only auto-select if the button is enabled (means they've selected but not confirmed)
-        if (!confirmButton.disabled && (dropdown.value || customInput.value.trim())) {
-            selectPrompt();
-        }
-    });
+    
+    // Start prompt selection timer (prompt selection always has a 30-second timer)
+    if (data.time_limit > 0) {
+        startTimer(data.time_limit, () => {
+            // Auto-select prompt if user has made a selection but not confirmed
+            const dropdown = document.getElementById('prompt-dropdown');
+            const customInput = document.getElementById('custom-prompt-input');
+            const confirmButton = document.getElementById('confirm-prompt-btn');
+            
+            // Only auto-select if the button is enabled (means they've selected but not confirmed)
+            if (!confirmButton.disabled && (dropdown.value || customInput.value.trim())) {
+                selectPrompt();
+            }
+        });
+    } else {
+        // This shouldn't normally happen as prompt selection has a fixed timer
+        document.getElementById('timer').classList.add('hidden');
+    }
 });
 
 socket.on('prompt_selected', (data) => {
@@ -230,11 +237,16 @@ socket.on('round_started', (data) => {
     // Initialize submissions tracker
     submissions = {};
     
-    // Set up auto-submission when timer expires
-    startTimer(data.time_limit, () => {
-        // Auto-submit any non-empty, non-submitted bribes
-        autoSubmitPendingBribes();
-    });
+    // Set up auto-submission when timer expires (only if time_limit > 0)
+    if (data.time_limit > 0) {
+        startTimer(data.time_limit, () => {
+            // Auto-submit any non-empty, non-submitted bribes
+            autoSubmitPendingBribes();
+        });
+    } else {
+        // No timer mode - hide timer element
+        document.getElementById('timer').classList.add('hidden');
+    }
 
     // Re-enable all form elements for new round
     document.querySelectorAll('textarea[id^="submission-"]').forEach(textarea => {
@@ -369,12 +381,20 @@ socket.on('voting_phase', (data) => {
     });
 
     updateStatus('Vote for your favourite bribe!');
-    startTimer(data.time_limit, () => {
-        // Auto-submit vote if one is selected but not submitted
-        if (selectedVote && !document.getElementById('submit-vote-btn').disabled) {
-            submitVote();
-        }
-    });
+    
+    // Only start timer if time_limit > 0 (timed mode is enabled)
+    if (data.time_limit > 0) {
+        startTimer(data.time_limit, () => {
+            // Auto-submit vote if one is selected but not submitted
+            if (selectedVote && !document.getElementById('submit-vote-btn').disabled) {
+                submitVote();
+            }
+        });
+    } else {
+        // No timer mode - hide timer element
+        document.getElementById('timer').classList.add('hidden');
+    }
+    
     document.getElementById('submit-vote-btn').disabled = true;
 });
 

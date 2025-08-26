@@ -91,7 +91,7 @@ def start_submission_phase(game):
         'total_rounds': game.settings['rounds'],
         'prompt': game.current_prompt if not game.custom_prompts_enabled() else None,
         'custom_prompts_enabled': game.custom_prompts_enabled(),
-        'time_limit': game.settings['submission_time']
+        'time_limit': game.settings['submission_time']  # Will be 0 for "no timer" mode
     }, room=game.game_id)
 
     # Send individual pairings to each player with their specific prompts
@@ -204,7 +204,7 @@ def end_submission_phase(game):
 
         socketio.emit('voting_phase', {
             'bribes': bribes_for_player,
-            'time_limit': game.settings['voting_time'],
+            'time_limit': game.settings['voting_time'],  # Will be 0 for "no timer" mode
             'player_prompt': player_prompt
         }, room=get_player_room(game_manager, game.game_id, player_id))
 

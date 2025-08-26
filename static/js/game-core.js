@@ -40,8 +40,16 @@ function updateStatus(message) {
 }
 
 function startTimer(seconds, callback) {
+    // Clear any existing timer
     clearInterval(timer);
     const timerEl = document.getElementById('timer');
+    
+    // If seconds is 0 or undefined, this is a "no timer" mode
+    if (!seconds) {
+        timerEl.classList.add('hidden');
+        return;
+    }
+    
     timerEl.classList.remove('hidden');
 
     timer = setInterval(() => {
