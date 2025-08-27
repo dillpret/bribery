@@ -92,6 +92,22 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="prompt-selection-time-mode">Prompt Selection Time:</label>
+                            <div class="time-input-container">
+                                <select id="prompt-selection-time-mode">
+                                    <option value="off">Off - Wait for all players</option>
+                                    <option value="timed" selected>Timed</option>
+                                </select>
+                                <div id="prompt-selection-time-controls" class="time-controls">
+                                    <input type="number" id="prompt-selection-time-value" min="1" max="999" value="30" placeholder="30">
+                                    <select id="prompt-selection-time-unit">
+                                        <option value="seconds" selected>Seconds</option>
+                                        <option value="minutes">Minutes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="custom-prompts">Custom Prompts:</label>
                             <select id="custom-prompts">
                                 <option value="true">Enabled - Each player chooses their own</option>

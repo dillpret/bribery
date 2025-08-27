@@ -60,6 +60,7 @@ def handle_create_game(data):
         'submission_time': data.get('submission_time', 0),  # 0 means wait for all players
         'voting_time': data.get('voting_time', 0),  # 0 means wait for all players
         'results_time': data.get('results_time', 0),  # 0 means host controls next round
+        'prompt_selection_time': data.get('prompt_selection_time', 30),  # Default 30 seconds
         'custom_prompts': data.get('custom_prompts', False)
     }
 
@@ -495,6 +496,9 @@ def handle_update_settings(data):
         
     if 'results_time' in data and isinstance(data['results_time'], int) and 0 <= data['results_time'] <= 600:
         game.settings['results_time'] = data['results_time']
+        
+    if 'prompt_selection_time' in data and isinstance(data['prompt_selection_time'], int) and 0 <= data['prompt_selection_time'] <= 600:
+        game.settings['prompt_selection_time'] = data['prompt_selection_time']
         
     if 'custom_prompts' in data and isinstance(data['custom_prompts'], bool):
         game.settings['custom_prompts'] = data['custom_prompts']

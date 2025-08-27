@@ -56,6 +56,7 @@ socket.on('lobby_update', (data) => {
         <p><strong>Rounds:</strong> ${data.settings.rounds}</p>
         <p><strong>Submission Time:</strong> ${data.settings.submission_time ? data.settings.submission_time + ' seconds' : 'Wait for all players'}</p>
         <p><strong>Voting Time:</strong> ${data.settings.voting_time ? data.settings.voting_time + ' seconds' : 'Wait for all players'}</p>
+        <p><strong>Prompt Selection Time:</strong> ${data.settings.prompt_selection_time ? data.settings.prompt_selection_time + ' seconds' : 'Wait for all players'}</p>
         <p><strong>Custom Prompts:</strong> ${data.settings.custom_prompts ? 'Enabled' : 'Disabled'}</p>
     `;
 
@@ -128,8 +129,24 @@ socket.on('lobby_update', (data) => {
         // Set custom prompts
         document.getElementById('custom-prompts').value = data.settings.custom_prompts ? 'true' : 'false';
         
+        // Set prompt selection time
+        const promptSelectionTime = data.settings.prompt_selection_time;
+        document.getElementById('prompt-selection-time-mode').value = promptSelectionTime ? 'timed' : 'off';
+        if (promptSelectionTime) {
+            document.getElementById('prompt-selection-time-controls').classList.remove('hidden');
+            if (promptSelectionTime >= 60 && promptSelectionTime % 60 === 0) {
+                document.getElementById('prompt-selection-time-value').value = promptSelectionTime / 60;
+                document.getElementById('prompt-selection-time-unit').value = 'minutes';
+            } else {
+                document.getElementById('prompt-selection-time-value').value = promptSelectionTime;
+                document.getElementById('prompt-selection-time-unit').value = 'seconds';
+            }
+        } else {
+            document.getElementById('prompt-selection-time-controls').classList.add('hidden');
+        }
+        
         // Setup timer mode toggles
-        ['submission-time', 'voting-time', 'results-time'].forEach(timerId => {
+        ['submission-time', 'voting-time', 'results-time', 'prompt-selection-time'].forEach(timerId => {
             const modeSelect = document.getElementById(`${timerId}-mode`);
             const controls = document.getElementById(`${timerId}-controls`);
             

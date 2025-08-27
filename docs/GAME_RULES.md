@@ -14,6 +14,7 @@
   - Number of rounds (configurable)
   - Submission time limit per round (seconds)
   - Voting time limit per round (seconds)
+  - Prompt selection time limit (seconds)
   - **Custom Prompts**: Enabled/Disabled (see Custom Prompts Mode)
 
 ### 2. Round Structure
@@ -29,7 +30,7 @@ Each round consists of three or four phases depending on the Custom Prompts sett
 - **Individual Choice**: Each player selects their own prompt for receiving bribes
 - **Prompt Options**: Two separate sections - dropdown with preset prompts OR custom text input
 - **Custom Prompts**: Players can enter completely custom prompts (up to 200 characters)
-- **Completion**: Phase advances when all players select prompts OR 30-second timer expires
+- **Completion**: Phase advances when all players select prompts OR when the configurable timer expires
 - **Fallback**: Players who don't select use a default prompt
 
 #### Phase 1B: Submission (Bribery)
@@ -74,7 +75,7 @@ Custom Prompts mode allows each player to choose their own prompt that others wi
 
 ### Prompt Selection Phase (Custom Mode Only)
 - **Triggers**: When custom prompts enabled, each round starts with prompt selection
-- **Duration**: 30-second timer for all players to select prompts
+- **Duration**: Configurable timer for all players to select prompts
 - **Options**: 
   - Dropdown with preset prompts from `prompts.txt`
   - "Custom Prompt..." option for completely custom text (max 200 characters)
@@ -121,7 +122,7 @@ Custom Prompts mode allows each player to choose their own prompt that others wi
 6. **"finished"**: Final results, restart/lobby options
 
 ### Timing Rules
-- **Configurable Timers**: Host sets submission and voting time limits
+- **Configurable Timers**: Host sets prompt selection, submission, and voting time limits
 - **Automatic Progression**: Phases advance on timer expiry regardless of completion status
 - **Timer Cancellation**: Early completion cancels remaining time
 

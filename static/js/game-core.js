@@ -99,6 +99,7 @@ function updateSettings() {
         submission_time: getTimeInSeconds('submission-time'),
         voting_time: getTimeInSeconds('voting-time'),
         results_time: getTimeInSeconds('results-time'),
+        prompt_selection_time: getTimeInSeconds('prompt-selection-time'),
         custom_prompts: document.getElementById('custom-prompts').value === 'true'
     };
 

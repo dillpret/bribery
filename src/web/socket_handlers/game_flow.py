@@ -60,17 +60,22 @@ def start_next_round(game):
         # Load available prompts
         prompts = load_prompts()
 
+        # Get the prompt selection time from settings, default to 30 seconds if not set
+        prompt_selection_time = game.settings.get('prompt_selection_time', 30)
+
         # Emit prompt selection to all players
         socketio.emit('prompt_selection_started', {
             'round': game.current_round,
             'total_rounds': game.settings['rounds'],
             'available_prompts': prompts,
-            'time_limit': 30  # 30 seconds to select prompts
+            'time_limit': prompt_selection_time  # Use configured time limit
         }, room=game.game_id)
 
-        # Start prompt selection timer
-        game.round_timer = threading.Timer(30, start_submission_phase, [game])
-        game.round_timer.start()
+        # Only start the timer if prompt_selection_time > 0
+        if prompt_selection_time > 0:
+            # Start prompt selection timer
+            game.round_timer = threading.Timer(prompt_selection_time, start_submission_phase, [game])
+            game.round_timer.start()
     else:
         # Skip directly to submission phase with shared prompt
         start_submission_phase(game)
