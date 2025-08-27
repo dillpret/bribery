@@ -3,9 +3,25 @@ const socket = io();
 let currentGameId = null;
 let currentPlayerId = null;
 
+// Animation for elements on page load
+document.addEventListener('DOMContentLoaded', function() {
+    animateElements();
+});
+
+function animateElements() {
+    const elements = document.querySelectorAll('.hero-container, .hero-card, .button-container');
+    elements.forEach((el, index) => {
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, 100 * index);
+    });
+}
+
 function showMainMenu() {
     hideAll();
     document.getElementById('main-menu').classList.remove('hidden');
+    animateElements();
 }
 
 function showHostGame() {

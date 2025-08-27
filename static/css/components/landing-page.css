@@ -3,7 +3,7 @@
 .container {
     background: white;
     border-radius: 20px;
-    padding: 20px;
+    padding: 30px 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     max-width: 500px;
     width: calc(100% - 20px); /* Ensure there's room for padding */
@@ -14,16 +14,23 @@
 
 h1 {
     color: #764ba2;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-size: clamp(1.8rem, 5vw, 2.5rem);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
     color: #666;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-size: clamp(0.9rem, 3vw, 1.1rem);
     line-height: 1.4;
+}
+
+/* Animation setup */
+.hero-container, .hero-card, .button-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
 .time-input-container {

@@ -10,40 +10,58 @@
 
 <body>
     <div class="container">
-        <h1>🎯 Bribery</h1>
-        <p class="subtitle">A casual web game for groups of all sizes (min 3 players)</p>
-
+        <div class="hero-container">
+            <div class="logo-wrapper">
+                <span class="hero-emoji">🎯</span>
+                <h1>Bribery</h1>
+            </div>
+            <p class="subtitle">A casual web game for groups of all sizes (min 3 players)</p>
+        </div>
+        
         <!-- Main Menu -->
         <div id="main-menu">
-            <button onclick="showHostGame()">Host New Game</button>
-            <div class="or-divider">- OR -</div>
-            <button onclick="showJoinGame()">Join Game</button>
+            <div class="hero-card">
+                <p class="game-tagline">Create bribes to win over judges, or vote for the most <span class="tagline-highlight">creative</span>, <span class="tagline-highlight">persuasive</span>, or <span class="tagline-highlight">ridiculous</span> offers!</p>
+                
+                <div class="button-container">
+                    <button class="primary-action-btn" onclick="showHostGame()">Host New Game</button>
+                    <button class="secondary-action-btn" onclick="showJoinGame()">Join Existing Game</button>
+                </div>
+            </div>
         </div>
 
         <!-- Host Game Form -->
         <div id="host-game" class="hidden">
             <h2>Host New Game</h2>
-            <div class="form-group">
-                <label for="host-username">Your Username:</label>
-                <input type="text" id="host-username" placeholder="Enter your username" required>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="host-username">Your Username:</label>
+                    <input type="text" id="host-username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-action-buttons">
+                    <button onclick="showMainMenu()">Back</button>
+                    <button onclick="createGame()">Create Game</button>
+                </div>
             </div>
-            <button onclick="createGame()">Create Game</button>
-            <button onclick="showMainMenu()">Back</button>
         </div>
 
         <!-- Join Game Form -->
         <div id="join-game" class="hidden">
             <h2>Join Game</h2>
-            <div class="form-group">
-                <label for="join-username">Your Username:</label>
-                <input type="text" id="join-username" placeholder="Enter your username" required>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="join-username">Your Username:</label>
+                    <input type="text" id="join-username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="game-id">Game ID:</label>
+                    <input type="text" id="game-id" placeholder="Enter game ID" required style="text-transform: uppercase;">
+                </div>
+                <div class="form-action-buttons">
+                    <button onclick="showMainMenu()">Back</button>
+                    <button onclick="joinGame()">Join Game</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="game-id">Game ID:</label>
-                <input type="text" id="game-id" placeholder="Enter game ID" required style="text-transform: uppercase;">
-            </div>
-            <button onclick="joinGame()">Join Game</button>
-            <button onclick="showMainMenu()">Back</button>
         </div>
 
         <!-- Game Created -->
@@ -53,12 +71,14 @@
                 <p>Share this Game ID with your friends:</p>
                 <div class="game-id-code" id="created-game-id"></div>
                 <p style="margin-top: 10px; color: #666;">Or share this link:</p>
-                <div style="background: white; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                <div style="background: white; padding: 10px; border-radius: 8px; margin-top: 5px;">
                     <input type="text" id="game-link" readonly style="border: none; font-size: 14px; color: #667eea;">
                 </div>
             </div>
-            <button onclick="copyGameLink()">Copy Link</button>
-            <button onclick="goToLobby()">Go to Lobby</button>
+            <div class="game-created-actions">
+                <button onclick="copyGameLink()">Copy Link</button>
+                <button onclick="goToLobby()" class="primary-action-btn">Go to Lobby</button>
+            </div>
         </div>
 
         <!-- Error Display -->
@@ -72,7 +92,7 @@
         </div>
 
         <!-- Version number (inconspicuous) -->
-        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 20px;">v{{ version }}</div>
+        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
     </div>
 
     <script src="/static/socket.io.min.js"></script>
