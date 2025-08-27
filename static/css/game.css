@@ -14,6 +14,11 @@
 @import url('components/phase-explanation.css');
 @import url('components/error-banner.css');
 
+/* Enhanced visual hierarchy components */
+@import url('components/enhanced-buttons.css');
+@import url('components/enhanced-phases.css');
+@import url('components/enhanced-results.css');
+
 /* Global styles - Mobile First */
 * {
     margin: 0;

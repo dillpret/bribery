@@ -1,0 +1,191 @@
+/* Enhanced game phases CSS with better visual separation */
+
+/* Phase badges with distinct colors for each phase */
+.phase-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: white;
+}
+
+/* Color coding for different phases */
+.prompt-selection .phase-badge {
+    background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+}
+
+.submission-phase .phase-badge {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+.voting-phase .phase-badge {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.scoreboard-phase .phase-badge {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+/* Phase containers with distinctive styling */
+#prompt-selection, 
+#submission-phase, 
+#voting-phase, 
+#scoreboard-phase {
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin: 30px 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Phase-specific styling */
+#prompt-selection {
+    background: linear-gradient(to bottom, #ffffff, #f7f2ff);
+    border-top: 5px solid #805ad5;
+}
+
+#submission-phase {
+    background: linear-gradient(to bottom, #ffffff, #f0f7ff);
+    border-top: 5px solid #4299e1;
+}
+
+#voting-phase {
+    background: linear-gradient(to bottom, #ffffff, #f0fff4);
+    border-top: 5px solid #48bb78;
+}
+
+#scoreboard-phase {
+    background: linear-gradient(to bottom, #ffffff, #fffaf0);
+    border-top: 5px solid #ed8936;
+}
+
+/* Phase header styling */
+#prompt-selection h2,
+#submission-phase h2,
+#voting-phase h2,
+#scoreboard-phase h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    position: relative;
+}
+
+#prompt-selection h2::after,
+#submission-phase h2::after,
+#voting-phase h2::after,
+#scoreboard-phase h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    border-radius: 3px;
+}
+
+#prompt-selection h2::after {
+    background: linear-gradient(to right, #805ad5, #6b46c1);
+}
+
+#submission-phase h2::after {
+    background: linear-gradient(to right, #4299e1, #3182ce);
+}
+
+#voting-phase h2::after {
+    background: linear-gradient(to right, #48bb78, #38a169);
+}
+
+#scoreboard-phase h2::after {
+    background: linear-gradient(to right, #ed8936, #dd6b20);
+}
+
+/* Phase indicator pills for persistent phase tracking */
+.phase-indicator-container {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0 25px;
+    gap: 8px;
+}
+
+.phase-indicator-pill {
+    height: 8px;
+    border-radius: 4px;
+    flex: 1;
+    max-width: 70px;
+    background: #e2e8f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.phase-indicator-pill.active {
+    background: #a0aec0;
+}
+
+.phase-indicator-pill.completed {
+    background: #68d391;
+}
+
+.phase-indicator-pill.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pill-progress 1.5s infinite;
+}
+
+@keyframes pill-progress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+}
+
+/* Phase transition animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#prompt-selection:not(.hidden),
+#submission-phase:not(.hidden),
+#voting-phase:not(.hidden),
+#scoreboard-phase:not(.hidden) {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Phase card styling for content sections */
+.phase-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Enhance the phase explanations */
+.phase-explanation {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #a0aec0;
+}
+
+.instruction {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #4a5568;
+}
