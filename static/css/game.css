@@ -90,22 +90,23 @@ h1 {
     gap: 10px;
 }
 
-.instructions-link {
-    font-size: 1.2rem;
+.instructions-button {
+    font-size: 0.85rem;
+    background-color: #f0f2ff;
     color: #667eea;
-    text-decoration: none;
-    width: 32px;
-    height: 32px;
+    border: 1px solid #dbe1ff;
+    border-radius: 5px;
+    padding: 4px 8px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    gap: 5px;
     transition: all 0.2s ease;
 }
 
-.instructions-link:hover {
-    background-color: #f0f2ff;
-    transform: scale(1.1);
+.instructions-button:hover {
+    background-color: #e2e7ff;
+    transform: translateY(-1px);
 }
 
 .status-bar {

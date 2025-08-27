@@ -8,9 +8,40 @@
     <link rel="stylesheet" href="/static/css/index.css">
     <style>
         /* Specific styles for instructions page */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 10px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f2ff;
+            padding-bottom: 8px;
+        }
+        
         .back-button {
-            display: block;
-            margin: 20px 0;
+            display: inline-block;
             padding: 10px 20px;
             background: #667eea;
             color: white;
@@ -18,108 +49,100 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
-            text-align: center;
             text-decoration: none;
+            margin: 20px 0;
         }
+        
         .back-button:hover {
             background: #5a67d8;
         }
-        .instructions-page .container {
-            max-width: 800px;
-        }
+        
         .instructions-content {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            padding: 0 10px;
         }
-        /* Print button styles */
-        .print-button {
-            background: #eee;
-            color: #333;
-            margin-left: 10px;
+        
+        .quick-start {
+            background-color: #f5f7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
-        .button-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
+        
+        ol, ul {
+            padding-left: 25px;
+            margin-bottom: 15px;
         }
-        /* For screens smaller than 600px */
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background-color: #fff4e5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
         @media (max-width: 600px) {
-            .button-row {
-                flex-direction: column;
-                gap: 10px;
+            .container {
+                padding: 15px;
             }
-            .print-button {
-                margin-left: 0;
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 
-<body class="instructions-page">
+<body>
     <div class="container">
-        <h1>🎯 Bribery</h1>
+        <h1>🎯 Bribery - Game Rules</h1>
         
-        <div class="button-row">
-            <a href="javascript:history.back()" class="back-button">← Back</a>
-            <button onclick="window.print()" class="back-button print-button">🖨️ Print</button>
-        </div>
+        <button onclick="history.back()" class="back-button">← Back to Game</button>
         
         <div class="instructions-content">
-            <h2>How Bribery Works</h2>
-            <p>Bribery is a creative game of persuasion and voting:</p>
+            <div class="quick-start">
+                <h2>Quick Start</h2>
+                <p>Bribery is a party game about creativity and persuasion:</p>
+                <ol>
+                    <li>Each player creates a <strong>prompt</strong> for others to respond to</li>
+                    <li>You'll create <strong>bribes</strong> to win points from other players</li>
+                    <li>You'll vote for your <strong>favourite bribe</strong> from others</li>
+                    <li><strong>Player with most points wins!</strong></li>
+                </ol>
+            </div>
+            
+            <h2>How a Round Works</h2>
             <ol>
-                <li><strong>Each round, you'll receive a point to award</strong> to one of your bribers</li>
-                <li><strong>You'll choose a prompt</strong> that other players will use when bribing you</li>
-                <li><strong>Two other players will submit creative "bribes"</strong> to win your point</li>
-                <li><strong>You'll vote for your favourite bribe</strong> and award them your point</li>
-                <li><strong>Meanwhile, you'll be creating bribes</strong> to win points from other players</li>
-                <li><strong>The player with the most points at the end wins!</strong></li>
+                <li><strong>Prompt Creation:</strong> Choose a prompt for others to use when bribing you</li>
+                <li><strong>Bribe Creation:</strong> Craft creative bribes for your assigned targets</li>
+                <li><strong>Voting:</strong> Review the bribes you received and vote for your favourite</li>
+                <li><strong>Results:</strong> See who won points and current standings</li>
             </ol>
             
-            <h3>Detailed Gameplay</h3>
-            <h4>Round Structure:</h4>
-            <ol>
-                <li><strong>Target Selection:</strong> Each player selects a prompt for others to use when bribing them</li>
-                <li><strong>Bribe Creation:</strong> Players create bribes for their assigned targets</li>
-                <li><strong>Voting:</strong> Players vote on the bribes they received</li>
-                <li><strong>Results:</strong> Points are awarded and scores are updated</li>
-            </ol>
-            
-            <h4>Bribes Can Include:</h4>
+            <h2>Tips for Better Bribes</h2>
             <ul>
-                <li>Text responses</li>
-                <li>Images and GIFs</li>
-                <li>Links to videos or websites</li>
-                <li>Any creative content that might win a vote!</li>
+                <li><strong>Be creative</strong> - You can use text, images, GIFs, or links</li>
+                <li><strong>Know your audience</strong> - Personalize bribes to your target</li>
+                <li><strong>Keep it fun</strong> - The goal is entertainment, not serious competition</li>
             </ul>
             
-            <h3>Tips for Success</h3>
-            <ul class="tips-list">
-                <li><strong>Be creative with prompts:</strong> Choose prompts that inspire fun and creative responses</li>
-                <li><strong>Know your audience:</strong> Personalize your bribes to what you know about the other player</li>
-                <li><strong>Have fun with it:</strong> Don't be afraid to be silly or over-the-top</li>
-                <li><strong>Mix it up:</strong> Try different types of bribes (text, images, etc.) to see what works best</li>
-                <li><strong>Keep it appropriate:</strong> Remember that bribes are visible to everyone in the game</li>
-            </ul>
-            
-            <h3>Game Settings</h3>
-            <p>The host can customize:</p>
+            <h2>Game Settings</h2>
+            <p>The host can adjust:</p>
             <ul>
-                <li><strong>Number of rounds:</strong> Choose how long the game will last</li>
-                <li><strong>Time limits:</strong> Set optional timers for each phase</li>
-                <li><strong>Custom prompts:</strong> Use community-created prompts or defaults</li>
+                <li>Number of rounds (3, 5, or 7)</li>
+                <li>Time limits for each phase</li>
+                <li>Custom prompt options</li>
             </ul>
         </div>
         
-        <div class="button-row" style="margin-top: 30px;">
-            <a href="javascript:history.back()" class="back-button">← Back</a>
-        </div>
-        
-        <!-- Version number (inconspicuous) -->
-        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 20px;">Bribery Game</div>
+        <button onclick="history.back()" class="back-button">← Back to Game</button>
     </div>
 </body>
 
