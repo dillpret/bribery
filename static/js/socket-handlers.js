@@ -208,7 +208,7 @@ socket.on('prompt_selection_started', (data) => {
 
     updateStatus('Choose your prompt for this round!');
     
-    // Start prompt selection timer (prompt selection always has a 30-second timer)
+    // Start prompt selection timer if time limit is set
     if (data.time_limit > 0) {
         startTimer(data.time_limit, () => {
             // Auto-select prompt if user has made a selection but not confirmed
@@ -222,7 +222,7 @@ socket.on('prompt_selection_started', (data) => {
             }
         });
     } else {
-        // This shouldn't normally happen as prompt selection has a fixed timer
+        // No timer for prompt selection - hide timer element
         document.getElementById('timer').classList.add('hidden');
     }
 });
