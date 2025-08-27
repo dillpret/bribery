@@ -152,7 +152,8 @@ class Game:
             
             # Find a player targeting the donor and redirect to recipient
             for player_id, targets in pairings.items():
-                if donor in targets and player_id != recipient:
+                # Never assign a player to bribe themselves
+                if donor in targets and player_id != recipient and recipient != player_id:
                     # Replace donor with recipient in this player's targets
                     targets[targets.index(donor)] = recipient
                     # Update counts
@@ -174,6 +175,20 @@ class Game:
                         self.past_bribe_targets[player_id].append(recipient)
                     
                     break
+        
+        # Final verification: ensure no player is assigned to bribe themselves
+        for player_id, targets in pairings.items():
+            if player_id in targets:
+                # Find a safe swap with another player's targets
+                for other_id, other_targets in pairings.items():
+                    if other_id != player_id and player_id not in other_targets:
+                        # Swap a target between these players
+                        for target in other_targets:
+                            if target != other_id and target not in targets:
+                                # Safe to swap
+                                targets[targets.index(player_id)] = target
+                                other_targets[other_targets.index(target)] = player_id
+                                break
         
         return pairings
 
