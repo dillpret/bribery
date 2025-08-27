@@ -1,57 +1,58 @@
 /* Logo styling */
 .logo-wrapper {
     position: relative;
-    margin-bottom: 15px;
+    margin: 5px 0 20px;
+    padding: 5px 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .hero-logo {
     max-width: 280px;
-    width: 90%;
+    width: 100%;
     height: auto;
-    margin-bottom: 5px;
+    max-height: 140px;
+    margin: 10px 0 15px;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
     transition: transform 0.3s ease-in-out;
+    object-fit: contain;
 }
 
 .hero-logo:hover {
     transform: scale(1.02);
 }
 
-/* Logo animation for page load */
-@keyframes logoReveal {
-    0% {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Fallback logo styling */
+.hero-logo-fallback {
+    display: none;
+    font-size: 2.2rem;
+    color: #764ba2;
+    font-weight: bold;
+    margin: 0;
 }
 
-.logo-wrapper {
-    animation: logoReveal 0.8s ease-out forwards;
+/* Show fallback only when image fails to load */
+.hero-logo[src=""], 
+.hero-logo:not([src]),
+.hero-logo[src="error"],
+.hero-logo.error {
+    display: none;
+}
+
+.hero-logo[src=""] ~ .hero-logo-fallback, 
+.hero-logo:not([src]) ~ .hero-logo-fallback,
+.hero-logo[src="error"] ~ .hero-logo-fallback,
+.hero-logo.error ~ .hero-logo-fallback {
+    display: block;
 }
 
 /* Responsive adjustments */
 @media (min-width: 640px) {
     .hero-logo {
         max-width: 320px;
+        max-height: 160px;
     }
-}
-
-/* Fallback if image fails to load */
-.hero-logo-fallback {
-    display: none;
-}
-
-img.hero-logo[src=""] + .hero-logo-fallback,
-img.hero-logo:not([src]) + .hero-logo-fallback {
-    display: block;
-    font-size: 2.5rem;
-    color: #764ba2;
-    font-weight: bold;
 }

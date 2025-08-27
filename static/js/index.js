@@ -3,10 +3,22 @@ const socket = io();
 let currentGameId = null;
 let currentPlayerId = null;
 
-// Animation for elements on page load
+// Setup on page load
 document.addEventListener('DOMContentLoaded', function() {
     animateElements();
+    setupLogoHandling();
 });
+
+function setupLogoHandling() {
+    const logo = document.querySelector('.hero-logo');
+    
+    // Handle logo load errors
+    if (logo) {
+        logo.addEventListener('error', function() {
+            this.classList.add('error');
+        });
+    }
+}
 
 function animateElements() {
     const elements = document.querySelectorAll('.hero-container, .hero-card, .button-container');

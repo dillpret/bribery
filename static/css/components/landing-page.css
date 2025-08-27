@@ -6,10 +6,11 @@
     padding: 30px 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     max-width: 500px;
-    width: calc(100% - 20px); /* Ensure there's room for padding */
+    width: calc(100% - 30px); /* Ensure there's room for padding */
     text-align: center;
     position: relative;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 h1 {
@@ -22,72 +23,23 @@ h1 {
 .subtitle {
     color: #666;
     margin-bottom: 25px;
-    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    font-size: clamp(1rem, 3vw, 1.2rem);
     line-height: 1.4;
 }
 
 /* Animation setup */
-.hero-container, .hero-card, .button-container {
+.hero-container, 
+.hero-card, 
+.button-container {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.time-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.time-input-container select,
-.time-input-container input[type="number"] {
-    width: 100%;
-}
-
-.time-controls {
-    display: flex;
-    gap: 8px;
-    margin-top: 5px;
-}
-
-.time-controls input[type="number"] {
-    flex: 1;
-    min-width: 0;
-}
-
-.time-controls select {
-    flex: 0 0 auto;
-    width: 120px;
-    min-width: 100px;
-}
-
-/* On smaller screens, stack vertically */
-@media (max-width: 480px) {
-    .time-controls {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .time-controls select {
-        width: 100%;
-    }
-}
-
-.settings-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
 }
 
 /* Desktop styles */
 @media (min-width: 640px) {
     .container {
         padding: 40px;
-    }
-
-    .settings-grid {
-        grid-template-columns: 1fr 1fr;
     }
 
     h1 {
@@ -97,6 +49,12 @@ h1 {
     .subtitle {
         margin-bottom: 30px;
     }
+}
+
+.or-divider {
+    margin: 15px 0;
+    color: #999;
+    font-size: 18px;
 }
 
 .or-divider {

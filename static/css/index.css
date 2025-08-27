@@ -37,12 +37,13 @@ body {
 
 .how-to-play-button {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.4);
-    color: #444 !important;
-    padding: 8px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #5a5a8e;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     -webkit-appearance: none;
@@ -51,11 +52,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .how-to-play-button .instructions-icon {
-    margin-right: 8px;
+    margin-right: 10px;
     display: inline-block;
+    font-size: 1.1em;
 }
 
 .how-to-play-button .toggle-icon {
@@ -69,8 +72,9 @@ body {
 }
 
 .how-to-play-button:hover {
-    background-color: rgba(255, 255, 255, 0.6);
-    color: #444 !important;
+    background-color: #ffffff;
+    color: #667eea !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .game-instructions-panel {

@@ -8,21 +8,6 @@
     position: relative;
 }
 
-.logo-wrapper {
-    position: relative;
-    margin-bottom: 10px;
-    transform-style: preserve-3d;
-    perspective: 500px;
-}
-
-.hero-emoji {
-    font-size: 3.5rem;
-    position: relative;
-    display: inline-block;
-    animation: float 3s ease-in-out infinite;
-    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-}
-
 .hero-card {
     border-radius: 16px;
     background: linear-gradient(to bottom right, #f0f4ff, #e6eeff);
@@ -33,19 +18,7 @@
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-.game-tagline {
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-    line-height: 1.5;
-}
-
-.tagline-highlight {
-    color: #667eea;
-    font-weight: 600;
-}
-
+/* Button styles */
 .button-container {
     display: flex;
     flex-direction: column;
@@ -60,6 +33,7 @@
     font-size: 1.1em;
 }
 
+/* Primary action button */
 .primary-action-btn {
     position: relative;
     overflow: hidden;
@@ -71,11 +45,130 @@
     padding: 16px 24px;
     width: 100%;
     border-radius: 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
     box-shadow: 0 10px 20px rgba(102, 126, 234, 0.25);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+}
+
+.primary-action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+}
+
+.primary-action-btn:active {
+    transform: translateY(0);
+}
+
+/* Secondary action button */
+.secondary-action-btn {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    min-height: 56px;
+    font-size: 17px;
+    font-weight: 700;
+    width: 100%;
+    margin: 0;
+    padding: 14px 24px;
+    border-radius: 28px;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secondary-action-btn:hover {
+    background: rgba(102, 126, 234, 0.05);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+}
+
+.secondary-action-btn:active {
+    transform: translateY(0);
+}
+
+/* Form styling */
+.form-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-action-buttons button {
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-action-buttons button:first-child {
+    background: white;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.form-action-buttons button:last-child {
+    flex: 2;
+}
+
+/* Game created section */
+.game-created-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.game-created-actions button {
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-id-display {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    border: 1px solid #e0e6ff;
+}
+
+.game-id-code {
+    font-size: 32px;
+    font-weight: 700;
+    color: #667eea;
+    letter-spacing: 3px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin: 10px 0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+    .button-container {
+        flex-direction: row;
+    }
+    
+    .button-container button {
+        flex: 1;
+    }
 }
 
 .primary-action-btn:hover {
