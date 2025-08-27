@@ -303,15 +303,24 @@ socket.on('your_targets', (data) => {
         const targetEl = document.createElement('div');
         targetEl.className = 'target-item';
         targetEl.innerHTML = `
-            <h4>Bribe for: ${target.name}</h4>
-            <p class="target-prompt"><strong>Their prompt:</strong> "${target.prompt}"</p>
+            <div class="target-header">
+                <h4>Bribe for: <span class="target-name">${target.name}</span></h4>
+                <div class="target-prompt-container">
+                    <p class="target-prompt"><strong>Their prompt:</strong> "${target.prompt}"</p>
+                    <p class="bribe-explanation">Create something that might convince ${target.name} to give you their point!</p>
+                </div>
+            </div>
             <div class="submission-area">
-                <textarea class="submission-input" id="submission-${target.id}" 
-                        placeholder="Enter your bribe for this prompt (text, link, or paste an image)..."></textarea>
+                <div class="submission-options">
+                    <div class="option-label">Option 1: Text or Link</div>
+                    <textarea class="submission-input" id="submission-${target.id}" 
+                            placeholder="Enter your bribe here - text, link to GIF/meme, or anything creative..."></textarea>
+                </div>
                 <div class="image-upload-container">
+                    <div class="option-label">Option 2: Image</div>
                     <div class="drag-drop-area" id="drop-${target.id}">
-                        <span class="drag-drop-text">Or drag and drop an image here</span>
-                        <span class="mobile-upload-text">Or tap to add an image</span>
+                        <span class="drag-drop-text">Drag and drop an image here</span>
+                        <span class="mobile-upload-text">Tap to add an image</span>
                     </div>
                     <input type="file" 
                            id="file-input-${target.id}" 
@@ -383,21 +392,39 @@ socket.on('voting_phase', (data) => {
         playerPromptElement.classList.remove('hidden');
     }
 
-    data.bribes.forEach(bribe => {
+    // Add clear instruction for voting
+    const instructionEl = document.createElement('div');
+    instructionEl.className = 'voting-instruction';
+    instructionEl.innerHTML = '<p>Click on a bribe below to select it:</p>';
+    votingOptions.appendChild(instructionEl);
+
+    data.bribes.forEach((bribe, index) => {
         const option = document.createElement('div');
         option.className = 'bribe-option';
         option.onclick = () => selectVote(bribe.id, option);
 
+        // Add a clear label for each option
+        const optionNumber = index + 1;
+        const optionHeader = document.createElement('div');
+        optionHeader.className = 'bribe-option-header';
+        optionHeader.innerHTML = `<span class="bribe-number">Option ${optionNumber}</span>`;
+        option.appendChild(optionHeader);
+
+        // Create content container
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'bribe-content-container';
+
         if (bribe.type === 'image' || bribe.type === 'gif') {
             const imageClass = bribe.type === 'gif' ? 'bribe-image gif-preview' : 'bribe-image';
-            option.innerHTML = `
+            contentContainer.innerHTML = `
                 <div class="bribe-image-container">
                     <img src="${bribe.content}" class="${imageClass}" alt="Bribe ${bribe.type}" loading="lazy">
                 </div>`;
         } else {
-            option.innerHTML = `<div class="bribe-content">${bribe.content}</div>`;
+            contentContainer.innerHTML = `<div class="bribe-content">${bribe.content}</div>`;
         }
-
+        
+        option.appendChild(contentContainer);
         votingOptions.appendChild(option);
     });
 

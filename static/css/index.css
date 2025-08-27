@@ -27,20 +27,42 @@ body {
     display: none;
 }
 
-/* How To Play Button and Modal */
+/* How To Play Button and Panel */
+.game-instructions-wrapper {
+    width: 100%;
+    margin-top: 20px;
+}
+
 .how-to-play-button {
+    width: 100%;
     background-color: rgba(255, 255, 255, 0.4);
     color: #444 !important;
     padding: 8px 16px;
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 20px;
     font-size: 14px;
-    margin-top: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
     text-transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.how-to-play-button .instructions-icon {
+    margin-right: 6px;
+}
+
+.how-to-play-button .toggle-icon {
+    margin-left: 6px;
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+.how-to-play-button[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
 }
 
 .how-to-play-button:hover {
@@ -48,50 +70,30 @@ body {
     color: #444 !important;
 }
 
-.game-instructions-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: none; /* Changed from flex to none for initial state */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.game-instructions-modal.hidden {
-    display: none;
-}
-
-.game-instructions-modal:not(.hidden) {
-    display: flex;
-}
-
-.game-instructions-modal-content {
+.game-instructions-panel {
     background: white;
-    padding: 20px;
     border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    margin-top: 10px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.3s ease, margin 0.3s ease;
 }
 
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
+.game-instructions-panel.hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
-.close-button:hover {
-    color: #333;
+.game-instructions-panel:not(.hidden) {
+    max-height: 800px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .instructions {
@@ -112,4 +114,18 @@ body {
 .instructions li {
     margin-bottom: 8px;
     line-height: 1.3;
+}
+
+.instructions .tips-heading {
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.instructions .tips-list {
+    margin-left: 20px;
+    list-style-type: disc;
+}
+
+.instructions strong {
+    color: #667eea;
 }

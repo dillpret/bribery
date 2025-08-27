@@ -11,6 +11,7 @@
 @import url('components/reconnection.css');
 @import url('components/toasts.css');
 @import url('components/connection-status.css');
+@import url('components/phase-explanation.css');
 
 /* Global styles - Mobile First */
 * {
@@ -128,12 +129,44 @@ h1 {
     background: white;
     border: 2px solid #667eea;
     border-radius: 12px;
-    padding: 15px;
+    padding: 20px;
+    margin: 16px 0 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.target-header {
+    margin-bottom: 15px;
+}
+
+.target-name {
+    color: #667eea;
+    font-weight: bold;
+}
+
+.target-prompt-container {
     margin: 12px 0;
 }
 
+.bribe-explanation {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
 .submission-area {
-    margin-top: 12px;
+    margin-top: 15px;
+}
+
+.submission-options {
+    margin-bottom: 15px;
+}
+
+.option-label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .submission-input {
@@ -160,18 +193,45 @@ h1 {
     text-align: center;
 }
 
+.voting-instruction {
+    margin: 15px 0 5px;
+    text-align: left;
+    color: #666;
+    font-weight: bold;
+}
+
 .bribe-option {
     background: white;
     border: 2px solid #e0e0e0;
     border-radius: 15px;
     padding: 16px;
-    margin: 12px 0;
+    margin: 15px 0;
     cursor: pointer;
     transition: all 0.3s;
     min-height: 60px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     -webkit-tap-highlight-color: transparent;
+}
+
+.bribe-option-header {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.bribe-number {
+    background-color: #667eea;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.bribe-content-container {
+    display: flex;
+    align-items: center;
 }
 
 .bribe-option:hover,

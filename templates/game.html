@@ -131,11 +131,19 @@
         <div id="prompt-selection" class="hidden">
             <div class="prompt-selection-content">
                 <h2 id="prompt-round-title"></h2>
-                <p class="instruction">Choose the prompt that other players will use when bribing you:</p>
+                <div class="phase-explanation">
+                    <p>
+                        <span class="phase-badge">Phase 1 of 4:</span> Prompt Selection
+                    </p>
+                    <p class="instruction">
+                        <strong>Choose a prompt that other players will use when bribing you.</strong><br>
+                        This is what two other players will respond to when trying to win your point!
+                    </p>
+                </div>
 
                 <div class="prompt-selector">
                     <div class="prompt-option-section">
-                        <h3>Choose from suggested prompts:</h3>
+                        <h3>Option 1: Choose from suggested prompts:</h3>
                         <select id="prompt-dropdown" onchange="onPromptDropdownChange()">
                             <option value="">Select a prompt...</option>
                         </select>
@@ -146,7 +154,7 @@
                     </div>
 
                     <div class="prompt-option-section">
-                        <h3>Type your own custom prompt:</h3>
+                        <h3>Option 2: Type your own custom prompt:</h3>
                         <textarea id="custom-prompt-input" placeholder="Enter your custom prompt here..."
                             maxlength="200"></textarea>
                     </div>
@@ -157,7 +165,7 @@
                 </div>
 
                 <div class="help-text">
-                    <p><strong>Tip:</strong> Choose a prompt that will inspire creative and funny bribes!</p>
+                    <p><strong>Tip:</strong> Choose a prompt that will inspire creative and funny bribes! Examples: "The best way to spend a weekend," "Something that would convince me to give you my last cookie," etc.</p>
                 </div>
             </div>
         </div>
@@ -166,6 +174,15 @@
         <div id="submission-phase" class="hidden">
             <div class="round-info">
                 <h2 id="round-title"></h2>
+                <div class="phase-explanation">
+                    <p>
+                        <span class="phase-badge">Phase 2 of 4:</span> Bribery Creation
+                    </p>
+                    <p class="instruction">
+                        <strong>Create bribes to win points from other players!</strong><br>
+                        Respond to each player's prompt with something creative and convincing.
+                    </p>
+                </div>
                 <div class="prompt" id="current-prompt"></div>
                 <div id="submission-progress" class="progress-indicator">
                     <p id="submission-progress-text">0/0 players finished</p>
@@ -178,6 +195,15 @@
         <div id="voting-phase" class="hidden">
             <div class="voting-content">
                 <h2>Time to Vote!</h2>
+                <div class="phase-explanation">
+                    <p>
+                        <span class="phase-badge">Phase 3 of 4:</span> Voting
+                    </p>
+                    <p class="instruction">
+                        <strong>Choose your favourite bribe!</strong><br>
+                        Two players have created bribes based on your prompt. Vote for the one you like best.
+                    </p>
+                </div>
                 <div id="voting-progress" class="progress-indicator">
                     <p id="voting-progress-text">0/0 players voted</p>
                 </div>
@@ -195,7 +221,15 @@
         <div id="scoreboard-phase" class="hidden">
             <div class="round-info">
                 <h2 id="scoreboard-title"></h2>
-                <p class="round-subtitle">See who won each prompt and their winning bribes below!</p>
+                <div class="phase-explanation">
+                    <p>
+                        <span class="phase-badge">Phase 4 of 4:</span> Round Results
+                    </p>
+                    <p class="round-subtitle">
+                        <strong>See who won points this round!</strong><br>
+                        The winning bribes for each prompt are shown below.
+                    </p>
+                </div>
             </div>
             <div id="vote-results" class="vote-results hidden"></div>
             <div class="scoreboard" id="scoreboard"></div>

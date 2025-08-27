@@ -161,43 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // How To Play button and modal
+    // How To Play button and panel
     const howToPlayBtn = document.getElementById('how-to-play-btn');
-    const howToPlayModal = document.getElementById('how-to-play-modal');
-    const closeButton = document.querySelector('.close-button');
+    const instructionsPanel = document.getElementById('game-instructions-panel');
 
-    if (howToPlayBtn && howToPlayModal) {
-        // Open modal when button is clicked - using delay and style property changes to avoid ad blockers
+    if (howToPlayBtn && instructionsPanel) {
+        // Toggle instructions panel when button is clicked
         howToPlayBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Small delay to differentiate from automatic popups
-            setTimeout(() => {
-                howToPlayModal.style.display = 'flex';
-                howToPlayModal.classList.remove('hidden');
-            }, 50);
-        });
-
-        // Close modal when close button is clicked
-        if (closeButton) {
-            closeButton.addEventListener('click', function() {
-                howToPlayModal.style.display = 'none';
-                howToPlayModal.classList.add('hidden');
-            });
-        }
-
-        // Close modal when clicking outside the modal content
-        howToPlayModal.addEventListener('click', function(e) {
-            if (e.target === howToPlayModal) {
-                howToPlayModal.style.display = 'none';
-                howToPlayModal.classList.add('hidden');
-            }
-        });
-
-        // Close modal when Escape key is pressed
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !howToPlayModal.classList.contains('hidden')) {
-                howToPlayModal.style.display = 'none';
-                howToPlayModal.classList.add('hidden');
+            const isExpanded = howToPlayBtn.getAttribute('aria-expanded') === 'true';
+            
+            if (isExpanded) {
+                instructionsPanel.classList.add('hidden');
+                howToPlayBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                instructionsPanel.classList.remove('hidden');
+                howToPlayBtn.setAttribute('aria-expanded', 'true');
             }
         });
     }

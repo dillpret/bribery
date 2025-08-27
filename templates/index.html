@@ -64,25 +64,31 @@
         <!-- Error Display -->
         <div id="error-message" class="error hidden"></div>
         
-        <!-- How To Play Button -->
-        <button id="how-to-play-btn" class="how-to-play-button" data-action="open-instructions">How To Play</button>
-        
-        <!-- How To Play Modal -->
-        <div id="how-to-play-modal" class="game-instructions-modal hidden" role="dialog" aria-labelledby="instructions-title">
-            <div class="game-instructions-modal-content">
-                <span class="close-button" data-action="close-instructions">&times;</span>
-                <h2 id="instructions-title">How To Play</h2>
+        <!-- Inline How To Play Section -->
+        <div class="game-instructions-wrapper">
+            <button id="how-to-play-btn" class="how-to-play-button" aria-expanded="false">
+                <span class="instructions-icon">📖</span> How To Play <span class="toggle-icon">▼</span>
+            </button>
+            
+            <div id="game-instructions-panel" class="game-instructions-panel hidden">
+                <h2 id="instructions-title">How Bribery Works</h2>
                 <div class="instructions">
                     <p>Bribery is a creative game of persuasion and voting:</p>
                     <ol>
-                        <li>Each player has one point to give away each round</li>
-                        <li>You'll create or select a prompt for other players to answer</li>
-                        <li>Two players will submit creative "bribes" to win your point</li>
-                        <li>Choose your favourite bribe and award them your point</li>
-                        <li>Meanwhile, you'll be creating bribes to win points from others</li>
-                        <li>The player with the most points at the end wins!</li>
+                        <li><strong>Each round, you'll receive a point to award</strong> to one of your bribers</li>
+                        <li><strong>You'll choose a prompt</strong> that other players will use when bribing you</li>
+                        <li><strong>Two other players will submit creative "bribes"</strong> to win your point</li>
+                        <li><strong>You'll vote for your favourite bribe</strong> and award them your point</li>
+                        <li><strong>Meanwhile, you'll be creating bribes</strong> to win points from other players</li>
+                        <li><strong>The player with the most points at the end wins!</strong></li>
                     </ol>
-                    <p>It's all about creativity, humour, and knowing your audience!</p>
+                    <p class="tips-heading">Tips for Success:</p>
+                    <ul class="tips-list">
+                        <li>Create prompts that inspire creativity and fun responses</li>
+                        <li>Personalize your bribes to what you know about the other player</li>
+                        <li>Text, images, GIFs, and links are all valid bribes</li>
+                        <li>Remember, it's all about creativity, humour, and knowing your audience!</li>
+                    </ul>
                 </div>
             </div>
         </div>
