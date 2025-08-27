@@ -85,6 +85,27 @@ h1 {
 .game-info {
     color: #666;
     font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.instructions-link {
+    font-size: 1.2rem;
+    color: #667eea;
+    text-decoration: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.instructions-link:hover {
+    background-color: #f0f2ff;
+    transform: scale(1.1);
 }
 
 .status-bar {

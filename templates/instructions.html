@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>How To Play Bribery</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <style>
+        /* Specific styles for instructions page */
+        .back-button {
+            display: block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background: #5a67d8;
+        }
+        .instructions-page .container {
+            max-width: 800px;
+        }
+        .instructions-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        /* Print button styles */
+        .print-button {
+            background: #eee;
+            color: #333;
+            margin-left: 10px;
+        }
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        /* For screens smaller than 600px */
+        @media (max-width: 600px) {
+            .button-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .print-button {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="instructions-page">
+    <div class="container">
+        <h1>🎯 Bribery</h1>
+        
+        <div class="button-row">
+            <a href="javascript:history.back()" class="back-button">← Back</a>
+            <button onclick="window.print()" class="back-button print-button">🖨️ Print</button>
+        </div>
+        
+        <div class="instructions-content">
+            <h2>How Bribery Works</h2>
+            <p>Bribery is a creative game of persuasion and voting:</p>
+            <ol>
+                <li><strong>Each round, you'll receive a point to award</strong> to one of your bribers</li>
+                <li><strong>You'll choose a prompt</strong> that other players will use when bribing you</li>
+                <li><strong>Two other players will submit creative "bribes"</strong> to win your point</li>
+                <li><strong>You'll vote for your favourite bribe</strong> and award them your point</li>
+                <li><strong>Meanwhile, you'll be creating bribes</strong> to win points from other players</li>
+                <li><strong>The player with the most points at the end wins!</strong></li>
+            </ol>
+            
+            <h3>Detailed Gameplay</h3>
+            <h4>Round Structure:</h4>
+            <ol>
+                <li><strong>Target Selection:</strong> Each player selects a prompt for others to use when bribing them</li>
+                <li><strong>Bribe Creation:</strong> Players create bribes for their assigned targets</li>
+                <li><strong>Voting:</strong> Players vote on the bribes they received</li>
+                <li><strong>Results:</strong> Points are awarded and scores are updated</li>
+            </ol>
+            
+            <h4>Bribes Can Include:</h4>
+            <ul>
+                <li>Text responses</li>
+                <li>Images and GIFs</li>
+                <li>Links to videos or websites</li>
+                <li>Any creative content that might win a vote!</li>
+            </ul>
+            
+            <h3>Tips for Success</h3>
+            <ul class="tips-list">
+                <li><strong>Be creative with prompts:</strong> Choose prompts that inspire fun and creative responses</li>
+                <li><strong>Know your audience:</strong> Personalize your bribes to what you know about the other player</li>
+                <li><strong>Have fun with it:</strong> Don't be afraid to be silly or over-the-top</li>
+                <li><strong>Mix it up:</strong> Try different types of bribes (text, images, etc.) to see what works best</li>
+                <li><strong>Keep it appropriate:</strong> Remember that bribes are visible to everyone in the game</li>
+            </ul>
+            
+            <h3>Game Settings</h3>
+            <p>The host can customize:</p>
+            <ul>
+                <li><strong>Number of rounds:</strong> Choose how long the game will last</li>
+                <li><strong>Time limits:</strong> Set optional timers for each phase</li>
+                <li><strong>Custom prompts:</strong> Use community-created prompts or defaults</li>
+            </ul>
+        </div>
+        
+        <div class="button-row" style="margin-top: 30px;">
+            <a href="javascript:history.back()" class="back-button">← Back</a>
+        </div>
+        
+        <!-- Version number (inconspicuous) -->
+        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 20px;">Bribery Game</div>
+    </div>
+</body>
+
+</html>

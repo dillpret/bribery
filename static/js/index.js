@@ -161,23 +161,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // How To Play button and panel
-    const howToPlayBtn = document.getElementById('how-to-play-btn');
-    const instructionsPanel = document.getElementById('game-instructions-panel');
-
-    if (howToPlayBtn && instructionsPanel) {
-        // Toggle instructions panel when button is clicked
-        howToPlayBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const isExpanded = howToPlayBtn.getAttribute('aria-expanded') === 'true';
-            
-            if (isExpanded) {
-                instructionsPanel.classList.add('hidden');
-                howToPlayBtn.setAttribute('aria-expanded', 'false');
-            } else {
-                instructionsPanel.classList.remove('hidden');
-                howToPlayBtn.setAttribute('aria-expanded', 'true');
-            }
-        });
-    }
+    // Any additional event listeners or initialization can go here
 });

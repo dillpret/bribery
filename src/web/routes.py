@@ -28,6 +28,10 @@ def register_routes(app):
     @app.route('/bribery/<game_id>')
     def bribery_game_page(game_id):
         return render_template('game.html', game_id=game_id, version=version)
+        
+    @app.route('/instructions')
+    def instructions_page():
+        return render_template('instructions.html', version=version)
     
     # Keep the old route for backwards compatibility (optional)
     @app.route('/game/<game_id>')
