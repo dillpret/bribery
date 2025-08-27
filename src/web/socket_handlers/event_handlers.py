@@ -60,7 +60,7 @@ def handle_create_game(data):
         'submission_time': data.get('submission_time', 0),  # 0 means wait for all players
         'voting_time': data.get('voting_time', 0),  # 0 means wait for all players
         'results_time': data.get('results_time', 0),  # 0 means host controls next round
-        'prompt_selection_time': data.get('prompt_selection_time', 30),  # Default 30 seconds
+        'prompt_selection_time': data.get('prompt_selection_time', 0),  # 0 means wait for all players
         'custom_prompts': data.get('custom_prompts', False)
     }
 
