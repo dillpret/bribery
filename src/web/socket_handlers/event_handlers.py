@@ -491,7 +491,7 @@ def handle_update_settings(data):
         return
     
     # Input validation for each setting
-    if 'rounds' in data and isinstance(data['rounds'], int) and 1 <= data['rounds'] <= 10:
+    if 'rounds' in data and isinstance(data['rounds'], int) and 1 <= data['rounds'] <= 100:
         game.settings['rounds'] = data['rounds']
         
     if 'submission_time' in data and isinstance(data['submission_time'], int) and 0 <= data['submission_time'] <= 600:

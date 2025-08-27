@@ -94,8 +94,21 @@ function getTimeInSeconds(baseId) {
 }
 
 function updateSettings() {
+    // Validate rounds input
+    const roundsInput = document.getElementById('rounds');
+    let rounds = parseInt(roundsInput.value);
+    
+    // Ensure rounds is within valid range
+    if (isNaN(rounds) || rounds < 1) {
+        rounds = 1;
+        roundsInput.value = 1;
+    } else if (rounds > 100) {
+        rounds = 100;
+        roundsInput.value = 100;
+    }
+    
     const settings = {
-        rounds: parseInt(document.getElementById('rounds').value),
+        rounds: rounds,
         submission_time: getTimeInSeconds('submission-time'),
         voting_time: getTimeInSeconds('voting-time'),
         results_time: getTimeInSeconds('results-time'),
