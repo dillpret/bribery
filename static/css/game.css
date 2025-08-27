@@ -12,6 +12,7 @@
 @import url('components/toasts.css');
 @import url('components/connection-status.css');
 @import url('components/phase-explanation.css');
+@import url('components/error-banner.css');
 
 /* Global styles - Mobile First */
 * {

@@ -115,7 +115,13 @@ def handle_join_game(data):
             break
             
     if not game:
-        emit('error', {'message': 'Game not found. Check your game code and try again.'})
+        # Send specific 'game_not_found' event for better user experience
+        emit('game_not_found', {'message': 'Game not found. Check your game code and try again.'})
+        return
+        
+    # Check if the game has already finished
+    if game.state == "finished":
+        emit('game_ended', {'message': 'This game has already ended.'})
         return
 
     # Import here to avoid circular imports

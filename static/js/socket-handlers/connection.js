@@ -79,6 +79,20 @@ export function registerConnectionHandlers(socket, GameState, hideAllScreens, up
     });
 
     socket.on('error', (data) => {
-        alert('Error: ' + data.message);
+        // Check if error is related to game not found
+        if (data.message && (data.message.includes('Game not found') || 
+                            data.message.includes('no longer exists') ||
+                            data.message.includes('invalid game'))) {
+            // Use the user-friendly banner
+            if (typeof showGameNotFoundBanner === 'function') {
+                showGameNotFoundBanner();
+            } else {
+                // Fallback if the function isn't available
+                alert('Error: ' + data.message);
+            }
+        } else {
+            // For other errors, use a regular alert
+            alert('Error: ' + data.message);
+        }
     });
 }

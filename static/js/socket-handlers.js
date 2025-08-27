@@ -675,5 +675,14 @@ function clearGameState() {
 }
 
 socket.on('error', (data) => {
-    alert('Error: ' + data.message);
+    // Check if error is related to game not found
+    if (data.message && (data.message.includes('Game not found') || 
+                         data.message.includes('no longer exists') ||
+                         data.message.includes('invalid game'))) {
+        // Use the new user-friendly banner instead of an alert
+        showGameNotFoundBanner();
+    } else {
+        // For other errors, use a regular alert
+        alert('Error: ' + data.message);
+    }
 });

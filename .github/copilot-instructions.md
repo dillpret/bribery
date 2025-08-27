@@ -93,6 +93,12 @@ command1 && command2 # Use command1; command2
   - UI Components: Divided into game phases in game.html with modular CSS
   - See `docs/TECHNICAL_ARCHITECTURE.md` for component maps and flows
 
+- **UI Guidelines:**
+  - **IMPORTANT:** Avoid using modal dialogs/overlays as they can be blocked by ad blockers
+  - Use inline messaging, banners, or page redirects instead of modals
+  - Prefer non-blocking UI patterns for error messages and notifications
+  - Critical interactions should use standard HTML forms or in-page elements
+
 ## Game Logic Documentation
 For understanding game behaviour, rules, and implementation details:
 - **`docs/GAME_RULES.md`** - Canonical business rules including Custom Prompts mode
