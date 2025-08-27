@@ -3,6 +3,7 @@
 @import url('components/buttons.css');
 @import url('components/forms.css');
 @import url('components/enhanced-landing.css');
+@import url('components/logo.css');
 
 /* Global styles - Mobile First */
 * {
@@ -53,7 +54,8 @@ body {
 }
 
 .how-to-play-button .instructions-icon {
-    margin-right: 6px;
+    margin-right: 8px;
+    display: inline-block;
 }
 
 .how-to-play-button .toggle-icon {

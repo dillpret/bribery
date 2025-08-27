@@ -54,6 +54,12 @@
     margin: 5px 0 20px;
 }
 
+.button-icon {
+    margin-right: 8px;
+    display: inline-block;
+    font-size: 1.1em;
+}
+
 .primary-action-btn {
     position: relative;
     overflow: hidden;
@@ -67,6 +73,9 @@
     border-radius: 28px;
     box-shadow: 0 10px 20px rgba(102, 126, 234, 0.25);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .primary-action-btn:hover {
@@ -90,6 +99,9 @@
     padding: 14px 24px;
     border-radius: 28px;
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .secondary-action-btn:hover {
@@ -140,6 +152,9 @@
 .form-action-buttons button {
     flex: 1;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .form-action-buttons button:first-child {
@@ -161,6 +176,9 @@
 .game-created-actions button {
     flex: 1;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .game-id-display {

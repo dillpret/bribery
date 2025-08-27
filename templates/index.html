@@ -6,26 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Bribery Game</title>
     <link rel="stylesheet" href="/static/css/index.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/logo/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/static/images/logo/favicon.svg" />
+    <link rel="shortcut icon" href="/static/images/logo/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/logo/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Bribery" />
+    <link rel="manifest" href="/static/site.webmanifest">
 </head>
 
 <body>
     <div class="container">
         <div class="hero-container">
             <div class="logo-wrapper">
-                <span class="hero-emoji">🎯</span>
-                <h1>Bribery</h1>
+                <img src="/static/images/logo/logo-full.png" alt="Bribery Game" class="hero-logo" onerror="this.style.display='none'">
+                <h1 class="hero-logo-fallback">😉 Bribery</h1>
             </div>
-            <p class="subtitle">A casual web game for groups of all sizes (min 3 players)</p>
+            <p class="subtitle">A casual web game</p>
         </div>
         
         <!-- Main Menu -->
         <div id="main-menu">
             <div class="hero-card">
-                <p class="game-tagline">Create bribes to win over judges, or vote for the most <span class="tagline-highlight">creative</span>, <span class="tagline-highlight">persuasive</span>, or <span class="tagline-highlight">ridiculous</span> offers!</p>
-                
                 <div class="button-container">
-                    <button class="primary-action-btn" onclick="showHostGame()">Host New Game</button>
-                    <button class="secondary-action-btn" onclick="showJoinGame()">Join Existing Game</button>
+                    <button class="primary-action-btn" onclick="showHostGame()">
+                        <span class="button-icon">🎮</span> Host New Game
+                    </button>
+                    <button class="secondary-action-btn" onclick="showJoinGame()">
+                        <span class="button-icon">🔍</span> Join Existing Game
+                    </button>
                 </div>
             </div>
         </div>
@@ -39,8 +48,12 @@
                     <input type="text" id="host-username" placeholder="Enter your username" required>
                 </div>
                 <div class="form-action-buttons">
-                    <button onclick="showMainMenu()">Back</button>
-                    <button onclick="createGame()">Create Game</button>
+                    <button onclick="showMainMenu()">
+                        <span class="button-icon">⬅️</span> Back
+                    </button>
+                    <button onclick="createGame()">
+                        <span class="button-icon">✅</span> Create Game
+                    </button>
                 </div>
             </div>
         </div>
@@ -58,8 +71,12 @@
                     <input type="text" id="game-id" placeholder="Enter game ID" required style="text-transform: uppercase;">
                 </div>
                 <div class="form-action-buttons">
-                    <button onclick="showMainMenu()">Back</button>
-                    <button onclick="joinGame()">Join Game</button>
+                    <button onclick="showMainMenu()">
+                        <span class="button-icon">⬅️</span> Back
+                    </button>
+                    <button onclick="joinGame()">
+                        <span class="button-icon">➡️</span> Join Game
+                    </button>
                 </div>
             </div>
         </div>
@@ -76,8 +93,12 @@
                 </div>
             </div>
             <div class="game-created-actions">
-                <button onclick="copyGameLink()">Copy Link</button>
-                <button onclick="goToLobby()" class="primary-action-btn">Go to Lobby</button>
+                <button onclick="copyGameLink()">
+                    <span class="button-icon">📋</span> Copy Link
+                </button>
+                <button onclick="goToLobby()" class="primary-action-btn">
+                    <span class="button-icon">🚀</span> Go to Lobby
+                </button>
             </div>
         </div>
 

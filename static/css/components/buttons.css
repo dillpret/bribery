@@ -14,6 +14,9 @@ button:not(.player-list-toggle) {
     min-width: 120px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:not(.player-list-toggle):hover,

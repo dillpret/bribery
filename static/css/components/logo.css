@@ -1,0 +1,57 @@
+/* Logo styling */
+.logo-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-logo {
+    max-width: 280px;
+    width: 90%;
+    height: auto;
+    margin-bottom: 5px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease-in-out;
+}
+
+.hero-logo:hover {
+    transform: scale(1.02);
+}
+
+/* Logo animation for page load */
+@keyframes logoReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo-wrapper {
+    animation: logoReveal 0.8s ease-out forwards;
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+    .hero-logo {
+        max-width: 320px;
+    }
+}
+
+/* Fallback if image fails to load */
+.hero-logo-fallback {
+    display: none;
+}
+
+img.hero-logo[src=""] + .hero-logo-fallback,
+img.hero-logo:not([src]) + .hero-logo-fallback {
+    display: block;
+    font-size: 2.5rem;
+    color: #764ba2;
+    font-weight: bold;
+}
