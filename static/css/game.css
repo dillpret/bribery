@@ -13,6 +13,11 @@
 @import url('./components/toasts.css');
 @import url('./components/connection-status.css');
 @import url('./components/phase-explanation.css');
+@import url('./components/phase-badges.css');
+@import url('./components/prompt-selection.css');
+@import url('./components/submission-phase.css');
+@import url('./components/voting-phase.css');
+@import url('./components/results-phase.css');
 @import url('./components/error-banner.css');
 @import url('./components/logo.css');
 @import url('./components/header.css');
@@ -40,8 +45,8 @@ body {
     padding: 20px;
     background: white;
     border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    min-height: calc(100vh - 60px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 40px);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -221,6 +226,28 @@ body {
     input[type="file"] {
         display: none;
     }
+}
+
+/* Status bar */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #eaeaea;
+}
+
+.status-bar #game-status {
+    font-weight: 500;
+    color: #333;
+}
+
+.status-bar .timer {
+    font-weight: bold;
+    color: #764ba2;
 }
 
 /* Hidden class - Essential for game phase management */

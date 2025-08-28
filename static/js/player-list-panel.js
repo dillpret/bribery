@@ -47,12 +47,17 @@ function initializePlayerListPanel() {
 // Handle screen size changes for responsive layout
 function handleScreenSizeChange() {
     const container = document.querySelector('.container');
+    const wasAlreadyVisible = playerListPanel.classList.contains('visible');
+    
     if (window.innerWidth >= 769) {
         container.classList.add('with-player-panel');
         playerListPanel.classList.add('visible');
     } else {
         container.classList.remove('with-player-panel');
-        playerListPanel.classList.remove('visible');
+        // Only hide if it wasn't explicitly opened by the user
+        if (!wasAlreadyVisible) {
+            playerListPanel.classList.remove('visible');
+        }
     }
 }
 

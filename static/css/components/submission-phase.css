@@ -1,0 +1,151 @@
+/* Submission phase styling */
+
+.targets-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.bribe-target {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.bribe-target-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.bribe-target-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #4a5568;
+    flex-grow: 1;
+}
+
+.target-prompt {
+    background-color: #f0f7ff;
+    border: 1px solid #c2e0ff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #1e429f;
+    font-size: 16px;
+    position: relative;
+    quotes: """ """;
+}
+
+.target-prompt:before {
+    content: open-quote;
+    font-size: 28px;
+    position: absolute;
+    left: 8px;
+    top: -5px;
+    color: #3182ce;
+    opacity: 0.3;
+}
+
+.target-prompt:after {
+    content: close-quote;
+    font-size: 28px;
+    position: absolute;
+    right: 8px;
+    bottom: -15px;
+    color: #3182ce;
+    opacity: 0.3;
+}
+
+.bribe-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.option-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    color: #a0aec0;
+}
+
+.option-divider:before,
+.option-divider:after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 0 10px;
+}
+
+.bribe-textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 120px;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.bribe-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.image-upload-container {
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+.image-upload-container:hover {
+    border-color: #667eea;
+    background-color: #f0f4fd;
+}
+
+.submit-bribe-btn {
+    background-color: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.submit-bribe-btn:hover {
+    background-color: #38a169;
+}
+
+.submit-bribe-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+    .targets-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .bribe-target {
+        flex: 1 1 calc(50% - 15px);
+        min-width: 300px;
+    }
+}

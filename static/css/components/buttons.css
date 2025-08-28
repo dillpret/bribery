@@ -47,13 +47,16 @@ button:not(.player-list-toggle):disabled {
 .primary-button,
 #start-game-btn,
 #submit-vote-btn,
-#confirm-prompt-btn {
-    background: linear-gradient(135deg, #4d7df0 0%, #5a67d8 100%);
+#confirm-prompt-btn,
+#next-round-btn,
+.submit-bribe-btn,
+button[id^="submit-bribe-"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     font-weight: 600;
     font-size: 16px;
     padding: 14px 20px;
-    box-shadow: 0 4px 12px rgba(77, 125, 240, 0.25);
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.25);
     border-radius: 10px;
     border: none;
     min-width: 140px;
@@ -62,16 +65,22 @@ button:not(.player-list-toggle):disabled {
 .primary-button:hover,
 #start-game-btn:hover,
 #submit-vote-btn:hover,
-#confirm-prompt-btn:hover {
-    background: linear-gradient(135deg, #3b62c0 0%, #4c57b6 100%);
+#confirm-prompt-btn:hover,
+#next-round-btn:hover,
+.submit-bribe-btn:hover,
+button[id^="submit-bribe-"]:hover {
+    background: linear-gradient(135deg, #5a72d4 0%, #6842a0 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(77, 125, 240, 0.3);
+    box-shadow: 0 6px 16px rgba(118, 75, 162, 0.3);
 }
 
 .primary-button:disabled,
 #start-game-btn:disabled,
 #submit-vote-btn:disabled,
-#confirm-prompt-btn:disabled {
+#confirm-prompt-btn:disabled,
+#next-round-btn:disabled,
+.submit-bribe-btn:disabled,
+button[id^="submit-bribe-"]:disabled {
     background: linear-gradient(135deg, #a0aec0 0%, #9aa2b8 100%);
     box-shadow: none;
     transform: none;

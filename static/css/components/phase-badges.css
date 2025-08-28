@@ -1,0 +1,122 @@
+/* Phase badges styling for all game phases */
+.phase-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: white;
+}
+
+/* Phase 1 - Prompt Selection */
+.phase-badge[data-phase="1"],
+.phase-badge.phase-1 {
+    background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+}
+
+/* Phase 2 - Submission */
+.phase-badge[data-phase="2"],
+.phase-badge.phase-2 {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+/* Phase 3 - Voting */
+.phase-badge[data-phase="3"],
+.phase-badge.phase-3 {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+/* Phase 4 - Results */
+.phase-badge[data-phase="4"],
+.phase-badge.phase-4 {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+/* Phase indicator styles */
+.phase-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 20px 0;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+    font-weight: 500;
+}
+
+/* Phase content containers */
+.phase-content {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+}
+
+/* Progress indicators */
+.progress-indicator {
+    background-color: rgba(255, 243, 230, 0.7);
+    border: 1px solid rgba(237, 137, 54, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 15px 0;
+    font-size: 14px;
+    color: #b45309;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Prompt styling */
+.player-prompt {
+    background-color: #f0f7ff;
+    border: 1px solid #c2e0ff;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    color: #1e429f;
+    font-size: 16px;
+    font-weight: 500;
+    position: relative;
+    quotes: """ """;
+}
+
+.player-prompt:before {
+    content: open-quote;
+    font-size: 28px;
+    position: absolute;
+    left: 8px;
+    top: -5px;
+    color: #3182ce;
+    opacity: 0.3;
+}
+
+.player-prompt:after {
+    content: close-quote;
+    font-size: 28px;
+    position: absolute;
+    right: 8px;
+    bottom: -15px;
+    color: #3182ce;
+    opacity: 0.3;
+}
+
+/* Round headers */
+.round-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.round-title {
+    font-size: 26px;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.round-subtitle {
+    color: #718096;
+    font-size: 16px;
+}

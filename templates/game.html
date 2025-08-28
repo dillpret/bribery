@@ -29,7 +29,6 @@
             <div class="game-info">
                 Game ID: <strong>{{ game_id }}</strong>
                 <span id="connection-status" class="connection-status connected" title="Connection Status"></span>
-                <button onclick="window.location.href='/instructions'" class="instructions-button" title="How To Play">📖 Rules</button>
             </div>
         </div>
 
@@ -139,18 +138,20 @@
 
         <!-- Prompt Selection Phase -->
         <div id="prompt-selection" class="hidden">
-            <div class="prompt-selection-content">
-                <h2 id="prompt-round-title"></h2>
+            <div class="round-header">
+                <h2 id="prompt-round-title" class="round-title"></h2>
+                <div class="phase-indicator">
+                    <span class="phase-badge phase-1">Phase 1 of 4:</span> Prompt Selection
+                </div>
                 <div class="phase-explanation">
-                    <p>
-                        <span class="phase-badge">Phase 1 of 4:</span> Prompt Selection
-                    </p>
                     <p class="instruction">
                         <strong>Choose a prompt that other players will use when bribing you.</strong><br>
                         This is what two other players will respond to when trying to win your point!
                     </p>
                 </div>
+            </div>
 
+            <div class="phase-content">
                 <div class="prompt-selector">
                     <div class="prompt-option-section">
                         <h3>Option 1: Choose from suggested prompts:</h3>
@@ -169,7 +170,7 @@
                             maxlength="200"></textarea>
                     </div>
 
-                    <button id="confirm-prompt-btn" onclick="selectPrompt()" disabled>
+                    <button id="confirm-prompt-btn" onclick="selectPrompt()" class="primary-button" disabled>
                         Confirm Prompt
                     </button>
                 </div>
@@ -182,33 +183,35 @@
 
         <!-- Submission Phase -->
         <div id="submission-phase" class="hidden">
-            <div class="round-info">
-                <h2 id="round-title"></h2>
+            <div class="round-header">
+                <h2 id="round-title" class="round-title"></h2>
+                <div class="phase-indicator">
+                    <span class="phase-badge phase-2">Phase 2 of 4:</span> Bribery Creation
+                </div>
                 <div class="phase-explanation">
-                    <p>
-                        <span class="phase-badge">Phase 2 of 4:</span> Bribery Creation
-                    </p>
                     <p class="instruction">
                         <strong>Create bribes to win points from other players!</strong><br>
                         Respond to each player's prompt with something creative and convincing.
                     </p>
                 </div>
-                <div class="prompt" id="current-prompt"></div>
                 <div id="submission-progress" class="progress-indicator">
                     <p id="submission-progress-text">0/0 players finished</p>
                 </div>
             </div>
-            <div id="targets-container"></div>
+            <div class="phase-content">
+                <div class="prompt" id="current-prompt"></div>
+                <div id="targets-container" class="targets-container"></div>
+            </div>
         </div>
 
         <!-- Voting Phase -->
         <div id="voting-phase" class="hidden">
-            <div class="voting-content">
-                <h2>Time to Vote!</h2>
+            <div class="round-header">
+                <h2 class="round-title">Time to Vote!</h2>
+                <div class="phase-indicator">
+                    <span class="phase-badge phase-3">Phase 3 of 4:</span> Voting
+                </div>
                 <div class="phase-explanation">
-                    <p>
-                        <span class="phase-badge">Phase 3 of 4:</span> Voting
-                    </p>
                     <p class="instruction">
                         <strong>Choose your favourite bribe!</strong><br>
                         Two players have created bribes based on your prompt. Vote for the one you like best.
@@ -217,34 +220,38 @@
                 <div id="voting-progress" class="progress-indicator">
                     <p id="voting-progress-text">0/0 players voted</p>
                 </div>
+            </div>
+            <div class="phase-content">
                 <div class="player-prompt-container">
                     <h3>Your prompt was:</h3>
                     <div id="voting-player-prompt" class="player-prompt"></div>
                 </div>
-                <p>Choose your favourite bribe submission:</p>
-                <div id="voting-options"></div>
-                <button id="submit-vote-btn" onclick="submitVote()" disabled>Submit Vote</button>
+                <p class="voting-instruction">Choose your favourite bribe submission:</p>
+                <div id="voting-options" class="voting-options"></div>
+                <button id="submit-vote-btn" onclick="submitVote()" class="primary-button" disabled>Submit Vote</button>
             </div>
         </div>
 
         <!-- Scoreboard -->
         <div id="scoreboard-phase" class="hidden">
-            <div class="round-info">
-                <h2 id="scoreboard-title"></h2>
+            <div class="round-header">
+                <h2 id="scoreboard-title" class="round-title"></h2>
+                <div class="phase-indicator">
+                    <span class="phase-badge phase-4">Phase 4 of 4:</span> Round Results
+                </div>
                 <div class="phase-explanation">
-                    <p>
-                        <span class="phase-badge">Phase 4 of 4:</span> Round Results
-                    </p>
-                    <p class="round-subtitle">
+                    <p class="instruction">
                         <strong>See who won points this round!</strong><br>
                         The winning bribes for each prompt are shown below.
                     </p>
                 </div>
             </div>
-            <div id="vote-results" class="vote-results hidden"></div>
-            <div class="scoreboard" id="scoreboard"></div>
-            <div id="host-round-controls" class="host-controls hidden">
-                <button id="next-round-btn" onclick="socket.emit('next_round')" class="primary-button">Continue to Next Round</button>
+            <div class="phase-content">
+                <div id="vote-results" class="vote-results"></div>
+                <div class="scoreboard" id="scoreboard"></div>
+                <div id="host-round-controls" class="host-controls hidden">
+                    <button id="next-round-btn" onclick="socket.emit('next_round')" class="primary-button">Continue to Next Round</button>
+                </div>
             </div>
         </div>
 
@@ -272,9 +279,10 @@
     </div>
 
     <!-- Player List Panel -->
-    <button class="player-list-toggle" id="player-list-toggle">👥</button>
+    <button class="player-list-toggle" id="player-list-toggle" aria-label="Show player list">👥</button>
     <div id="player-list-panel" class="player-list-panel">
         <h2>Players & Scores</h2>
+        <div class="panel-description">Current standings and player status</div>
         <ul id="player-score-list" class="player-score-list">
             <!-- Player list will be populated here -->
         </ul>
