@@ -1,11 +1,9 @@
-// Centralized state management for Bribery Game
-// Handles both localStorage persistence and runtime state
-
 /**
- * GameState - Centralized state management module
+ * @fileoverview GameState - Centralized state management module
+ * @module game-state
  * 
  * This module provides structured state management for the Bribery game:
- * - Handles localStorage persistence
+ * - Handles localStorage persistence with error handling
  * - Provides consistent API for state operations
  * - Separates concerns: authentication, game state, user preferences
  * - Implements proper error handling and validation
@@ -259,8 +257,11 @@ function updateAuthFromServer(data) {
     }
 }
 
-// Create the GameState object
+/**
+ * Primary GameState object with all state management functions
+ */
 const GameStateObj = {
+    // Primary public API
     init: initializeAuthState,
     get: getState,
     set: setState,
@@ -269,8 +270,9 @@ const GameStateObj = {
     persist: persistAuthState
 };
 
-// Export for ES modules
+// Standard ES6 named export - this is the preferred way to import this module
 export const GameState = GameStateObj;
 
-// Also set on window for backwards compatibility with non-module scripts
+// Legacy global export for backwards compatibility
+// This helps with scripts that haven't been converted to ES modules
 window.GameState = GameStateObj;

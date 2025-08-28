@@ -313,6 +313,9 @@
     <!-- Load Socket.IO first - must be non-module for global availability -->
     <script src="{{ versioned_static('socket.io.min.js') }}"></script>
     
+    <!-- Socket manager must be loaded right after Socket.IO -->
+    <script src="{{ versioned_static('js/socket-manager.js') }}" type="module"></script>
+    
     <!-- Non-module scripts (can access global socket variable) -->
     <script src="{{ versioned_static('js/image-loading-optimizer.js') }}"></script>
     <script src="{{ versioned_static('js/cache-buster.js') }}"></script>

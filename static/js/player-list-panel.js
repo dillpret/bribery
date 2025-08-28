@@ -1,5 +1,16 @@
-// Player list panel functionality
+/**
+ * @fileoverview Player List Panel Module - Manages the player list sidebar
+ * @module player-list-panel
+ * 
+ * This module handles:
+ * - Displaying player scores and status in a collapsible panel
+ * - Host controls for player management (kicking)
+ * - Responsive layout adjustments
+ * - Submission status indicators
+ */
 import ProgressTracker from './progress-tracker.js';
+import { socket } from './socket-manager.js';
+import { GameState } from './game-state.js';
 
 // DOM references
 const playerListPanel = document.getElementById('player-list-panel');
@@ -202,5 +213,18 @@ socket.on('kick_player_result', (data) => {
     }
 });
 
+// Public API object
+const PlayerListPanel = {
+    init: initializePlayerListPanel,
+    updateList: updatePlayerList,
+    updateFromScoreboard: updatePlayerListFromScoreboard
+};
+
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', initializePlayerListPanel);
+
+// Export as ES module
+export default PlayerListPanel;
+
+// Also add to window for backwards compatibility
+window.PlayerListPanel = PlayerListPanel;

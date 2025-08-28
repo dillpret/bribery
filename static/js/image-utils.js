@@ -1,10 +1,19 @@
-// Image and media handling utilities
+/**
+ * @fileoverview Image Utilities - Image processing and validation
+ * @module image-utils
+ * 
+ * This module provides utilities for:
+ * - Image validation
+ * - Optimization and resizing
+ * - GIF handling
+ * - Error handling for media content
+ */
 
 /**
  * Image validation and processing utility
  * Handles validation, optimization and error handling for media content
  */
-const ImageUtils = {
+const ImageUtilsObj = {
     /**
      * Maximum image dimensions
      * Images larger than this will be resized
@@ -253,5 +262,8 @@ const ImageUtils = {
     }
 };
 
-// Export the module
-window.ImageUtils = ImageUtils;
+// ES6 module export
+export const ImageUtils = ImageUtilsObj;
+
+// Add to window for backwards compatibility
+window.ImageUtils = ImageUtilsObj;

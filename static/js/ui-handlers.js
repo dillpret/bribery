@@ -1,5 +1,25 @@
-// UI interaction handlers and helpers
+/**
+ * @fileoverview UI Handlers - User interface interaction handlers
+ * @module ui-handlers
+ * 
+ * This module provides functions for handling UI interactions in the game:
+ * - Vote selection and submission
+ * - Bribe submission handling
+ * - Image upload and processing
+ * - Drag and drop functionality
+ * - Scoreboard display
+ */
+import { ImageUtils } from './image-utils.js';
 
+// Keep track of image submissions
+let submissions = {};
+let selectedVote = null;
+
+/**
+ * Select a vote in the voting phase
+ * @param {string} brideId - ID of the selected bribe
+ * @param {HTMLElement} element - DOM element that was clicked
+ */
 function selectVote(brideId, element) {
     document.querySelectorAll('.bribe-option').forEach(el => el.classList.remove('selected'));
     element.classList.add('selected');
@@ -7,6 +27,10 @@ function selectVote(brideId, element) {
     document.getElementById('submit-vote-btn').disabled = false;
 }
 
+/**
+ * Submit a bribe for a specific target
+ * @param {string} targetId - ID of the target
+ */
 function submitTargetBribe(targetId) {
     let content, type = 'text';
 
@@ -80,6 +104,10 @@ function autoSubmitPendingBribes() {
     });
 }
 
+/**
+ * Set up drag and drop functionality for image uploads
+ * @param {string} targetId - ID of the target
+ */
 function setupDragDrop(targetId) {
     const dropArea = document.getElementById(`drop-${targetId}`);
     const textarea = document.getElementById(`submission-${targetId}`);
@@ -116,6 +144,10 @@ function setupDragDrop(targetId) {
     });
 }
 
+/**
+ * Set up mobile-friendly image upload
+ * @param {string} targetId - ID of the target
+ */
 function setupMobileImageUpload(targetId) {
     const fileInput = document.getElementById(`file-input-${targetId}`);
     const uploadBtn = document.getElementById(`upload-btn-${targetId}`);
@@ -139,6 +171,11 @@ function setupMobileImageUpload(targetId) {
     });
 }
 
+/**
+ * Handle file upload and processing
+ * @param {File} file - The file to upload
+ * @param {string} targetId - ID of the target
+ */
 function handleFileUpload(file, targetId) {
     if (!file) {
         return;
@@ -198,6 +235,21 @@ function handleFileUpload(file, targetId) {
     });
 }
 
+/**
+ * Prevent default browser behavior for drag and drop
+ * @param {Event} e - The event object
+ */
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+/**
+ * Display scoreboard with player scores
+ * @param {Array<Object>} scores - Array of player score objects
+ * @param {string} containerId - ID of the container element
+ * @param {boolean} isFinal - Whether this is the final scoreboard
+ */
 function displayScoreboard(scores, containerId, isFinal = false) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -238,3 +290,29 @@ function displayScoreboard(scores, containerId, isFinal = false) {
         container.appendChild(scoreItem);
     });
 }
+
+// Create the UIHandlers object
+const UIHandlers = {
+    selectVote,
+    submitTargetBribe,
+    autoSubmitPendingBribes,
+    setupDragDrop,
+    setupMobileImageUpload,
+    handleFileUpload,
+    displayScoreboard,
+    getSelectedVote: () => selectedVote,
+    resetSubmissions: () => { submissions = {}; },
+    resetSelectedVote: () => { selectedVote = null; }
+};
+
+// Export as ES6 module
+export default UIHandlers;
+
+// Also add to window for backwards compatibility
+window.UIHandlers = UIHandlers;
+
+// Legacy function exports for inline event handlers
+window.selectVote = selectVote;
+window.submitTargetBribe = submitTargetBribe;
+window.setupDragDrop = setupDragDrop;
+window.setupMobileImageUpload = setupMobileImageUpload;

@@ -1,9 +1,45 @@
 // Core game variables and initialization
-import { socket, isSocketInitialized } from './socket-manager.js';
-import { GameState } from './game-state.js';
+let socket, isSocketInitialized, GameState;
+
+try {
+    // Dynamic import with fallbacks for better reliability
+    const socketModule = await import('./socket-manager.js').catch(err => {
+        console.error('Failed to import socket-manager.js:', err);
+        return { 
+            socket: window.socketManager?.socket || { 
+                on: () => {}, emit: () => {}, disconnect: () => {} 
+            },
+            isSocketInitialized: () => false
+        };
+    });
+    
+    socket = socketModule.socket;
+    isSocketInitialized = socketModule.isSocketInitialized;
+    
+    // Import GameState module with fallback
+    const gameStateModule = await import('./game-state.js').catch(err => {
+        console.error('Failed to import game-state.js:', err);
+        return { 
+            GameState: window.GameState || { get: () => ({}), set: () => {}, update: () => {} }
+        };
+    });
+    
+    GameState = gameStateModule.GameState;
+    
+    console.log('Game core modules loaded successfully');
+} catch (err) {
+    console.error('Error initializing game core:', err);
+    // Fallbacks for critical functionality
+    if (!socket) {
+        socket = window.socketManager?.socket || { on: () => {}, emit: () => {}, disconnect: () => {} };
+    }
+    if (!GameState) {
+        GameState = window.GameState || { get: () => ({}), set: () => {}, update: () => {} };
+    }
+}
 
 // Check if socket is properly initialized
-if (!isSocketInitialized()) {
+if (!isSocketInitialized || !isSocketInitialized()) {
     console.error('Socket.IO not properly initialized!');
 }
 

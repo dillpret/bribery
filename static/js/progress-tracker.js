@@ -1,5 +1,14 @@
-// Progress Tracker Module - Enhances player submission status tracking
-// This module tracks and updates the UI to show progress in all interactive phases
+/**
+ * @fileoverview Progress Tracker Module - Tracks player submission status
+ * @module progress-tracker
+ * 
+ * This module tracks and updates the UI to show progress in all interactive phases:
+ * - Prompt selection phase
+ * - Submission phase
+ * - Voting phase
+ * 
+ * It provides detailed progress messages and status tracking for the player list.
+ */
 
 const ProgressTracker = {
     // Current phase information
@@ -10,7 +19,9 @@ const ProgressTracker = {
     submissionStatus: {},
     votingStatus: {},
     
-    // Initialize the progress tracker
+    /**
+     * Initialize the progress tracker
+     */
     init: function() {
         // Reset all status tracking
         this.resetPhaseStatuses();
@@ -21,7 +32,10 @@ const ProgressTracker = {
         });
     },
     
-    // Handle phase changes - reset appropriate trackers
+    /**
+     * Handle phase changes - reset appropriate trackers
+     * @param {string} phase - The new game phase
+     */
     handlePhaseChange: function(phase) {
         this.currentPhase = phase;
         
@@ -35,7 +49,10 @@ const ProgressTracker = {
         }
     },
     
-    // Reset a specific phase's tracking status
+    /**
+     * Reset a specific phase's tracking status
+     * @param {string} phase - The phase to reset
+     */
     resetPhaseStatus: function(phase) {
         if (phase === 'promptSelection') {
             this.promptSelectionStatus = {};
@@ -46,14 +63,20 @@ const ProgressTracker = {
         }
     },
     
-    // Reset all phase statuses
+    /**
+     * Reset all phase statuses
+     */
     resetPhaseStatuses: function() {
         this.promptSelectionStatus = {};
         this.submissionStatus = {};
         this.votingStatus = {};
     },
     
-    // Update player submission status for the current phase
+    /**
+     * Update player submission status for the current phase
+     * @param {string} playerId - Player ID
+     * @param {boolean} hasSubmitted - Whether the player has submitted
+     */
     updatePlayerStatus: function(playerId, hasSubmitted) {
         if (this.currentPhase === 'prompt_selection') {
             this.promptSelectionStatus[playerId] = hasSubmitted;
@@ -67,7 +90,10 @@ const ProgressTracker = {
         this.updatePlayerListSubmissionStatus();
     },
     
-    // Get current status object based on active phase
+    /**
+     * Get current status object based on active phase
+     * @returns {Object} Status object for current phase
+     */
     getCurrentStatusObject: function() {
         if (this.currentPhase === 'prompt_selection') {
             return this.promptSelectionStatus;
@@ -79,7 +105,9 @@ const ProgressTracker = {
         return {};
     },
     
-    // Update player list with submission status
+    /**
+     * Update player list with submission status
+     */
     updatePlayerListSubmissionStatus: function() {
         // This function will be called when the socket handlers update player data
         // The actual update happens in the player-list-panel.js file
@@ -87,7 +115,14 @@ const ProgressTracker = {
         document.dispatchEvent(event);
     },
     
-    // Generate detailed progress message with player names for progress indicators
+    /**
+     * Generate detailed progress message with player names for progress indicators
+     * @param {Object} data - Progress data
+     * @param {number} data.completed - Number of completed submissions
+     * @param {number} data.total - Total number of expected submissions
+     * @param {Array<string>} data.pendingPlayers - Names of players who haven't submitted
+     * @returns {string} Formatted progress message
+     */
     generateDetailedProgressMessage: function(data) {
         const completed = data.completed;
         const total = data.total;
@@ -114,5 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ProgressTracker.init();
 });
 
-// Export for use in other modules
+// Export as ES module
 export default ProgressTracker;
+
+// Add to window for backwards compatibility
+window.ProgressTracker = ProgressTracker;

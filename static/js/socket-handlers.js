@@ -2,6 +2,28 @@
 import { socket } from './socket-manager.js';
 import { GameState } from './game-state.js';
 
+// Fallback mechanism in case imports fail
+let socketInstance = socket;
+let gameStateInstance = GameState;
+
+// Verify imports and use fallbacks if needed
+if (!socketInstance || typeof socketInstance.on !== 'function') {
+    console.warn('Failed to import socket, attempting to use global fallback');
+    socketInstance = window.socketManager?.socket || { 
+        on: () => console.error('Socket not available'),
+        emit: () => console.error('Socket not available')
+    };
+}
+
+if (!gameStateInstance) {
+    console.warn('Failed to import GameState, attempting to use global fallback');
+    gameStateInstance = window.GameState || {
+        get: () => ({}),
+        set: () => {},
+        update: () => {}
+    };
+}
+
 // Connection and lobby events
 socket.on('joined_game', (data) => {
     console.log('Joined game event received:', data);
