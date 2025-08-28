@@ -87,16 +87,22 @@
 .how-to-play-btn {
     display: block;
     margin: 15px auto 0;
-    background: none;
-    border: 2px solid white;
+    background: #6658d3;
+    border: none;
     color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 240px;
 }
 
 .how-to-play-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #7668e3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
