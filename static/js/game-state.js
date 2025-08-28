@@ -177,9 +177,15 @@ function initializeAuthState(gameId) {
     
     if (!wasLoaded) {
         // Only prompt if we don't have stored credentials
-        const username = prompt('Enter your username:') || 'Anonymous';
+        const username = prompt('Enter your username:');
+        // If user cancels or enters empty username, redirect to home page
+        if (!username || username.trim() === '') {
+            window.location.href = '/?message=' + encodeURIComponent('Username is required to join a game');
+            return getState(STATE_TYPES.AUTH);
+        }
+        
         setState(STATE_TYPES.AUTH, {
-            username: username,
+            username: username.trim(),
             gameId: gameId
         });
     }
