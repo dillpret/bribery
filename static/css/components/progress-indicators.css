@@ -1,0 +1,54 @@
+/* Submission Status Indicators */
+.submission-status {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    margin-left: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.submission-status.submitted {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.submission-status.pending {
+    background-color: #FFC107;
+    color: #333;
+}
+
+/* Progress Indicator Enhancements */
+.progress-indicator {
+    margin: 10px 0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.progress-indicator.waiting {
+    background-color: #e1f5fe;
+}
+
+.progress-indicator p {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Customize for each phase */
+#prompt-selection-progress {
+    border-left: 4px solid #9C27B0; /* Purple for prompt selection */
+}
+
+#submission-progress {
+    border-left: 4px solid #2196F3; /* Blue for submission */
+}
+
+#voting-progress {
+    border-left: 4px solid #FF9800; /* Orange for voting */
+}

@@ -1,4 +1,5 @@
 // Player list panel functionality
+import ProgressTracker from './progress-tracker.js';
 
 // DOM references
 const playerListPanel = document.getElementById('player-list-panel');
@@ -39,6 +40,11 @@ function initializePlayerListPanel() {
         }
     });
 
+    // Listen for submission status updates
+    document.addEventListener('submissionStatusUpdated', () => {
+        updatePlayerList(players);
+    });
+
     // Check screen size for layout
     handleScreenSizeChange();
     window.addEventListener('resize', handleScreenSizeChange);
@@ -73,6 +79,9 @@ function updatePlayerList(playerData) {
     // Clear player list
     playerScoreList.innerHTML = '';
     
+    // Get current game phase for submission status indicators
+    const gamePhase = GameState.get('phase') || '';
+    
     // Add players to list
     players.forEach(player => {
         const playerItem = document.createElement('li');
@@ -96,6 +105,25 @@ function updatePlayerList(playerData) {
             hostBadge.className = 'host-badge';
             hostBadge.textContent = 'HOST';
             playerInfo.appendChild(hostBadge);
+        }
+        
+        // Add submission status indicator for relevant game phases
+        if (['prompt_selection', 'submission', 'voting'].includes(gamePhase)) {
+            const submissionStatus = document.createElement('span');
+            submissionStatus.className = 'submission-status';
+            
+            // Set status based on player's submission state and current phase
+            if (player.hasOwnProperty('submitted') && player.submitted) {
+                submissionStatus.className += ' submitted';
+                submissionStatus.title = 'Submitted';
+                submissionStatus.textContent = '✓';
+            } else {
+                submissionStatus.className += ' pending';
+                submissionStatus.title = 'Waiting for submission';
+                submissionStatus.textContent = '⋯';
+            }
+            
+            playerInfo.appendChild(submissionStatus);
         }
         
         playerItem.appendChild(playerInfo);
