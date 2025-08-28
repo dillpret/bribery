@@ -30,8 +30,12 @@ function initializeGame() {
 
 // Utility functions
 function hideAllScreens() {
-    document.querySelectorAll('#lobby, #prompt-selection, #submission-phase, #voting-phase, #scoreboard-phase, #final-results, #waiting-screen').forEach(el => {
+    console.log('Hiding all screens');
+    const screens = document.querySelectorAll('#lobby, #prompt-selection, #submission-phase, #voting-phase, #scoreboard-phase, #final-results, #waiting-screen');
+    console.log('Found', screens.length, 'screens to hide');
+    screens.forEach(el => {
         el.classList.add('hidden');
+        console.log('Added hidden class to', el.id);
     });
 }
 

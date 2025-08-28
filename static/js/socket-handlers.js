@@ -2,23 +2,40 @@
 
 // Connection and lobby events
 socket.on('joined_game', (data) => {
-    // Update state with server response data
-    // AUTHENTICATION FLOW: This updates our state with the server-provided data
-    // while preserving any existing values that might be important
-    GameState.update(data);
+    console.log('Joined game event received:', data);
     
-    // Get the updated auth state for local use
-    const authState = GameState.get('auth');
-    updateStatus('Connected to game');
+    try {
+        // Update state with server response data
+        // AUTHENTICATION FLOW: This updates our state with the server-provided data
+        // while preserving any existing values that might be important
+        GameState.update(data);
+        
+        // Get the updated auth state for local use
+        const authState = GameState.get('auth');
+        updateStatus('Connected to game');
+        console.log('Auth state after join:', authState);
 
-    // Set UI state based on game state
-    if (data.game_state === 'lobby') {
-        hideAllScreens();
-        document.getElementById('lobby').classList.remove('hidden');
-        GameState.set('ui', { activeScreen: 'lobby' });
-    } else {
-        hideAllScreens();
-        document.getElementById('waiting-screen').classList.remove('hidden');
+        // Set UI state based on game state
+        if (data.game_state === 'lobby') {
+            console.log('Game state is lobby, showing lobby screen');
+            hideAllScreens();
+            const lobbyElement = document.getElementById('lobby');
+            if (lobbyElement) {
+                lobbyElement.classList.remove('hidden');
+                console.log('Lobby screen unhidden');
+            } else {
+                console.error('Lobby element not found in DOM');
+                updateStatus('Error: Lobby element not found');
+            }
+            GameState.set('ui', { activeScreen: 'lobby' });
+        } else {
+            console.log('Game state is not lobby:', data.game_state);
+            hideAllScreens();
+            document.getElementById('waiting-screen').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error in joined_game handler:', error);
+        updateStatus('Error processing game join');
     }
 });
 

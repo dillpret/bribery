@@ -18,13 +18,19 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- Preload critical assets -->
+    <link rel="preload" href="{{ versioned_static('images/logo/logo-full.png') }}" as="image">
+    <!-- Image loading optimizations -->
+    <link rel="stylesheet" href="{{ versioned_static('css/components/image-loading.css') }}">
 </head>
 
 <body>
     <div class="container">
         <div class="header">
             <div class="logo-wrapper">
-                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" onerror="this.classList.add('error')">
+                <!-- Optimized logo loading with SVG fallback -->
+                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" 
+                     loading="eager" fetchpriority="high" onerror="this.classList.add('error')">
                 <h1 class="hero-logo-fallback">🎯 Bribery</h1>
             </div>
             <div class="game-info">
@@ -308,6 +314,7 @@
     <script src="{{ versioned_static('js/game-state.js') }}" type="module"></script>
     <script src="{{ versioned_static('js/progress-tracker.js') }}" type="module"></script>
     <script src="{{ versioned_static('js/image-utils.js') }}" type="module"></script>
+    <script src="{{ versioned_static('js/image-loading-optimizer.js') }}"></script>
     <script src="{{ versioned_static('js/game-core.js') }}" type="module"></script>
     <script src="{{ versioned_static('js/socket-handlers.js') }}" type="module"></script>
     <script src="{{ versioned_static('js/connection-handlers.js') }}" type="module"></script>

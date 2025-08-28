@@ -1,0 +1,33 @@
+/**
+ * Logo and image loading optimizations
+ */
+
+/* Logo loading transition effect */
+.hero-logo {
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+    /* Show a colored placeholder until the image loads */
+    background-color: #6B5FF0; /* Matching the logo's primary color */
+}
+
+.hero-logo.logo-loaded {
+    opacity: 1;
+}
+
+.hero-logo-fallback {
+    display: none;
+}
+
+/* Show fallback when logo has error */
+.hero-logo.error + .hero-logo-fallback {
+    display: block;
+}
+
+/* Logo container styling for consistent layout */
+.logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px; /* Reserve space for the logo */
+}

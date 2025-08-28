@@ -17,15 +17,21 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- Preload critical assets -->
+    <link rel="preload" href="{{ versioned_static('images/logo/logo-full.png') }}" as="image">
     <!-- Instructions panel styles -->
     <link rel="stylesheet" href="{{ versioned_static('css/components/instructions-panel.css') }}">
+    <!-- Image loading optimizations -->
+    <link rel="stylesheet" href="{{ versioned_static('css/components/image-loading.css') }}">
 </head>
 
 <body>
     <div class="container">
         <div class="hero-container">
             <div class="logo-wrapper">
-                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" onerror="this.classList.add('error')">
+                <!-- Optimized logo loading with SVG fallback -->
+                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" 
+                     loading="eager" fetchpriority="high" onerror="this.classList.add('error')">
                 <h1 class="hero-logo-fallback">😉 Bribery</h1>
             </div>
             <p class="subtitle">A casual web game</p>
@@ -121,6 +127,7 @@
     <script src="{{ versioned_static('socket.io.min.js') }}"></script>
     <script src="{{ versioned_static('js/auth-module.js') }}"></script>
     <script src="{{ versioned_static('js/cache-buster.js') }}"></script>
+    <script src="{{ versioned_static('js/image-loading-optimizer.js') }}"></script>
     <script src="{{ versioned_static('js/index.js') }}"></script>
     
     <!-- Instructions Panel -->
