@@ -201,3 +201,12 @@ function preventDefaults(e) {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializeGame);
+
+// Export key functions to global scope for use in HTML
+window.updateSettings = updateSettings;
+window.startGame = startGame;
+window.selectPrompt = selectPrompt;
+window.submitVote = submitVote;
+window.returnToLobby = returnToLobby;
+window.restartGame = restartGame;
+window.onPromptDropdownChange = onPromptDropdownChange;
