@@ -335,14 +335,30 @@ def handle_submit_vote(data):
         emit('error', {'message': 'Bribe ID is required'})
         return
 
+    # Store the vote in the game state
+    if game.current_round not in game.votes:
+        game.votes[game.current_round] = {}
+    
     game.votes[game.current_round][player_id] = bribe_id.strip()
+    
+    # Record that this player has voted, even if they disconnect later
+    if not hasattr(game, 'voted_players'):
+        game.voted_players = {}
+    if game.current_round not in game.voted_players:
+        game.voted_players[game.current_round] = set()
+    
+    game.voted_players[game.current_round].add(player_id)
+    
     emit('vote_submitted')
 
     # Emit progress update
     emit_voting_progress(game)
 
-    # Check if all votes are in
-    if len(game.votes[game.current_round]) >= len(game.get_active_player_ids()):
+    # Check if all votes are in - using our tracked voted_players set
+    active_player_count = len(game.get_active_player_ids())
+    voted_player_count = len(game.voted_players.get(game.current_round, set()))
+    
+    if voted_player_count >= active_player_count:
         if game.round_timer:
             game.round_timer.cancel()
         end_voting_phase(game)

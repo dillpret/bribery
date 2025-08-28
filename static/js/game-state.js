@@ -50,38 +50,60 @@ function getStorageKey(gameId) {
 }
 
 /**
- * Save authentication state to localStorage
+ * Save authentication state to localStorage with proper error handling
  * @param {string} gameId - Game ID
+ * @returns {boolean} - Whether state was successfully saved
  */
 function persistAuthState(gameId) {
     if (!gameId) gameId = _state[STATE_TYPES.AUTH].gameId;
-    if (!gameId) return; // Can't persist without gameId
+    if (!gameId) return false; // Can't persist without gameId
     
     const storageKey = getStorageKey(gameId);
     const authState = _state[STATE_TYPES.AUTH];
     
-    localStorage.setItem(storageKey, JSON.stringify({
-        playerId: authState.playerId,
-        username: authState.username,
-        isHost: authState.isHost,
-        timestamp: Date.now()
-    }));
+    try {
+        const dataToStore = JSON.stringify({
+            playerId: authState.playerId,
+            username: authState.username,
+            isHost: authState.isHost,
+            timestamp: Date.now()
+        });
+        
+        localStorage.setItem(storageKey, dataToStore);
+        return true;
+    } catch (error) {
+        console.warn('Failed to save state to localStorage:', error);
+        // If localStorage fails, log the reason
+        if (error.name === 'QuotaExceededError') {
+            console.warn('localStorage quota exceeded. Try clearing browser data.');
+        } else if (error.name === 'SecurityError') {
+            console.warn('localStorage blocked by browser security settings.');
+        }
+        return false;
+    }
 }
 
 /**
- * Load authentication state from localStorage
+ * Load authentication state from localStorage with robust error handling
  * @param {string} gameId - Game ID
  * @returns {boolean} - Whether state was successfully loaded
  */
 function loadAuthState(gameId) {
     if (!gameId) return false;
     
-    const storageKey = getStorageKey(gameId);
-    const storedData = localStorage.getItem(storageKey);
+    // First check if localStorage is available
+    if (!isLocalStorageAvailable()) {
+        console.warn('localStorage is not available in this browser environment');
+        return false;
+    }
     
-    if (!storedData) return false;
+    const storageKey = getStorageKey(gameId);
     
     try {
+        const storedData = localStorage.getItem(storageKey);
+        
+        if (!storedData) return false;
+        
         const parsedData = JSON.parse(storedData);
         setState(STATE_TYPES.AUTH, {
             playerId: parsedData.playerId || null,
@@ -92,6 +114,21 @@ function loadAuthState(gameId) {
         return true;
     } catch (error) {
         console.error('Error loading auth state:', error);
+        return false;
+    }
+}
+
+/**
+ * Check if localStorage is available in the current browser environment
+ * @returns {boolean} - Whether localStorage is available
+ */
+function isLocalStorageAvailable() {
+    try {
+        const testKey = '__test_key__';
+        localStorage.setItem(testKey, testKey);
+        localStorage.removeItem(testKey);
+        return true;
+    } catch (e) {
         return false;
     }
 }

@@ -29,17 +29,24 @@ const Authentication = (function() {
     
     /**
      * Save current authentication state to localStorage
+     * @returns {boolean} - Whether state was saved successfully
      */
     function _persistState() {
-        if (!_state.gameId) return;
+        if (!_state.gameId) return false;
         
         const storageKey = _getStorageKey(_state.gameId);
-        localStorage.setItem(storageKey, JSON.stringify({
-            username: _state.username,
-            playerId: _state.playerId,
-            isHost: _state.isHost,
-            timestamp: Date.now()
-        }));
+        try {
+            localStorage.setItem(storageKey, JSON.stringify({
+                username: _state.username,
+                playerId: _state.playerId,
+                isHost: _state.isHost,
+                timestamp: Date.now()
+            }));
+            return true;
+        } catch (error) {
+            console.warn('Failed to save authentication state:', error);
+            return false;
+        }
     }
     
     /**
@@ -117,7 +124,11 @@ const Authentication = (function() {
          */
         clear: function() {
             if (_state.gameId) {
-                localStorage.removeItem(_getStorageKey(_state.gameId));
+                try {
+                    localStorage.removeItem(_getStorageKey(_state.gameId));
+                } catch (error) {
+                    console.warn('Failed to clear authentication state from localStorage:', error);
+                }
             }
             
             _state.username = null;

@@ -70,12 +70,14 @@ def emit_voting_progress(game):
     active_players = game.get_active_player_ids()
     total_active = len(active_players)
     
-    # Count votes submitted
-    votes_submitted = len(game.votes[game.current_round])
-    remaining_voters = []
+    # Get voted players using the tracked set for more accuracy
+    voted_set = getattr(game, 'voted_players', {}).get(game.current_round, set())
+    votes_submitted = len(voted_set)
     
+    # Find remaining voters
+    remaining_voters = []
     for player_id in active_players:
-        if player_id not in game.votes[game.current_round]:
+        if player_id not in voted_set:
             remaining_voters.append(player_id)
     
     # Generate progress message
@@ -83,7 +85,7 @@ def emit_voting_progress(game):
         progress_message = "All votes submitted! Calculating results..."
     elif len(remaining_voters) <= 2 and len(remaining_voters) > 0:
         # Show names when 2 or fewer players remaining
-        remaining_names = [game.players[pid]['username'] for pid in remaining_voters]
+        remaining_names = [game.players[pid]['username'] for pid in remaining_voters if pid in game.players]
         if len(remaining_names) == 1:
             progress_message = f"Waiting for {remaining_names[0]}"
         else:

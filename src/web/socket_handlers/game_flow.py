@@ -38,9 +38,12 @@ def get_game_manager():
 def start_next_round(game):
     """Start the next round of the game"""
     game.current_round += 1
+    logger.info(f"Starting round {game.current_round} for game {game.game_id}")
 
     # Activate any players who joined mid-game and were waiting
-    game.activate_waiting_players()
+    activated_count = game.activate_waiting_players()
+    if activated_count > 0:
+        logger.info(f"Activated {activated_count} waiting players for round {game.current_round}")
 
     # Generate new pairings for this round
     game.round_pairings[game.current_round] = game.generate_round_pairings()
@@ -48,6 +51,11 @@ def start_next_round(game):
     # Initialize bribes and votes for this round
     game.bribes[game.current_round] = {}
     game.votes[game.current_round] = {}
+    
+    # Initialize voted_players tracking for this round if not already present
+    if not hasattr(game, 'voted_players'):
+        game.voted_players = {}
+    game.voted_players[game.current_round] = set()
 
     if game.custom_prompts_enabled():
         # Start prompt selection phase
@@ -232,13 +240,23 @@ def end_voting_phase(game):
     round_scores = {}
     vote_results = []
 
+    # Process all votes, regardless of player connection status
+    # This ensures votes from players who disconnected after voting are still counted
     for voter_id, bribe_id in game.votes[game.current_round].items():
+        # Skip if voter no longer exists in player list (rare edge case)
+        if voter_id not in game.players:
+            continue
+            
         # Parse bribe_id to get submitter and target
         parts = bribe_id.split('_')
         if len(parts) != 2:
             continue
             
         submitter_id, target_id = parts
+        
+        # Verify both submitter and target still exist
+        if submitter_id not in game.players or target_id not in game.players:
+            continue
         
         # Check if this bribe is random
         is_random = False
@@ -394,11 +412,19 @@ def emit_lobby_update(game_id):
 
 def emit_midgame_joiner_state(game, player_id):
     """Send appropriate state to a player who joined mid-game"""
-    # Check if player is active in current round
+    # Check if player exists
     player = game.players.get(player_id)
     if not player:
         logger.error(f"Player {player_id} not found in game {game.game_id}")
         return
+    
+    # Ensure player has a properly initialized score even if they just joined
+    if player_id not in game.scores:
+        game.scores[player_id] = 0
+    
+    # Ensure player has past_bribe_targets initialized
+    if player_id not in game.past_bribe_targets:
+        game.past_bribe_targets[player_id] = []
         
     # If player is reconnecting but was already active, send them the current game state
     if player.get('active_in_round', False):
@@ -408,11 +434,18 @@ def emit_midgame_joiner_state(game, player_id):
         if game.state == "prompt_selection":
             # Send prompt selection data
             prompts = load_prompts()
+            
+            # Check if player already selected a prompt
+            player_prompt_ready = game.player_prompt_ready.get(game.current_round, {}).get(player_id, False)
+            player_selected_prompt = game.player_prompts.get(game.current_round, {}).get(player_id, "")
+            
             socketio.emit('prompt_selection_started', {
                 'round': game.current_round,
                 'total_rounds': game.settings['rounds'],
                 'available_prompts': prompts,
-                'time_limit': game.settings.get('prompt_selection_time', 0)
+                'time_limit': game.settings.get('prompt_selection_time', 0),
+                'already_selected': player_prompt_ready,
+                'selected_prompt': player_selected_prompt
             }, room=get_player_room(game_manager, game.game_id, player_id))
             
         elif game.state == "submission":

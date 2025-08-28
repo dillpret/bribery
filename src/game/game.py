@@ -78,33 +78,39 @@ class Game:
 
     def generate_round_pairings(self):
         """Generate pairings so each player bribes exactly 2 others and receives bribes from exactly 2 others"""
-        # Only include active players in pairings
-        player_ids = self.get_active_player_ids()
-        n = len(player_ids)
+        # Get a snapshot of active players to avoid race conditions
+        active_player_ids = self.get_active_player_ids()
+        n = len(active_player_ids)
 
         if n < 3:
             return {}
 
-        # Initialize pairings dictionary
-        pairings = {}
+        # Create a copy to avoid modifying the original list during iteration
+        player_ids = active_player_ids.copy()
         
-        # Keep track of how many bribes each player will receive
+        # Initialize pairings dictionary and bribes received counter
+        pairings = {}
         bribes_received = {pid: 0 for pid in player_ids}
+        
+        # Create a copy of past_bribe_targets to avoid modifying during processing
+        past_targets_copy = {}
+        for pid in player_ids:
+            if pid in self.past_bribe_targets:
+                past_targets_copy[pid] = self.past_bribe_targets[pid].copy()
+            else:
+                past_targets_copy[pid] = []
         
         # Process each player to assign their targets
         for player_id in player_ids:
-            if player_id not in self.past_bribe_targets:
-                self.past_bribe_targets[player_id] = []
-            
             # Get list of players this player hasn't bribed yet (excluding self)
             potential_targets = [pid for pid in player_ids 
                                if pid != player_id and 
-                               pid not in self.past_bribe_targets[player_id]]
+                               pid not in past_targets_copy[player_id]]
             
-            # If fewer than 2 potential targets left, reset history
+            # If fewer than 2 potential targets left, reset history for this player
             if len(potential_targets) < 2:
                 potential_targets = [pid for pid in player_ids if pid != player_id]
-                self.past_bribe_targets[player_id] = []
+                past_targets_copy[player_id] = []
             
             # Sort potential targets by bribes received so far (prioritize those with fewer bribes)
             potential_targets.sort(key=lambda pid: bribes_received[pid])
@@ -116,16 +122,19 @@ class Game:
             for target in targets:
                 bribes_received[target] += 1
             
-            # Update player's history
+            # Update player's history in our copy
             for target in targets:
-                if target not in self.past_bribe_targets[player_id]:
-                    self.past_bribe_targets[player_id].append(target)
+                if target not in past_targets_copy[player_id]:
+                    past_targets_copy[player_id].append(target)
             
             # Assign targets to this player
             pairings[player_id] = targets
         
+        # Now update the actual past_bribe_targets with our validated copy
+        for pid, targets in past_targets_copy.items():
+            self.past_bribe_targets[pid] = targets
+        
         # Validate and fix if any player doesn't receive exactly 2 bribes
-        # This is a fallback to ensure the test passes
         return self._balance_bribes(pairings, player_ids)
 
     def _balance_bribes(self, pairings, player_ids):
@@ -232,9 +241,24 @@ class Game:
 
     def activate_waiting_players(self):
         """Activate players who joined mid-game for the next round"""
+        activated_count = 0
         for player_id, player in self.players.items():
-            if player['connected'] and not player.get('active_in_round', True):
-                player['active_in_round'] = True
+            # Only consider connected players
+            if player['connected']:
+                # Check if player was marked as inactive
+                if not player.get('active_in_round', True):
+                    player['active_in_round'] = True
+                    activated_count += 1
+                    
+                    # Initialize scores for newly activated players if not already present
+                    if player_id not in self.scores:
+                        self.scores[player_id] = 0
+                        
+                    # Initialize past bribe targets for new players
+                    if player_id not in self.past_bribe_targets:
+                        self.past_bribe_targets[player_id] = []
+        
+        return activated_count  # Return count for logging purposes
 
     def cleanup(self):
         """Clean up game resources"""

@@ -50,36 +50,89 @@ function updateStatus(message) {
     document.getElementById('game-status').textContent = message;
 }
 
+// Store timer end timestamp to handle refresh
+let timerEndTime = 0;
+
 function startTimer(seconds, callback) {
     // Clear any existing timer
-    clearInterval(timer);
+    stopTimer();
+    
     const timerEl = document.getElementById('timer');
     
     // If seconds is 0 or undefined, this is a "no timer" mode
     if (!seconds) {
         timerEl.classList.add('hidden');
+        timerEndTime = 0;
         return;
+    }
+    
+    // Set the end time for this timer
+    timerEndTime = Date.now() + (seconds * 1000);
+    
+    // Store in localStorage to handle page refresh
+    try {
+        localStorage.setItem('bribery_timer_end', timerEndTime.toString());
+    } catch (e) {
+        console.error('Failed to store timer in localStorage:', e);
     }
     
     timerEl.classList.remove('hidden');
 
+    // Update every second
     timer = setInterval(() => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
+        // Calculate remaining time
+        const remainingTime = Math.max(0, Math.floor((timerEndTime - Date.now()) / 1000));
+        const minutes = Math.floor(remainingTime / 60);
+        const remainingSeconds = remainingTime % 60;
+        
+        // Update display
         timerEl.textContent = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 
-        if (seconds <= 0) {
-            clearInterval(timer);
+        if (remainingTime <= 0) {
+            stopTimer();
             timerEl.classList.add('hidden');
             if (callback) callback();
         }
-        seconds--;
     }, 1000);
 }
 
 function stopTimer() {
-    clearInterval(timer);
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
+    
+    // Clear stored timer
+    try {
+        localStorage.removeItem('bribery_timer_end');
+    } catch (e) {
+        console.error('Failed to remove timer from localStorage:', e);
+    }
+    
+    timerEndTime = 0;
     document.getElementById('timer').classList.add('hidden');
+}
+
+// Restore timer on page refresh if needed
+function restoreTimer() {
+    try {
+        const storedEndTime = localStorage.getItem('bribery_timer_end');
+        if (storedEndTime) {
+            const endTime = parseInt(storedEndTime);
+            const now = Date.now();
+            
+            // Only restore if timer hasn't ended yet
+            if (endTime > now) {
+                const remainingSeconds = Math.floor((endTime - now) / 1000);
+                startTimer(remainingSeconds);
+            } else {
+                // Timer would have ended - remove it
+                localStorage.removeItem('bribery_timer_end');
+            }
+        }
+    } catch (e) {
+        console.error('Failed to restore timer:', e);
+    }
 }
 
 // Game action functions
@@ -211,7 +264,11 @@ function preventDefaults(e) {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeGame);
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame();
+    // Restore timer if there was one
+    restoreTimer();
+});
 
 // Export key functions to global scope for use in HTML
 window.updateSettings = updateSettings;

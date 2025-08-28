@@ -146,6 +146,11 @@ function handleFileUpload(file, targetId) {
     
     // Show loading state
     const dropArea = document.getElementById(`drop-${targetId}`);
+    const submitBtn = document.getElementById(`submit-btn-${targetId}`);
+    
+    // Disable submit button during processing
+    if (submitBtn) submitBtn.disabled = true;
+    
     dropArea.innerHTML = `<div class="upload-loading">Processing image...</div>`;
     
     // Process the image using our utility
@@ -153,18 +158,43 @@ function handleFileUpload(file, targetId) {
         if (result.error) {
             // Show error message
             dropArea.innerHTML = `<div class="upload-error">${result.error}</div>`;
+            // Re-enable submit button on error
+            if (submitBtn) submitBtn.disabled = false;
             return;
         }
         
         // Display image preview with appropriate handling for GIFs
         const isGif = result.type === 'gif';
-        dropArea.innerHTML = `<img src="${result.content}" class="file-preview${isGif ? ' gif-preview' : ''}" alt="Uploaded ${isGif ? 'GIF' : 'image'}">`;
         
-        // Store submission data
-        submissions[targetId] = {
-            content: result.content,
-            type: result.type
+        // Create an image element to verify it loads correctly
+        const img = new Image();
+        img.onload = function() {
+            // Image loaded successfully
+            dropArea.innerHTML = `<img src="${result.content}" class="file-preview${isGif ? ' gif-preview' : ''}" alt="Uploaded ${isGif ? 'GIF' : 'image'}">`;
+            
+            // Store submission data
+            submissions[targetId] = {
+                content: result.content,
+                type: result.type
+            };
+            
+            // Re-enable submit button
+            if (submitBtn) submitBtn.disabled = false;
         };
+        
+        img.onerror = function() {
+            // Image failed to load
+            dropArea.innerHTML = `<div class="upload-error">Failed to load image. Please try another.</div>`;
+            if (submitBtn) submitBtn.disabled = false;
+        };
+        
+        // Set source to trigger load/error events
+        img.src = result.content;
+    }).catch(error => {
+        // Handle any unexpected errors in the promise chain
+        console.error('Image processing error:', error);
+        dropArea.innerHTML = `<div class="upload-error">Failed to process image. Please try another.</div>`;
+        if (submitBtn) submitBtn.disabled = false;
     });
 }
 

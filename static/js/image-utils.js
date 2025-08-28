@@ -80,7 +80,22 @@ const ImageUtils = {
      */
     processImage: async function(file) {
         try {
-            // Validate file first
+            // Check for null or undefined file
+            if (!file) {
+                return { content: null, type: null, error: "No file provided" };
+            }
+            
+            // Basic file type check
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+            if (!allowedTypes.includes(file.type)) {
+                return { 
+                    content: null, 
+                    type: null, 
+                    error: `Unsupported file type: ${file.type || 'unknown'}. Please use JPG, PNG, GIF, WebP or BMP.`
+                };
+            }
+            
+            // Validate file thoroughly
             const validation = await this.validateFile(file);
             if (!validation.valid) {
                 return { content: null, type: null, error: validation.message };
@@ -94,10 +109,11 @@ const ImageUtils = {
             // For static images, resize if needed
             return this.handleStaticImage(file);
         } catch (err) {
+            console.error('Image processing error:', err);
             return { 
                 content: null, 
                 type: null, 
-                error: 'Error processing image: ' + err.message 
+                error: 'Error processing image: ' + (err.message || 'Unknown error')
             };
         }
     },
