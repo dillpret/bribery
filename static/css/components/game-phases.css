@@ -1,10 +1,12 @@
-/* Game phases styles - Mobile First */
+/* Consolidated Game Phases Styles - Mobile First */
+
 .game-phase {
     background: #f8f9fa;
     border-radius: 12px;
     padding: 20px;
     margin: 20px 0;
     border: 1px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .game-phase h3 {
@@ -12,6 +14,34 @@
     margin-bottom: 16px;
     font-size: 18px;
     font-weight: 600;
+}
+
+/* Phase badges with distinct colors for each phase */
+.phase-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: white;
+}
+
+/* Color coding for different phases */
+.prompt-selection .phase-badge {
+    background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+}
+
+.submission-phase .phase-badge {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+.voting-phase .phase-badge {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.scoreboard-phase .phase-badge {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
 }
 
 /* Prompt selection phase */
@@ -63,235 +93,126 @@
     font-size: 16px;
     border: 2px solid #e1e5e9;
     border-radius: 8px;
-    resize: vertical;
-    min-height: 80px;
+    background: white;
     margin-bottom: 15px;
+    min-height: 100px;
     outline: none;
     transition: border-color 0.3s ease;
-    font-family: inherit;
+    resize: vertical;
 }
 
 .prompt-selector textarea:focus {
     border-color: #6f42c1;
 }
 
-.prompt-selector button {
-    background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+/* Enhanced phase transitions */
+.game-phase {
+    transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 }
 
-.prompt-selector button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(111, 66, 193, 0.4);
+.game-phase:not(.active-phase) {
+    opacity: 0.7;
+    transform: scale(0.98);
 }
 
-.prompt-selector button:disabled {
-    background: #28a745;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.help-text {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
-    border-left: 4px solid #6f42c1;
-}
-
-.help-text p {
-    color: #666;
-    margin: 0;
-    font-size: 14px;
-}
-
-/* Target prompt display in submission phase */
-.target-prompt {
-    background: #e8f4fd;
-    border: 1px solid #b3d9f0;
-    border-radius: 6px;
-    padding: 10px;
-    margin: 10px 0;
-    font-style: italic;
-    color: #0056b3;
-}
-
-/* Nomination phase */
-.nomination-phase {
-    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-    border-color: #2196f3;
-}
-
-.nomination-phase h3 {
-    color: #1976d2;
-}
-
-/* Voting phase */
-.voting-phase {
-    background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%);
-    border-color: #ff9800;
-}
-
-.voting-phase h3 {
-    color: #f57c00;
-}
-
-.player-prompt-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 15px;
-    margin: 15px 0;
-    border-left: 5px solid #ff9800;
-}
-
-.player-prompt {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
-    font-style: italic;
-    line-height: 1.4;
-    margin-top: 8px;
-}
-
-/* Results phase */
-.results-phase {
-    background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
-    border-color: #4caf50;
-}
-
-.results-phase h3 {
-    color: #388e3c;
-}
-
-/* Game over phase */
-.game-over-phase {
-    background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
-    border-color: #f44336;
-}
-
-.game-over-phase h3 {
-    color: #d32f2f;
-}
-
-/* Phase transitions */
-.phase-transition {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-}
-
-.phase-transition.active {
+.game-phase.active-phase {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Phase indicators */
-.phase-indicator {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    gap: 10px;
+/* Enhanced content organization */
+.phase-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.phase-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #dee2e6;
-    transition: all 0.3s ease;
-}
-
-.phase-dot.active {
-    background: #667eea;
-    transform: scale(1.2);
-}
-
-.phase-dot.completed {
-    background: #28a745;
-}
-
-/* Phase content */
-.phase-content {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.phase-header {
     text-align: center;
+    margin-bottom: 20px;
 }
 
-.phase-content p {
-    margin-bottom: 16px;
-    color: #6c757d;
+.phase-header h2 {
+    font-size: 24px;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.phase-header p {
+    color: #718096;
+    font-size: 16px;
     line-height: 1.5;
 }
 
-/* Category selection */
-.category-selection {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    margin: 20px 0;
+/* Submission phase enhancements */
+.submission-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
 }
 
-.category-option {
-    background: #fff;
-    border: 2px solid #e9ecef;
+.submission-container h3 {
+    font-size: 20px;
+    color: #3182ce;
+    margin-bottom: 15px;
+}
+
+.submission-form textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
+    font-size: 16px;
     transition: all 0.2s ease;
-    min-height: 60px;
+    margin-bottom: 15px;
+}
+
+.submission-form textarea:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+    outline: none;
+}
+
+/* Voting phase enhancements */
+.vote-option {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.vote-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.vote-option.selected {
+    border-color: #48bb78;
+    background-color: #f0fff4;
+}
+
+.vote-option.selected:before {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #48bb78;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.category-option:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
-}
-
-.category-option.selected {
-    border-color: #667eea;
-    background: #667eea;
-    color: white;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    .game-phase {
-        padding: 16px;
-        margin: 16px 0;
-    }
-    
-    .phase-indicator {
-        margin: 16px 0;
-        gap: 8px;
-    }
-    
-    .phase-dot {
-        width: 10px;
-        height: 10px;
-    }
-    
-    .category-selection {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .category-option {
-        min-height: 50px;
-        padding: 12px;
-    }
+    font-size: 14px;
+    font-weight: bold;
 }

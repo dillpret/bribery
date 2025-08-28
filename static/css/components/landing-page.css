@@ -1,4 +1,4 @@
-/* Landing page component styles */
+/* Consolidated Landing Page Styles */
 
 .container {
     background: white;
@@ -27,66 +27,134 @@ h1 {
     line-height: 1.4;
 }
 
-/* Animation setup */
-.hero-container, 
-.hero-card, 
+/* Enhanced landing styles */
+.hero-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    position: relative;
+}
+
+.hero-card {
+    border-radius: 16px;
+    background: linear-gradient(to bottom right, #f0f4ff, #e6eeff);
+    padding: 25px 20px;
+    width: 100%;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Button styles */
 .button-container {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+    margin: 5px 0 20px;
 }
 
-/* Desktop styles */
-@media (min-width: 640px) {
-    .container {
-        padding: 40px;
-    }
-
-    h1 {
-        margin-bottom: 30px;
-    }
-
-    .subtitle {
-        margin-bottom: 30px;
-    }
-}
-
-.or-divider {
-    margin: 15px 0;
-    color: #999;
+.button-icon {
+    margin-right: 10px;
     font-size: 18px;
 }
 
-.or-divider {
-    margin: 30px 0;
-    color: #999;
-    font-size: 18px;
+/* Card styles */
+.landing-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: left;
 }
 
-.game-id-display {
-    background: #f8f9fa;
-    border: 2px dashed #667eea;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px 0;
+.landing-card h2 {
+    color: #4a5568;
+    font-size: 22px;
+    margin-bottom: 15px;
+    font-weight: 700;
 }
 
-.game-id-code {
-    font-size: 24px;
-    font-weight: bold;
-    color: #667eea;
-    letter-spacing: 2px;
+.landing-card p {
+    color: #718096;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
 }
 
-.error {
-    background: #ffe6e6;
-    color: #d00;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 10px 0;
+/* Form styling */
+.form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Utility classes */
-.hidden {
-    display: none !important;
+.form-container h3 {
+    color: #4a5568;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.form-row {
+    margin-bottom: 15px;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 15px;
+}
+
+.form-row input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.form-row input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    outline: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.landing-card {
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.landing-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.landing-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+/* Help text styling */
+.help-text {
+    color: #718096;
+    font-size: 14px;
+    margin-top: 8px;
+    display: block;
 }

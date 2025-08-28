@@ -1,17 +1,19 @@
-/* Button styles - Mobile First */
-button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-btn) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+/* Consolidated Button Styles - Mobile First */
+
+/* Base button styles */
+button:not(.player-list-toggle) {
+    background: #e9ecef;
+    color: #495057;
     border: none;
-    padding: 14px 18px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     margin: 8px;
-    min-height: 48px;
-    min-width: 120px;
+    min-height: 44px;
+    min-width: 100px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     display: flex;
@@ -19,93 +21,150 @@ button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-b
     justify-content: center;
 }
 
-button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-btn):hover,
-button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-btn):focus {
+button:not(.player-list-toggle):hover,
+button:not(.player-list-toggle):focus {
+    background: #dee2e6;
     transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     outline: none;
 }
 
-button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-btn):active {
+button:not(.player-list-toggle):active {
     transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-button:not(.player-list-toggle):not(.primary-action-btn):not(.secondary-action-btn):disabled {
-    background: #6c757d;
+button:not(.player-list-toggle):disabled {
+    background: #e9ecef;
+    color: #adb5bd;
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.8;
     transform: none;
     box-shadow: none;
 }
 
-.submit-btn {
-    background: #28a745;
+/* Primary buttons - most important actions */
+.primary-button,
+#start-game-btn,
+#submit-vote-btn,
+#confirm-prompt-btn {
+    background: linear-gradient(135deg, #4d7df0 0%, #5a67d8 100%);
     color: white;
-    border: none;
-    padding: 14px 20px;
-    border-radius: 8px;
-    font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    margin-top: 12px;
-    min-height: 44px;
-    min-width: 100px;
-    transition: all 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.submit-btn:hover,
-.submit-btn:focus {
-    background: #218838;
-    transform: translateY(-1px);
-    outline: none;
-}
-
-.submit-btn:active {
-    transform: translateY(0);
-}
-
-.submit-btn:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.6;
-    transform: none;
-}
-
-#submit-vote-btn {
-    background: #28a745;
-    font-size: 18px;
-    padding: 18px 32px;
-    margin-top: 20px;
-    min-width: 200px;
-}
-
-#submit-vote-btn:hover {
-    background: #218838;
-}
-
-/* Primary button for important actions */
-.primary-button {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    border: 2px solid #28a745;
-    padding: 18px 24px;
     font-size: 16px;
-    font-weight: 700;
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
-    min-width: 160px;
+    padding: 14px 20px;
+    box-shadow: 0 4px 12px rgba(77, 125, 240, 0.25);
+    border-radius: 10px;
+    border: none;
+    min-width: 140px;
 }
 
 .primary-button:hover,
-.primary-button:focus {
-    background: linear-gradient(135deg, #218838 0%, #1ea585 100%);
-    border-color: #218838;
+#start-game-btn:hover,
+#submit-vote-btn:hover,
+#confirm-prompt-btn:hover {
+    background: linear-gradient(135deg, #3b62c0 0%, #4c57b6 100%);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 6px 16px rgba(77, 125, 240, 0.3);
 }
 
-.primary-button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+.primary-button:disabled,
+#start-game-btn:disabled,
+#submit-vote-btn:disabled,
+#confirm-prompt-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0 0%, #9aa2b8 100%);
+    box-shadow: none;
+    transform: none;
+}
+
+/* Success buttons - actions that confirm/complete */
+.success-button,
+.submit-btn,
+button[onclick="selectPrompt()"],
+button[onclick="submitBribe()"] {
+    background: linear-gradient(135deg, #38b2ac 0%, #48bb78 100%);
+    color: white;
+    font-weight: 600;
+    padding: 14px 20px;
+    box-shadow: 0 4px 12px rgba(56, 178, 172, 0.25);
+}
+
+.success-button:hover,
+.submit-btn:hover,
+button[onclick="selectPrompt()"].primary-button:hover,
+button[onclick="submitBribe()"].primary-button:hover {
+    background: linear-gradient(135deg, #2c9d98 0%, #38a169 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(56, 178, 172, 0.3);
+}
+
+/* Danger buttons - delete, remove, cancel actions */
+.danger-button,
+.cancel-kick,
+button[onclick="cancelSubmission()"] {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    color: white;
+    font-weight: 600;
+    padding: 14px 20px;
+    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.25);
+}
+
+.danger-button:hover,
+.cancel-kick:hover,
+button[onclick="cancelSubmission()"].danger-button:hover {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 101, 101, 0.3);
+}
+
+/* Extra prominent action - final results, game end */
+#next-round-btn,
+button[onclick="returnToLobby()"],
+button[onclick="restartGame()"] {
+    background: linear-gradient(135deg, #6b46c1 0%, #805ad5 100%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 24px;
+    box-shadow: 0 6px 16px rgba(107, 70, 193, 0.25);
+    min-width: 160px;
+    border-radius: 12px;
+}
+
+#next-round-btn:hover,
+button[onclick="returnToLobby()"].primary-button:hover,
+button[onclick="restartGame()"].primary-button:hover {
+    background: linear-gradient(135deg, #5a38a1 0%, #6d4cb8 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(107, 70, 193, 0.3);
+}
+
+/* Button groups in horizontal layouts */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* Add a subtle "shine" animation to primary actions */
+@keyframes button-shine {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.primary-button,
+#start-game-btn,
+#submit-vote-btn,
+#confirm-prompt-btn {
+    background-size: 200% auto;
+    animation: button-shine 4s ease infinite;
 }
