@@ -1,5 +1,6 @@
 // Connection monitoring for mobile and desktop browsers
 // Handles page visibility changes and reconnection
+import { socket } from './socket-manager.js';
 
 // Track connection state
 let isConnected = socket.connected;

@@ -1,4 +1,6 @@
 // Socket event handlers for game state management
+import { socket } from './socket-manager.js';
+import { GameState } from './game-state.js';
 
 // Connection and lobby events
 socket.on('joined_game', (data) => {

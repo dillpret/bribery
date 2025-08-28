@@ -124,10 +124,13 @@
         <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
     </div>
 
+    <!-- Non-module scripts (common functionality) -->
     <script src="{{ versioned_static('socket.io.min.js') }}"></script>
-    <script src="{{ versioned_static('js/auth-module.js') }}"></script>
-    <script src="{{ versioned_static('js/cache-buster.js') }}"></script>
     <script src="{{ versioned_static('js/image-loading-optimizer.js') }}"></script>
+    <script src="{{ versioned_static('js/cache-buster.js') }}"></script>
+    
+    <!-- Application scripts -->
+    <script src="{{ versioned_static('js/auth-module.js') }}"></script>
     <script src="{{ versioned_static('js/index.js') }}"></script>
     
     <!-- Instructions Panel -->

@@ -222,8 +222,8 @@ function updateAuthFromServer(data) {
     }
 }
 
-// Export the public API
-window.GameState = {
+// Create the GameState object
+const GameStateObj = {
     init: initializeAuthState,
     get: getState,
     set: setState,
@@ -231,3 +231,9 @@ window.GameState = {
     clear: clearGameState,
     persist: persistAuthState
 };
+
+// Export for ES modules
+export const GameState = GameStateObj;
+
+// Also set on window for backwards compatibility with non-module scripts
+window.GameState = GameStateObj;

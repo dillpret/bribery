@@ -1,5 +1,12 @@
 // Core game variables and initialization
-const socket = io();
+import { socket, isSocketInitialized } from './socket-manager.js';
+import { GameState } from './game-state.js';
+
+// Check if socket is properly initialized
+if (!isSocketInitialized()) {
+    console.error('Socket.IO not properly initialized!');
+}
+
 const gameId = document.querySelector('meta[name="game-id"]').content;
 let timer = null;
 

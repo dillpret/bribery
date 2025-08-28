@@ -1,5 +1,7 @@
 // Basic connection handlers
 // More advanced connection monitoring is in connection-monitoring.js
+import { socket } from './socket-manager.js';
+import { GameState } from './game-state.js';
 
 // Connection established - handle rejoining
 socket.on('connect', () => {

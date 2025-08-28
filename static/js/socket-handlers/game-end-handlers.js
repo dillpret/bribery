@@ -1,4 +1,5 @@
 // Additional event handlers for game end and non-existent games
+import { socket } from '../socket-manager.js';
 
 // Handle case where game has ended
 socket.on('game_ended', (data) => {

@@ -6,8 +6,7 @@
 .hero-logo {
     opacity: 0;
     transition: opacity 0.3s ease-in;
-    /* Show a colored placeholder until the image loads */
-    background-color: #6B5FF0; /* Matching the logo's primary color */
+    /* No background color to avoid issues with transparent logos */
 }
 
 .hero-logo.logo-loaded {
