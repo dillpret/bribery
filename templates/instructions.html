@@ -5,7 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>How To Play Bribery</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="{{ versioned_static('css/index.css') }}">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ versioned_static('images/logo/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ versioned_static('images/logo/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ versioned_static('images/logo/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ versioned_static('images/logo/apple-touch-icon.png') }}" />
+    <meta name="apple-mobile-web-app-title" content="Bribery" />
+    <!-- Prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <style>
         /* Specific styles for instructions page */
         body {
@@ -143,6 +153,9 @@
         </div>
         
         <button onclick="history.back()" class="back-button">← Back to Game</button>
+        
+        <!-- Version number (inconspicuous) -->
+        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
     </div>
 </body>
 

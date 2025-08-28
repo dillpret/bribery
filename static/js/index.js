@@ -11,12 +11,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupLogoHandling() {
     const logo = document.querySelector('.hero-logo');
+    const fallback = document.querySelector('.hero-logo-fallback');
+    
+    // Initially hide fallback
+    if (fallback) {
+        fallback.style.display = 'none';
+    }
     
     // Handle logo load errors
     if (logo) {
-        logo.addEventListener('error', function() {
-            this.classList.add('error');
-        });
+        // If image is already loaded/errored by the time JS runs
+        if (logo.complete) {
+            if (logo.naturalWidth === 0) {
+                // Image failed to load
+                handleImageError();
+            } else {
+                // Image loaded successfully
+                handleImageSuccess();
+            }
+        } else {
+            // Wait for load/error events
+            logo.addEventListener('load', handleImageSuccess);
+            logo.addEventListener('error', handleImageError);
+        }
+    }
+    
+    function handleImageSuccess() {
+        if (logo && fallback) {
+            logo.style.display = 'block';
+            fallback.style.display = 'none';
+        }
+    }
+    
+    function handleImageError() {
+        if (logo && fallback) {
+            logo.classList.add('error');
+            logo.style.display = 'none';
+            fallback.style.display = 'block';
+        }
     }
 }
 

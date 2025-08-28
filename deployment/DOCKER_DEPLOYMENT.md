@@ -145,3 +145,19 @@ sudo cat /etc/nginx/sites-available/bribery-game
 ```
 
 The current deployment uses Nginx as a reverse proxy, so the Docker container runs on port 8080 internally while Nginx handles external requests on port 80. This setup helps avoid port conflicts with other services.
+
+## Caching and Version Management
+
+The application uses versioned static URLs to prevent browser caching issues. When deploying a new version:
+
+1. Ensure the `VERSION` file has been updated (happens automatically with Git commits)
+2. Rebuild and redeploy the Docker container
+3. Browser clients should automatically receive the new version of all static assets
+
+If you're still experiencing caching issues after deployment:
+
+1. Verify Nginx isn't adding its own caching headers that override the application's settings
+2. Check that your CDN (if using one) isn't aggressively caching static assets
+3. Consider adding a version-specific route to Nginx for critical static assets
+
+See `docs/VERSION_MANAGEMENT.md` for more details on the versioning and cache busting system.

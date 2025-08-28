@@ -16,14 +16,13 @@ def register_routes(app):
             version = f.read().strip()
     except (FileNotFoundError, IOError):
         version = "0.0.0"  # Fallback version
+        
+    # Store version in app config for use in versioned_static
+    app.config['VERSION'] = version
 
     @app.route('/')
     def index():
         return render_template('index.html', version=version)
-
-    @app.route('/test')
-    def frontend_test():
-        return render_template('frontend_test.html')
 
     @app.route('/bribery/<game_id>')
     def bribery_game_page(game_id):

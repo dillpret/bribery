@@ -5,21 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Bribery Game</title>
-    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="{{ versioned_static('css/index.css') }}">
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/static/images/logo/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/static/images/logo/favicon.svg" />
-    <link rel="shortcut icon" href="/static/images/logo/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/logo/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="{{ versioned_static('images/logo/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ versioned_static('images/logo/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ versioned_static('images/logo/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ versioned_static('images/logo/apple-touch-icon.png') }}" />
     <meta name="apple-mobile-web-app-title" content="Bribery" />
-    <link rel="manifest" href="/static/site.webmanifest">
+    <link rel="manifest" href="{{ versioned_static('site.webmanifest') }}">
+    <!-- Prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 
 <body>
     <div class="container">
         <div class="hero-container">
             <div class="logo-wrapper">
-                <img src="/static/images/logo/logo-full.png" alt="Bribery Game" class="hero-logo">
+                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" onerror="this.classList.add('error')">
                 <h1 class="hero-logo-fallback">😉 Bribery</h1>
             </div>
             <p class="subtitle">A casual web game</p>
@@ -116,9 +120,9 @@
         <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
     </div>
 
-    <script src="/static/socket.io.min.js"></script>
-    <script src="/static/js/auth-module.js"></script>
-    <script src="/static/js/index.js"></script>
+    <script src="{{ versioned_static('socket.io.min.js') }}"></script>
+    <script src="{{ versioned_static('js/auth-module.js') }}"></script>
+    <script src="{{ versioned_static('js/index.js') }}"></script>
 </body>
 
 </html>

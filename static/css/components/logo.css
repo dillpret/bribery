@@ -34,19 +34,13 @@
     margin: 0;
 }
 
-/* Show fallback only when image fails to load */
-.hero-logo[src=""], 
-.hero-logo:not([src]),
-.hero-logo[src="error"],
-.hero-logo.error {
-    display: none;
+/* Base styles - JS will control display */
+.hero-logo {
+    display: block;
 }
 
-.hero-logo[src=""] ~ .hero-logo-fallback, 
-.hero-logo:not([src]) ~ .hero-logo-fallback,
-.hero-logo[src="error"] ~ .hero-logo-fallback,
-.hero-logo.error ~ .hero-logo-fallback {
-    display: block;
+.hero-logo.error {
+    display: none;
 }
 
 /* Responsive adjustments */
