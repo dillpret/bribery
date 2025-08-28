@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     animateElements();
     setupLogoHandling();
     showMainMenu();
+    setupInstructionsPanel();
 });
 
 // These functions have been removed as they're not needed
@@ -231,3 +232,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Any additional event listeners or initialization can go here
 });
+
+// Instructions panel functions
+function setupInstructionsPanel() {
+    // Set up click handler for overlay
+    const overlay = document.getElementById('instructions-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', hideInstructions);
+    }
+
+    // Handle escape key to close instructions
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideInstructions();
+        }
+    });
+}
+
+function showInstructions() {
+    const panel = document.getElementById('instructions-panel');
+    const overlay = document.getElementById('instructions-overlay');
+    
+    if (panel && overlay) {
+        panel.classList.add('visible');
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling behind the panel
+    }
+}
+
+function hideInstructions() {
+    const panel = document.getElementById('instructions-panel');
+    const overlay = document.getElementById('instructions-overlay');
+    
+    if (panel && overlay) {
+        panel.classList.remove('visible');
+        overlay.classList.remove('visible');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+}

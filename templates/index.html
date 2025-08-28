@@ -17,6 +17,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- Instructions panel styles -->
+    <link rel="stylesheet" href="{{ versioned_static('css/components/instructions-panel.css') }}">
 </head>
 
 <body>
@@ -40,6 +42,9 @@
                         <span class="button-icon">🔍</span> Join Existing Game
                     </button>
                 </div>
+                <button class="how-to-play-btn" onclick="showInstructions()">
+                    <span class="button-icon">❓</span> How to Play
+                </button>
             </div>
         </div>
 
@@ -124,6 +129,51 @@
     <script src="{{ versioned_static('js/auth-module.js') }}"></script>
     <script src="{{ versioned_static('js/cache-buster.js') }}"></script>
     <script src="{{ versioned_static('js/index.js') }}"></script>
+    
+    <!-- Instructions Panel -->
+    <div class="instructions-overlay" id="instructions-overlay"></div>
+    <div class="instructions-panel" id="instructions-panel">
+        <div class="instructions-close">
+            <button onclick="hideInstructions()"><span>✕</span> Close</button>
+        </div>
+        <div class="instructions-content">
+            <h1>🎯 Bribery - Game Rules</h1>
+            
+            <div class="quick-start">
+                <h2>Quick Start</h2>
+                <p>Bribery is a party game about creativity and persuasion:</p>
+                <ol>
+                    <li>Each player creates a <strong>prompt</strong> for others to respond to</li>
+                    <li>You'll create <strong>bribes</strong> to win points from other players</li>
+                    <li>You'll vote for your <strong>favourite bribe</strong> from others</li>
+                    <li><strong>Player with most points wins!</strong></li>
+                </ol>
+            </div>
+            
+            <h2>How a Round Works</h2>
+            <ol>
+                <li><strong>Prompt Creation:</strong> Choose a prompt for others to use when bribing you</li>
+                <li><strong>Bribe Creation:</strong> Craft creative bribes for your assigned targets</li>
+                <li><strong>Voting:</strong> Review the bribes you received and vote for your favourite</li>
+                <li><strong>Results:</strong> See who won points and current standings</li>
+            </ol>
+            
+            <h2>Tips for Better Bribes</h2>
+            <ul>
+                <li><strong>Be creative</strong> - You can use text, images, GIFs, or links</li>
+                <li><strong>Know your audience</strong> - Personalize bribes to your target</li>
+                <li><strong>Keep it fun</strong> - The goal is entertainment, not serious competition</li>
+            </ul>
+            
+            <h2>Game Settings</h2>
+            <p>The host can adjust:</p>
+            <ul>
+                <li>Number of rounds (3, 5, or 7)</li>
+                <li>Time limits for each phase</li>
+                <li>Custom prompt options</li>
+            </ul>
+        </div>
+    </div>
 </body>
 
 </html>
