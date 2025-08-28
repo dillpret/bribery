@@ -113,7 +113,7 @@ function getTimeInSeconds(baseId) {
 function createGame() {
     const username = document.getElementById('host-username').value.trim();
     if (!username) {
-        showError('Please enter a username');
+        showError('Please enter your name');
         return;
     }
 
@@ -140,7 +140,7 @@ function joinGame() {
     const gameId = document.getElementById('game-id').value.trim().toUpperCase();
 
     if (!username || !gameId) {
-        showError('Please enter both username and game ID');
+        showError('Please enter both your name and game ID');
         return;
     }
 
