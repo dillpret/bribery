@@ -561,21 +561,16 @@ socket.on('round_results', (data) => {
     // Show scoreboard
     displayScoreboard(data.scoreboard, 'scoreboard');
 
-    // Add next round button for host if timer is disabled
+    // Show or hide host controls based on timer settings
+    const hostControls = document.getElementById('host-round-controls');
     if (!data.timer_enabled && Authentication.isHost()) {
-        // Create next round button
-        const nextRoundBtn = document.createElement('button');
-        nextRoundBtn.id = 'next-round-btn';
-        nextRoundBtn.textContent = 'Continue to Next Round';
-        nextRoundBtn.classList.add('action-button');
-        nextRoundBtn.onclick = () => socket.emit('next_round');
-        
-        // Add button to scoreboard phase
-        const scoreboardPhase = document.getElementById('scoreboard-phase');
-        scoreboardPhase.appendChild(nextRoundBtn);
-        
+        // Show the host controls with the next round button
+        hostControls.classList.remove('hidden');
         updateStatus('You control when to advance to the next round');
     } else {
+        // Hide the host controls if timer is enabled or not host
+        hostControls.classList.add('hidden');
+        
         updateStatus('Round complete!');
         if (data.timer_enabled) {
             startTimer(data.results_time || 5, 'Next round in: ');

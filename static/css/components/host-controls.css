@@ -1,0 +1,54 @@
+/* Host controls for round progression and game management */
+.host-controls {
+    display: flex;
+    justify-content: center;
+    margin: 25px auto;
+    padding: 15px;
+    max-width: 800px;
+}
+
+#host-round-controls,
+#host-final-controls {
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f9f9ff;
+    border: 1px solid #e0e0ff;
+    margin-top: 20px;
+}
+
+#host-round-controls button,
+#host-final-controls button {
+    margin: 8px;
+}
+
+/* Make primary button stand out more */
+#host-round-controls .primary-button,
+#host-final-controls .primary-button {
+    min-width: 200px;
+}
+
+/* Host status indication */
+.host-controls::before {
+    content: '🎮 Host Controls';
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #5d4a90;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .host-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #host-round-controls .primary-button,
+    #host-final-controls .primary-button {
+        width: 100%;
+        min-width: unset;
+    }
+}
