@@ -37,6 +37,13 @@ socket.on('midgame_waiting', (data) => {
 
     updateStatus('Waiting for next round to begin...');
     GameState.set('ui', { activeScreen: 'waiting' });
+    
+    // Store this state so we know we're waiting for next round
+    GameState.set('game', { 
+        isWaitingForNextRound: true,
+        currentRound: data.current_round,
+        totalRounds: data.total_rounds
+    });
 });
 
 socket.on('lobby_update', (data) => {
@@ -486,6 +493,39 @@ socket.on('voting_progress', (data) => {
 
 // Results events
 socket.on('round_results', (data) => {
+    // Handle simplified results for reconnecting players
+    if (data.simplified_reconnect) {
+        hideAllScreens();
+        document.getElementById('scoreboard-phase').classList.remove('hidden');
+        
+        const title = document.getElementById('scoreboard-title');
+        title.textContent = `Round ${data.round} of ${data.total_rounds} - Scores`;
+        
+        const scoreboardList = document.getElementById('scoreboard-list');
+        scoreboardList.innerHTML = '';
+        
+        // Sort players by score (descending)
+        const sortedPlayers = Object.entries(data.scores)
+            .sort((a, b) => b[1].score - a[1].score);
+        
+        // Add each player to the scoreboard
+        sortedPlayers.forEach(([playerId, info], index) => {
+            const playerEl = document.createElement('div');
+            playerEl.className = 'scoreboard-player';
+            playerEl.innerHTML = `
+                <div class="rank">${index + 1}</div>
+                <div class="player-name">${info.username}</div>
+                <div class="score">${info.score}</div>
+            `;
+            scoreboardList.appendChild(playerEl);
+        });
+        
+        updateStatus('Reconnected to game during scoreboard phase');
+        GameState.set('ui', { activeScreen: 'scoreboard' });
+        return;
+    }
+    
+    // Regular round results handling
     hideAllScreens();
     document.getElementById('scoreboard-phase').classList.remove('hidden');
 

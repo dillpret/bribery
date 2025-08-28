@@ -38,7 +38,11 @@ window.addEventListener('focus', () => {
     // If socket is disconnected when window gets focus
     if (!socket.connected && hasConnectedBefore) {
         console.log('Window focused but socket disconnected. Attempting manual reconnect...');
-        attemptManualReconnect();
+        // Update UI first
+        updateConnectionStatus('reconnecting');
+        showReconnectOverlay();
+        // Then try to reconnect
+        setTimeout(attemptManualReconnect, 300);
     }
 });
 
@@ -103,6 +107,14 @@ function attemptManualReconnect() {
     // Force socket to reconnect by closing and opening
     if (socket.io && !socket.connected) {
         console.log('Manually reopening socket connection...');
+        
+        // First, ensure we have valid authentication state
+        const authState = GameState.get('auth');
+        if (!authState || !authState.gameId || !authState.username) {
+            console.error('Missing authentication state for reconnection');
+            showFailedReconnectMessage();
+            return;
+        }
         
         // Try the built-in Socket.IO reconnect first
         socket.io.reconnect();

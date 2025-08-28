@@ -8,19 +8,39 @@ socket.on('connect', () => {
     
     // Automatically rejoin if we have credentials
     if (authState && authState.username && authState.gameId) {
-        console.log('Auto-rejoining game after connection');
-        socket.emit('join_game', {
-            game_id: authState.gameId,
-            username: authState.username,
-            player_id: authState.playerId  // Send stored player ID if available
-        });
+        console.log('Auto-rejoining game after connection', authState);
+        
+        // Add a short delay before rejoining to ensure server is ready to accept the connection
+        // This helps avoid race conditions with previous connections still being processed
+        setTimeout(() => {
+            socket.emit('join_game', {
+                game_id: authState.gameId,
+                username: authState.username,
+                player_id: authState.playerId  // Send stored player ID if available
+            });
+        }, 500);
     }
 });
 
 // Basic update status on reconnect
-socket.on('reconnect', () => {
-    console.log('Socket.IO built-in reconnect event triggered');
+socket.on('reconnect', (attemptNumber) => {
+    console.log('Socket.IO built-in reconnect event triggered, attempt:', attemptNumber);
     updateStatus('Reconnected to game');
+    
+    // Similar to connect but with a slightly longer delay to ensure cleanup
+    const authState = GameState.get('auth');
+    if (authState && authState.username && authState.gameId) {
+        console.log('Auto-rejoining game after reconnect', authState);
+        
+        // Longer delay on reconnect to ensure server has cleaned up previous connection
+        setTimeout(() => {
+            socket.emit('join_game', {
+                game_id: authState.gameId,
+                username: authState.username,
+                player_id: authState.playerId
+            });
+        }, 1000);
+    }
 });
 
 // Connection error - show user-friendly error banner

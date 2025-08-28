@@ -153,6 +153,14 @@ def handle_join_game(data):
         # Player rejoining
         player_id = existing_player_id
         game.players[player_id]['connected'] = True
+        
+        # Clean up any existing socket sessions for this player_id to prevent duplicates
+        # This ensures only one socket session per player
+        for sid, session in list(game_manager.player_sessions.items()):
+            if session.player_id == player_id and sid != request.sid:
+                logger.info(f"Cleaning up existing socket session for player {player_id}")
+                game_manager.remove_player_session(sid)
+        
         game_manager.add_player_session(
             request.sid, PlayerSession(
                 request.sid, player_id, game_id))
@@ -433,9 +441,28 @@ def handle_disconnect():
         game = game_manager.get_game(player_session.game_id)
 
         if game and player_session.player_id in game.players:
+            # Mark player as disconnected but keep their data
             game.players[player_session.player_id]['connected'] = False
-            emit_lobby_update(player_session.game_id)
+            # Only emit update if this was the most recent connection for this player
+            # This prevents multiple disconnect events for the same player
+            
+            # Check if there are other active sessions for this player
+            has_other_sessions = False
+            for sid, session in game_manager.player_sessions.items():
+                if (sid != request.sid and 
+                    session.player_id == player_session.player_id and 
+                    session.game_id == player_session.game_id):
+                    has_other_sessions = True
+                    break
+            
+            # Only notify others if this was the player's last active session
+            if not has_other_sessions:
+                emit_lobby_update(player_session.game_id)
+                logger.info(f"Player {player_session.player_id} disconnected from game {player_session.game_id}")
+            else:
+                logger.info(f"Duplicate session {request.sid} disconnected, player still connected via another session")
 
+        # Always remove this specific socket session
         game_manager.remove_player_session(request.sid)
 
 

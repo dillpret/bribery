@@ -198,17 +198,28 @@ function initializeAuthState(gameId) {
  * @param {object} data - Server response data
  */
 function updateAuthFromServer(data) {
-    // Update with server-provided values but preserve locally set values if they exist
+    // Update with server-provided values while preserving locally set values if they exist
     const currentAuth = getState(STATE_TYPES.AUTH);
     
-    setState(STATE_TYPES.AUTH, {
-        playerId: data.player_id,
-        // Keep existing username if we have one, otherwise use server's
+    const updatedAuth = {
+        // Always use server-provided player_id as the source of truth
+        playerId: data.player_id || currentAuth.playerId,
+        
+        // Username strategy: keep local value if exists, otherwise use server's
         username: currentAuth.username || data.username,
-        // Keep existing isHost if true, otherwise use server's
-        isHost: currentAuth.isHost || data.is_host,
+        
+        // Host status: if either says we're host, we're host
+        isHost: !!currentAuth.isHost || !!data.is_host,
+        
+        // Game ID: prefer server value as source of truth, fall back to local
         gameId: data.game_id || currentAuth.gameId
-    });
+    };
+    
+    // Only update if we have meaningful data
+    if (updatedAuth.playerId && updatedAuth.username && updatedAuth.gameId) {
+        setState(STATE_TYPES.AUTH, updatedAuth);
+        console.log('Updated auth state from server:', updatedAuth);
+    }
 }
 
 // Export the public API

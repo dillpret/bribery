@@ -396,7 +396,106 @@ def emit_midgame_joiner_state(game, player_id):
     """Send appropriate state to a player who joined mid-game"""
     # Check if player is active in current round
     player = game.players.get(player_id)
-    if not player or not player.get('active_in_round', True):
+    if not player:
+        logger.error(f"Player {player_id} not found in game {game.game_id}")
+        return
+        
+    # If player is reconnecting but was already active, send them the current game state
+    if player.get('active_in_round', False):
+        logger.info(f"Player {player_id} reconnected during active round - sending current game state")
+        
+        # Send the appropriate state based on current game phase
+        if game.state == "prompt_selection":
+            # Send prompt selection data
+            prompts = load_prompts()
+            socketio.emit('prompt_selection_started', {
+                'round': game.current_round,
+                'total_rounds': game.settings['rounds'],
+                'available_prompts': prompts,
+                'time_limit': game.settings.get('prompt_selection_time', 0)
+            }, room=get_player_room(game_manager, game.game_id, player_id))
+            
+        elif game.state == "submission":
+            # Send submission phase data
+            pairings = game.round_pairings.get(game.current_round, {}).get(player_id, [])
+            
+            if pairings:
+                # Convert player IDs to usernames for the client
+                targets = [{
+                    'id': target_id,
+                    'username': game.players[target_id]['username']
+                } for target_id in pairings if target_id in game.players]
+                
+                # Check if this player has already submitted
+                already_submitted = player_id in game.bribes.get(game.current_round, {})
+                
+                # Get their prompt (either custom or shared)
+                prompt = None
+                if game.custom_prompts_enabled():
+                    prompt = game.player_prompts.get(game.current_round, {}).get(player_id)
+                else:
+                    prompt = game.current_prompt
+                
+                # Send the submission phase data
+                socketio.emit('submission_phase', {
+                    'round': game.current_round,
+                    'total_rounds': game.settings['rounds'],
+                    'targets': targets,
+                    'prompt': prompt,
+                    'already_submitted': already_submitted,
+                    'time_limit': game.settings.get('submission_time', 0)
+                }, room=get_player_room(game_manager, game.game_id, player_id))
+                
+        elif game.state == "voting":
+            # Send voting phase data
+            # Check if this player already voted
+            already_voted = player_id in game.votes.get(game.current_round, {})
+            
+            # Get bribes targeted at this player
+            bribes_for_player = []
+            round_bribes = game.bribes.get(game.current_round, {})
+            
+            for bribing_player, targets in round_bribes.items():
+                for target_id, bribe in targets.items():
+                    if target_id == player_id:
+                        # Found a bribe targeted at this player
+                        bribes_for_player.append({
+                            'id': bribe.get('id'),
+                            'content': bribe.get('content'),
+                            'type': bribe.get('type', 'text')
+                        })
+            
+            # Send voting phase data
+            socketio.emit('voting_phase', {
+                'round': game.current_round,
+                'total_rounds': game.settings['rounds'],
+                'bribes': bribes_for_player,
+                'already_voted': already_voted,
+                'time_limit': game.settings.get('voting_time', 0)
+            }, room=get_player_room(game_manager, game.game_id, player_id))
+            
+        elif game.state == "scoreboard":
+            # Send scoreboard data
+            # For reconnecting players, just give them a simplified version of the scoreboard
+            # Create a simplified round results structure
+            round_scores = {}
+            for pid, score in game.scores.items():
+                if pid in game.players:
+                    round_scores[pid] = {
+                        'username': game.players[pid]['username'],
+                        'score': score
+                    }
+            
+            # Send scoreboard data
+            socketio.emit('round_results', {
+                'round': game.current_round,
+                'total_rounds': game.settings['rounds'],
+                'simplified_reconnect': True,  # Flag to tell client this is simplified data
+                'scores': round_scores,
+                'time_limit': game.settings.get('results_time', 0)
+            }, room=get_player_room(game_manager, game.game_id, player_id))
+            
+    else:
         # Player is waiting for next round - show waiting screen
         socketio.emit('midgame_waiting', {
             'message': 'You joined mid-game. Please wait for the next round to begin!',
@@ -412,11 +511,12 @@ def emit_midgame_joiner_state(game, player_id):
                     'username': p['username'],
                     'is_host': pid == game.host_id,
                     'connected': p.get('connected', True),
-                    'score': p.get('score', 0)
+                    'score': game.scores.get(pid, 0)
                 }
                 for pid, p in game.players.items()
             ],
-            'player_count': len(game.players)
+            'player_count': len(game.players),
+            'settings': game.settings
         }, room=get_player_room(game_manager, game.game_id, player_id))
         
         return
