@@ -16,7 +16,7 @@ docker-compose up -d
 ```powershell
 # Production setup
 py -m pip install -r requirements.txt
-py -m flask run
+py app.py
 
 # Development setup (includes code quality tools)
 py -m pip install -r requirements.txt -r requirements-dev.txt

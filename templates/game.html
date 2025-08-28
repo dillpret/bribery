@@ -22,7 +22,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 Bribery</h1>
+            <div class="logo-wrapper">
+                <img src="{{ versioned_static('images/logo/logo-full.png') }}" alt="Bribery Game" class="hero-logo" onerror="this.classList.add('error')">
+                <h1 class="hero-logo-fallback">🎯 Bribery</h1>
+            </div>
             <div class="game-info">
                 Game ID: <strong>{{ game_id }}</strong>
                 <span id="connection-status" class="connection-status connected" title="Connection Status"></span>

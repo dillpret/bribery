@@ -14,6 +14,8 @@
 @import url('components/connection-status.css');
 @import url('components/phase-explanation.css');
 @import url('components/error-banner.css');
+@import url('components/logo.css');
+@import url('components/header.css');
 
 /* Global styles - Mobile First */
 * {

@@ -76,3 +76,8 @@ body {
 .rounded-lg { border-radius: 0.5rem; }
 .rounded-xl { border-radius: 0.75rem; }
 .rounded-full { border-radius: 9999px; }
+
+/* Hide elements */
+.hidden { 
+    display: none !important; 
+}

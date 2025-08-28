@@ -26,9 +26,9 @@ Write-Host "`nStarting Bribery Game Server..." -ForegroundColor Green
 Write-Host "`nOpen your browser and go to: http://localhost:5000" -ForegroundColor White
 Write-Host "`nPress Ctrl+C to stop the server`n" -ForegroundColor White
 
-# Run Flask development server
-py -m flask run
+# Run the application
+py app.py
 
-# This line will only execute if the Flask server is stopped
+# This line will only execute if the server is stopped
 Write-Host "`nServer stopped. Press any key to exit..." -ForegroundColor Yellow
 $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null

@@ -7,7 +7,10 @@ let currentPlayerId = null;
 document.addEventListener('DOMContentLoaded', function() {
     animateElements();
     setupLogoHandling();
+    showMainMenu();
 });
+
+// These functions have been removed as they're not needed
 
 function setupLogoHandling() {
     const logo = document.querySelector('.hero-logo');
@@ -79,8 +82,13 @@ function showJoinGame() {
 }
 
 function hideAll() {
-    document.querySelectorAll('.container > div').forEach(div => {
-        div.classList.add('hidden');
+    // Only hide the main form containers, not all divs
+    const formContainers = ['main-menu', 'host-game', 'join-game', 'game-created', 'error-message'];
+    formContainers.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.add('hidden');
+        }
     });
 }
 
