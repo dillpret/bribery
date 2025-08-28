@@ -42,6 +42,8 @@ body {
     min-height: calc(100vh - 60px);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Section dividers */
@@ -217,4 +219,9 @@ body {
     input[type="file"] {
         display: none;
     }
+}
+
+/* Hidden class - Essential for game phase management */
+.hidden {
+    display: none !important;
 }
