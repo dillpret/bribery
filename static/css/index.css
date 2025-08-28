@@ -1,8 +1,8 @@
 /* Index page main styles */
-@import url('components/landing-page.css');
-@import url('components/buttons.css');
-@import url('components/forms.css');
-@import url('components/logo.css');
+@import url('./components/landing-page.css');
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/logo.css');
 
 /* Global styles - Mobile First */
 * {

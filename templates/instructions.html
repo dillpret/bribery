@@ -155,7 +155,15 @@
         <button onclick="history.back()" class="back-button">← Back to Game</button>
         
         <!-- Version number (inconspicuous) -->
-        <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
+            </div>
+    
+    <script src="{{ versioned_static('js/cache-buster.js') }}"></script>
+    
+    <!-- Version number (inconspicuous) -->
+    <div id="version-number" style="font-size: 10px; color: #ccc; text-align: center; margin-top: 15px;">v{{ version }}</div>
+</body>
+
+</html>
     </div>
 </body>
 

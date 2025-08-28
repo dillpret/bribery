@@ -1,21 +1,21 @@
 /* Base styles and component imports */
-@import url('components/lobby.css');
-@import url('components/buttons.css');
-@import url('components/forms.css');
-@import url('components/game-phases.css');
-@import url('components/scoreboard.css');
-@import url('components/mobile.css');
-@import url('components/host-settings.css');
-@import url('components/host-controls.css');
-@import url('components/player-list-panel.css');
-@import url('components/results-display.css');
-@import url('components/reconnection.css');
-@import url('components/toasts.css');
-@import url('components/connection-status.css');
-@import url('components/phase-explanation.css');
-@import url('components/error-banner.css');
-@import url('components/logo.css');
-@import url('components/header.css');
+@import url('./components/lobby.css');
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/game-phases.css');
+@import url('./components/scoreboard.css');
+@import url('./components/mobile.css');
+@import url('./components/host-settings.css');
+@import url('./components/host-controls.css');
+@import url('./components/player-list-panel.css');
+@import url('./components/results-display.css');
+@import url('./components/reconnection.css');
+@import url('./components/toasts.css');
+@import url('./components/connection-status.css');
+@import url('./components/phase-explanation.css');
+@import url('./components/error-banner.css');
+@import url('./components/logo.css');
+@import url('./components/header.css');
 
 /* Global styles - Mobile First */
 * {
