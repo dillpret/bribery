@@ -1,36 +1,44 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import CompatibilityWarning from '@/components/common/CompatibilityWarning.vue';
-import { isBrowserCompatible, getMissingFeatures } from '@/services/browser-compatibility';
+import * as browserCompat from '@/services/browser-compatibility';
 
 // Mock the browser compatibility service
-jest.mock('@/services/browser-compatibility', () => ({
-  isBrowserCompatible: jest.fn(),
-  getMissingFeatures: jest.fn()
-}));
+jest.mock('@/services/browser-compatibility', () => {
+  return {
+    isBrowserCompatible: jest.fn(),
+    getMissingFeatures: jest.fn(),
+    detectBrowserCapabilities: jest.fn()
+  };
+});
 
 describe('CompatibilityWarning.vue', () => {
   beforeEach(() => {
     // Reset mocks before each test
-    isBrowserCompatible.mockReset();
-    getMissingFeatures.mockReset();
+    jest.clearAllMocks();
+    
+    // Default mock implementations
+    browserCompat.isBrowserCompatible.mockImplementation(() => true);
+    browserCompat.getMissingFeatures.mockImplementation(() => []);
   });
   
-  it('should not display warning when browser is compatible', () => {
+  it('should not display warning when browser is compatible', async () => {
     // Mock browser as compatible
-    isBrowserCompatible.mockReturnValue(true);
+    browserCompat.isBrowserCompatible.mockReturnValue(true);
     
-    const wrapper = shallowMount(CompatibilityWarning);
+    const wrapper = mount(CompatibilityWarning);
+    await wrapper.vm.$nextTick();
     
     // Warning should not be visible
     expect(wrapper.find('.compatibility-warning').exists()).toBe(false);
   });
   
-  it('should display warning when browser is not compatible', () => {
+  it('should display warning when browser is not compatible', async () => {
     // Mock browser as incompatible
-    isBrowserCompatible.mockReturnValue(false);
-    getMissingFeatures.mockReturnValue(['localStorage', 'webSockets']);
+    browserCompat.isBrowserCompatible.mockReturnValue(false);
+    browserCompat.getMissingFeatures.mockReturnValue(['localStorage', 'webSockets']);
     
-    const wrapper = shallowMount(CompatibilityWarning);
+    const wrapper = mount(CompatibilityWarning);
+    await wrapper.vm.$nextTick();
     
     // Warning should be visible
     expect(wrapper.find('.compatibility-warning').exists()).toBe(true);
@@ -42,10 +50,11 @@ describe('CompatibilityWarning.vue', () => {
   
   it('should emit event when compatibility issues are detected', async () => {
     // Mock browser as incompatible
-    isBrowserCompatible.mockReturnValue(false);
-    getMissingFeatures.mockReturnValue(['localStorage']);
+    browserCompat.isBrowserCompatible.mockReturnValue(false);
+    browserCompat.getMissingFeatures.mockReturnValue(['localStorage']);
     
-    const wrapper = shallowMount(CompatibilityWarning);
+    const wrapper = mount(CompatibilityWarning);
+    await wrapper.vm.$nextTick();
     
     // Check if event was emitted with correct payload
     expect(wrapper.emitted('compatibility-issue')).toBeTruthy();
@@ -54,16 +63,18 @@ describe('CompatibilityWarning.vue', () => {
   
   it('should dismiss warning when button is clicked', async () => {
     // Mock browser as incompatible
-    isBrowserCompatible.mockReturnValue(false);
-    getMissingFeatures.mockReturnValue(['localStorage']);
+    browserCompat.isBrowserCompatible.mockReturnValue(false);
+    browserCompat.getMissingFeatures.mockReturnValue(['localStorage']);
     
-    const wrapper = shallowMount(CompatibilityWarning);
+    const wrapper = mount(CompatibilityWarning);
+    await wrapper.vm.$nextTick();
     
     // Warning should be visible initially
     expect(wrapper.find('.compatibility-warning').exists()).toBe(true);
     
     // Click dismiss button
     await wrapper.find('.dismiss-button').trigger('click');
+    await wrapper.vm.$nextTick();
     
     // Warning should be hidden
     expect(wrapper.find('.compatibility-warning').exists()).toBe(false);
@@ -72,16 +83,17 @@ describe('CompatibilityWarning.vue', () => {
     expect(wrapper.emitted('dismiss')).toBeTruthy();
   });
   
-  it('should not show dismiss button when isDismissable is false', () => {
+  it('should not show dismiss button when isDismissable is false', async () => {
     // Mock browser as incompatible
-    isBrowserCompatible.mockReturnValue(false);
-    getMissingFeatures.mockReturnValue(['localStorage']);
+    browserCompat.isBrowserCompatible.mockReturnValue(false);
+    browserCompat.getMissingFeatures.mockReturnValue(['localStorage']);
     
-    const wrapper = shallowMount(CompatibilityWarning, {
+    const wrapper = mount(CompatibilityWarning, {
       props: {
         isDismissable: false
       }
     });
+    await wrapper.vm.$nextTick();
     
     // Warning should be visible
     expect(wrapper.find('.compatibility-warning').exists()).toBe(true);
@@ -90,30 +102,32 @@ describe('CompatibilityWarning.vue', () => {
     expect(wrapper.find('.dismiss-button').exists()).toBe(false);
   });
   
-  it('should not check compatibility on mount when checkOnMount is false', () => {
+  it('should not check compatibility on mount when checkOnMount is false', async () => {
     // Mock browser-compatibility functions
-    isBrowserCompatible.mockReturnValue(true);
+    browserCompat.isBrowserCompatible.mockReturnValue(true);
     
-    const wrapper = shallowMount(CompatibilityWarning, {
+    const wrapper = mount(CompatibilityWarning, {
       props: {
         checkOnMount: false
       }
     });
+    await wrapper.vm.$nextTick();
     
     // isBrowserCompatible should not have been called
-    expect(isBrowserCompatible).not.toHaveBeenCalled();
+    expect(browserCompat.isBrowserCompatible).not.toHaveBeenCalled();
   });
   
-  it('should display user-friendly labels for features', () => {
+  it('should display user-friendly labels for features', async () => {
     // Mock browser as incompatible
-    isBrowserCompatible.mockReturnValue(false);
-    getMissingFeatures.mockReturnValue(['localStorage', 'webSockets']);
+    browserCompat.isBrowserCompatible.mockReturnValue(false);
+    browserCompat.getMissingFeatures.mockReturnValue(['localStorage', 'webSockets']);
     
-    const wrapper = shallowMount(CompatibilityWarning);
+    const wrapper = mount(CompatibilityWarning);
+    await wrapper.vm.$nextTick();
     
     // Get the text content of the list items
     const listItems = wrapper.findAll('.missing-features li');
-    const textContents = listItems.map(item => item.text());
+    const textContents = Array.from(listItems).map(item => item.text());
     
     // Check if user-friendly labels are used
     expect(textContents).toContain('Local storage for saving game progress');

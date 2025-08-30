@@ -59,9 +59,10 @@ export default {
     
     // Check browser compatibility
     const checkCompatibility = () => {
-      isCompatible.value = isBrowserCompatible();
+      const compatible = isBrowserCompatible();
+      isCompatible.value = compatible;
       
-      if (!isCompatible.value) {
+      if (!compatible) {
         missingFeatures.value = getMissingFeatures();
         emit('compatibility-issue', missingFeatures.value);
       }

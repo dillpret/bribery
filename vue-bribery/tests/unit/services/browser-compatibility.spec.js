@@ -237,4 +237,3 @@ describe('Browser Compatibility Service', () => {
     });
   });
 });
-});
