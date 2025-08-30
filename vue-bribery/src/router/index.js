@@ -1,17 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
 import store from '@/store'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue')
   },
   {
     path: '/game/:id',
     name: 'Game',
-    component: () => import('@/views/Game.vue'),
+    component: () => import(/* webpackChunkName: "game" */ '@/views/Game.vue'),
     meta: { requiresAuth: true },
     props: true
   },

@@ -20,6 +20,23 @@ def register_routes(app):
     # Store version in app config for use in versioned_static
     app.config['VERSION'] = version
 
+    # Helper function to get files from a directory with a specific extension
+    def get_files(directory, extension):
+        """Get all files in a directory with a specific extension"""
+        static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'static')
+        full_dir = os.path.join(static_dir, directory)
+        if not os.path.exists(full_dir):
+            return []
+        
+        files = []
+        for file in os.listdir(full_dir):
+            if file.endswith(extension):
+                files.append(os.path.join(directory, file))
+        return files
+    
+    # Add get_files function to jinja environment
+    app.jinja_env.globals.update(get_files=get_files)
+
     @app.route('/')
     def index():
         return render_template('index.html', version=version)
@@ -33,3 +50,17 @@ def register_routes(app):
     def game_page_redirect(game_id):
         from flask import redirect
         return redirect(f'/bribery/{game_id}')
+    
+    # Vue.js app routes
+    @app.route('/vue')
+    @app.route('/vue/game/<game_id>')
+    def vue_app(game_id=None):
+        return render_template('vue_app.html', version=version)
+    
+    # Handle 404 errors for Vue routes by returning the Vue app
+    @app.errorhandler(404)
+    def not_found(e):
+        path = str(e).split(" ")[2]
+        if path.startswith("/vue/"):
+            return render_template('vue_app.html', version=version)
+        return render_template('index.html', version=version), 404
